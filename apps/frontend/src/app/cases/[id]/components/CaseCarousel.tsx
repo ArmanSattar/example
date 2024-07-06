@@ -2,8 +2,10 @@
 
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Image from "next/image";
-import CarouselItem from "./CarouselItem";
 import { ICarouselItem } from "../page";
+import dynamic from "next/dynamic";
+
+const CarouselItem = dynamic(() => import("./CarouselItem"), { ssr: false });
 
 type AnimationCalculation = {
   distance: number;
@@ -23,7 +25,7 @@ function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const itemWidth = 176;
+export const itemWidth = 192;
 const distanceInItems = 20;
 const animationDistanceBounds = {
   lower: (distanceInItems - 0.5) * itemWidth,
@@ -96,12 +98,15 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       }
     }, [isDemoClicked, state.animationStage]);
 
+    const animationCompletedRef = useRef(false);
+
     useEffect(() => {
       const handleTransitionEnd = () => {
         console.log("ended");
         if (state.animationStage === 1) {
           dispatch(Action.FIRST_STAGE_END);
-        } else if (state.animationStage === 2) {
+        } else if (state.animationStage === 2 && !animationCompletedRef.current) {
+          animationCompletedRef.current = true;
           onAnimationComplete();
           dispatch(Action.SECOND_STAGE_END);
         }
@@ -114,6 +119,14 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         return () => carousel.removeEventListener("transitionend", handleTransitionEnd);
       }
     }, [state.animationStage, onAnimationComplete]);
+
+    // Reset the ref when starting a new animation
+    useEffect(() => {
+      if (isDemoClicked && state.animationStage === 0) {
+        animationCompletedRef.current = false;
+        dispatch(Action.START_ANIMATION);
+      }
+    }, [isDemoClicked, state.animationStage]);
 
     useEffect(() => {
       let animationFrameId: number;
@@ -177,6 +190,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       }
     };
 
+    console.log(state);
     return (
       <div
         className={`relative ${
@@ -192,11 +206,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
             numCases > 1 ? "inset-y-0 left-[-10px] my-auto" : "inset-x-0 top-[-10px] mx-auto"
           } z-10 transition-colors duration-1000 text-yellow-2 bg-amber-300`}
         />
-        <div
-          className={`mt-md flex overflow-hidden rounded-sm flex-col gap-xs h-[310px] xl:h-[180px] ${
-            numCases > 1 ? "xl:h-[310px]" : ""
-          }`}
-        >
+        <div className={`mt-md flex overflow-hidden rounded-sm flex-col gap-xs h-[310px]`}>
           <div className="relative mx-auto my-0 flex h-full items-center justify-center overflow-hidden bg-dark-4 w-full">
             <div
               ref={carouselRef}
@@ -210,6 +220,8 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
                   key={item.id}
                   {...item}
                   isMiddle={index === Math.round(items.length / 2) - 1 + middleItem}
+                  isFinal={index === Math.round(items.length / 2) - 1 + distanceInItems}
+                  animationEnd={state.animationStage === 2 || state.animationStage === 3}
                 />
               ))}
             </div>

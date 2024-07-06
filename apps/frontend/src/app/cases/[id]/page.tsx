@@ -75,6 +75,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   }, [numCases, generateCases]);
 
   const handleAnimationComplete = useCallback(() => {
+    console.log("Animation complete");
     setAnimationComplete((prev) => prev + 1);
   }, []);
 
