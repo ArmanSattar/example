@@ -9,6 +9,7 @@ import { CaseCarousel } from "./components/CaseCarousel";
 import { useWebSocket } from "../../context/WebSocketContext";
 import { toggleDemoClicked } from "../../../store/slices/demoSlice";
 import { ProvablyFair } from "./components/ProvablyFair";
+import { v4 as uuidv4 } from "uuid";
 
 interface CaseItem {
   name: string;
@@ -32,17 +33,25 @@ const generateClientSeed = async (): Promise<string> => {
   return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
 };
 
-const generateCases = (numCases: number): CaseItem[][] => {
+export type ICarouselItem = {
+  id: string;
+  name: string;
+  price: number;
+  rarity: string;
+  imagePath: string;
+};
+
+const generateCases = (numCases: number): ICarouselItem[][] => {
   return Array.from(
     { length: numCases },
     () =>
       Array.from({ length: 51 }, () => ({
+        id: uuidv4(),
         name: Math.random() < 0.5 ? "XXX" : "YYY",
         price: 4.99,
-        rarity: "Extraordinary",
-        tag: "Hot",
-        image: Math.random() < 0.5 ? "/cases/dota_3.svg" : "/cases/gun.svg",
-      })) as CaseItem[]
+        rarity: Math.random() < 0.5 ? "Extraordinary" : "Rare",
+        imagePath: Math.random() < 0.5 ? "/cases/dota_3.svg" : "/cases/gun.svg",
+      })) as ICarouselItem[]
   );
 };
 
@@ -56,7 +65,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [generateSeed, setGenerateSeed] = useState(true);
   const [animationComplete, setAnimationComplete] = useState(0);
   const dispatch = useDispatch();
-  const [cases, setCases] = useState<CaseItem[][]>(generateCases(numCases));
+  const [cases, setCases] = useState<ICarouselItem[][]>(generateCases(numCases));
   const handleClientSeedChange = (newClientSeed: string) => {
     setClientSeed(newClientSeed);
   };
@@ -152,7 +161,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
         {cases.map((cases, index) => (
           <CaseCarousel
             key={index}
-            cases={cases}
+            items={cases}
             isDemoClicked={isDemoClicked}
             numCases={numCases}
             onAnimationComplete={handleAnimationComplete}

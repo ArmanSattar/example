@@ -2,8 +2,10 @@
 
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { v4 as uuidv4 } from "uuid";
 
 export interface ICase {
+  id: string;
   name: string;
   price: number;
   rarity: string;
@@ -40,6 +42,7 @@ export const useCases = () => {
 
   if (!casesRef.current) {
     casesRef.current = Array.from({ length: 50 }, () => ({
+      id: uuidv4(),
       name: Math.random() < 0.5 ? "Watson Power" : "Fire Hand Mystery",
       price: Math.round(Math.random() * 1000),
       rarity: Math.random() < 0.5 ? "Exceptional" : "Exotic",

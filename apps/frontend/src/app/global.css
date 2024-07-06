@@ -98,3 +98,17 @@
   background-size: 800px 104px;
   animation: shimmer 1.5s linear infinite;
 }
+
+@keyframes middle-item {
+  0% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+.animate-middle-item {
+  animation: middle-item 700ms linear forwards;
+  opacity: 1;
+}
