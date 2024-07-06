@@ -16,10 +16,9 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
 }) => {
   return (
     <div
-      className={`relative flex flex-col items-center justify-center opacity-80 transition-transform duration-700 ease-in-out will-change-transform ${
+      className={`relative flex flex-col items-center justify-center opacity-80 duration-700 ease-in-out will-change-transform ${
         isMiddle ? "scale-110 opacity-100 brightness-125" : ""
-      }`}
-      style={{ width: 176, height: 176 }}
+      } w-[176px] h-[176px]`}
     >
       <div className="relative flex justify-center items-center h-full w-full">
         <Image src={image} alt={"case"} width={140} height={140} />

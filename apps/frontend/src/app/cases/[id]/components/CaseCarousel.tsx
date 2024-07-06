@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Image from "next/image";
 import { ICase } from "../../hooks/useCases";
 import CarouselItem from "./CarouselItem";
@@ -76,16 +76,17 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       animationStage: 0,
       offset: { distance: 0, tickerOffset: 0 },
     });
-    const [currentPosition, setCurrentPosition] = useState(0);
+    const currentPositionRef = useRef(0);
     const carouselRef = useRef<HTMLDivElement | null>(null);
-    const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const middleItemIndexRef = useRef<number>(0);
+    const [middleItem, setMiddleItem] = useState<number>(0);
+    console.log("rendering carousel");
 
-    const updatePosition = (position: number) => {
-      setCurrentPosition(position);
-    };
+    const updatePosition = useCallback((position: number) => {
+      currentPositionRef.current = position;
+      calculateMiddleItem();
 
-    console.log("Spinning cases");
+      console.log("Current position", currentPositionRef.current, middleItem);
+    }, []);
 
     useEffect(() => {
       if ((state.animationStage === 3 || state.animationStage === 0) && isDemoClicked) {
@@ -116,14 +117,6 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         return () => carousel.removeEventListener("transitionend", handleTransitionEnd);
       }
     }, [state.animationStage, onAnimationComplete]);
-
-    useEffect(() => {
-      return () => {
-        if (animationTimeoutRef.current) {
-          clearTimeout(animationTimeoutRef.current);
-        }
-      };
-    }, []);
 
     useEffect(() => {
       let animationFrameId: number;
@@ -174,19 +167,18 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     }, [state.animationStage, state.offset, numCases]);
 
     const calculateMiddleItem = () => {
-      const adjustedPosition = Math.abs(currentPosition);
+      const adjustedPosition = Math.abs(currentPositionRef.current);
 
       const itemOffsets = cases.map((_, index) => index * itemWidth);
       const closestOffset = itemOffsets.reduce((prev, curr) => {
         return Math.abs(curr - adjustedPosition) < Math.abs(prev - adjustedPosition) ? curr : prev;
       });
 
-      return itemOffsets.indexOf(closestOffset);
+      const middleItemIndex = itemOffsets.indexOf(closestOffset);
+      if (middleItemIndex != middleItem) {
+        setMiddleItem(middleItemIndex);
+      }
     };
-
-    useEffect(() => {
-      middleItemIndexRef.current = calculateMiddleItem();
-    }, [currentPosition, cases]);
 
     return (
       <div
@@ -211,7 +203,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           <div className="relative mx-auto my-0 flex h-full items-center justify-center overflow-hidden bg-dark-4 w-full">
             <div
               ref={carouselRef}
-              className={`flex transform-gpu will-change-transform carousel-animation ${
+              className={`flex carousel-animation ${
                 numCases > 1 ? "flex-row sm:flex-col" : "sm:flex-row flex-col"
               }`}
               style={carouselStyle}
@@ -220,7 +212,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
                 <MemoizedCarouselItem
                   key={index}
                   {...item}
-                  isMiddle={index === Math.round(cases.length / 2) - 1 + middleItemIndexRef.current}
+                  isMiddle={index === Math.round(cases.length / 2) - 1 + middleItem}
                 />
               ))}
             </div>

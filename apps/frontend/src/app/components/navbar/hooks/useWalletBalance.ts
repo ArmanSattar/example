@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 export const useWalletBalance = (publicKey: PublicKey | null, connection: Connection) => {
   const [balance, setBalance] = useState<number>(0);
@@ -8,7 +8,8 @@ export const useWalletBalance = (publicKey: PublicKey | null, connection: Connec
     const fetchBalance = async () => {
       if (!publicKey) return;
       const balance = await connection.getBalance(publicKey);
-      setBalance(balance);
+      const balanceInSol = balance / LAMPORTS_PER_SOL;
+      setBalance(balanceInSol);
     };
 
     fetchBalance();

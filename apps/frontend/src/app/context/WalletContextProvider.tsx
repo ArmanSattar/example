@@ -14,7 +14,7 @@ interface WalletContextProviderProps {
 }
 
 export const WalletContextProvider: React.FC<WalletContextProviderProps> = ({ children }) => {
-  const network = WalletAdapterNetwork.Testnet;
+  const network = WalletAdapterNetwork.Devnet;
   console.log(network);
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   const wallets = useMemo(

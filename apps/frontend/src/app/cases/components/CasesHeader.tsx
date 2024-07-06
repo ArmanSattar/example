@@ -49,7 +49,7 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({ updateFilters, handleS
 
   return (
     <div className="w-full flex justify-between py-8 items-center">
-      <div className="flex w-full justify-between items-end space-x-2">
+      <div className="flex lg:max-xl:flex-col w-full justify-between items-center xl:items-end space-y-4 xl:space-x-2">
         <div className="hidden lg:flex space-x-4">
           {dropdownItems.map((item) => (
             <div key={item.title} className="flex flex-col space-y-0.5">

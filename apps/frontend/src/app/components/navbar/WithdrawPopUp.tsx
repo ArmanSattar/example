@@ -26,7 +26,7 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
   const handleDollarInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Allow only numbers and a single decimal point
-    if (/^\d*\.?\d*$/.test(value)) {
+    if (/^\d*\.?\d{0,2}$/.test(value)) {
       setDollarValue(value);
     }
   };
