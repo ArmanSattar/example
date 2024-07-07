@@ -11,6 +11,7 @@ import { toggleDemoClicked } from "../../../store/slices/demoSlice";
 import { ProvablyFair } from "./components/ProvablyFair";
 import { v4 as uuidv4 } from "uuid";
 import useWindowSize from "./hooks/useWindowResize";
+import { Back } from "../../components/Back";
 
 interface CaseItem {
   name: string;
@@ -84,7 +85,6 @@ export default function CasePage({ params }: { params: { id: string } }) {
   }, [numCases, generateCases]);
 
   const handleAnimationComplete = useCallback(() => {
-    console.log("Animation complete");
     setAnimationComplete((prev) => prev + 1);
   }, []);
 
@@ -112,8 +112,6 @@ export default function CasePage({ params }: { params: { id: string } }) {
       }
     }
   }, [isDemoClicked, animationComplete, numCases, connectionStatus, sendMessage, clientSeed, id]);
-
-  console.log(cases);
 
   useEffect(() => {
     if (animationComplete === numCases && isDemoClicked) {
@@ -161,6 +159,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
 
   return (
     <div className="w-full h-full flex flex-col space-y-10 p-2">
+      <Back text="Back to Cases" to={""} />
       <CaseDetails {...caseExample} />
       <ProvablyFair
         serverSeedHash={serverSeedHash || "Please Login"}

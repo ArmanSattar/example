@@ -5,12 +5,14 @@ interface DemoState {
   demoClicked: boolean;
   numCases: number;
   fastClicked: boolean;
+  soundClicked: boolean;
 }
 
 const initialState: DemoState = {
   demoClicked: false,
   numCases: 1,
   fastClicked: false,
+  soundClicked: true,
 };
 
 const demoSlice = createSlice({
@@ -26,8 +28,12 @@ const demoSlice = createSlice({
     setNumCases(state, action) {
       state.numCases = action.payload;
     },
+    toggleSoundClicked(state) {
+      state.soundClicked = !state.soundClicked;
+    },
   },
 });
 
-export const { toggleDemoClicked, setNumCases, toggleFastClicked } = demoSlice.actions;
+export const { toggleDemoClicked, setNumCases, toggleFastClicked, toggleSoundClicked } =
+  demoSlice.actions;
 export default demoSlice.reducer;

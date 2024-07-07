@@ -1,6 +1,8 @@
 import Image from "next/image";
 import React, { memo } from "react";
 import { ICarouselItem } from "../page";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../store";
 
 interface CarouselItemProps extends ICarouselItem {
   isMiddle: boolean;
@@ -21,17 +23,16 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   const [shouldScaleDown, setShouldScaleDown] = React.useState(false);
   const audioTickRef = React.useRef<HTMLAudioElement | null>(null);
   const audioChaChingRef = React.useRef<HTMLAudioElement | null>(null);
+  const soundClicked = useSelector((state: RootState) => state.demo.soundClicked);
 
-  if (isMiddle) {
-    if (audioTickRef.current && !animationEnd) {
-      audioTickRef.current.currentTime = 0; // Reset audio to start
-      audioTickRef.current.play().catch((error) => console.error("Audio playback failed:", error));
-    } else if (audioChaChingRef.current && animationEnd) {
-      audioChaChingRef.current.currentTime = 0; // Reset audio to start
-      audioChaChingRef.current
-        .play()
-        .catch((error) => console.error("Audio playback failed:", error));
+  if (isMiddle && soundClicked) {
+    const audioToPlay = animationEnd ? audioChaChingRef.current : audioTickRef.current;
+
+    if (audioToPlay) {
+      audioToPlay.currentTime = 0;
+      audioToPlay.play().catch((error) => console.error("Audio playback failed:", error));
     }
+
     if (!shouldScaleDown) {
       setShouldScaleDown(true);
     }
@@ -40,7 +41,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   return (
     <>
       <audio ref={audioTickRef} src="/sounds/tick.wav" />
-      <audio ref={audioChaChingRef} src="/sounds/cha-ching.wav" />
+      <audio ref={audioChaChingRef} src="/sounds/cashier-cha-ching.mp3" />
       <div
         className={`relative flex flex-col items-center justify-center w-[192px] h-[192px] scale-90 opacity-50 ${
           isMiddle ? "animate-middle-item" : shouldScaleDown ? "animate-scale-down" : ""

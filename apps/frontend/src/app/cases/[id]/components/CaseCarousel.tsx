@@ -214,7 +214,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         setMiddleItem(middleItemIndex);
       }
     };
-    console.log(middleItem);
+
     return (
       <div
         className={`relative ${

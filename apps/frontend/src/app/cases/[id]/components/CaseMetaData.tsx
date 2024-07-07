@@ -7,6 +7,7 @@ import {
   toggleFastClicked,
 } from "../../../../store/slices/demoSlice";
 import { RootState } from "../../../../store";
+import { SoundToggle } from "./SoundToggle";
 
 interface CaseMetaDataProps {
   name: string;
@@ -100,7 +101,7 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             <span className="text-white">Demo</span>
           </button>
           <button
-            className={`flex justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-1 ${
+            className={`flex justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-2 ${
               demoClicked ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={demoClicked}
@@ -119,6 +120,7 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
               Quick
             </span>
           </button>
+          <SoundToggle />
         </div>
       </div>
     </div>
