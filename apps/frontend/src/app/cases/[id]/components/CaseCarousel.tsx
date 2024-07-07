@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import Image from "next/image";
-import { Direction, ICarouselItem } from "../page";
+import { CaseItem, Direction } from "../page";
 import dynamic from "next/dynamic";
 import { WindowSize } from "../hooks/useWindowResize";
 
@@ -14,7 +14,7 @@ type AnimationCalculation = {
 };
 
 interface CaseCarouselProps {
-  items: ICarouselItem[];
+  items: CaseItem[];
   isDemoClicked: boolean;
   isFastAnimationClicked: boolean;
   numCases: number;
@@ -52,7 +52,6 @@ enum Action {
   START_ANIMATION,
   FIRST_STAGE_END,
   SECOND_STAGE_END,
-  DIRECTION_CHANGE,
 }
 
 type State = {
@@ -243,7 +242,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
             >
               {items.map((item, index) => (
                 <CarouselItem
-                  key={item.id}
+                  key={index}
                   {...item}
                   isMiddle={index === Math.round(items.length / 2) - 1 + middleItem}
                   isFinal={index === Math.round(items.length / 2) - 1 + distanceInItems}

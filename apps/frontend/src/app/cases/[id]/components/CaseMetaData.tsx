@@ -5,6 +5,7 @@ import {
   setNumCases,
   toggleDemoClicked,
   toggleFastClicked,
+  toggleRarityInfoPopup,
 } from "../../../../store/slices/demoSlice";
 import { RootState } from "../../../../store";
 import { SoundToggle } from "./SoundToggle";
@@ -121,6 +122,12 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             </span>
           </button>
           <SoundToggle />
+          <button
+            onClick={() => dispatch(toggleRarityInfoPopup())}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Rarity Info
+          </button>
         </div>
       </div>
     </div>
