@@ -1,7 +1,11 @@
 import React from "react";
 import { Tag } from "../../components/Tag";
 import { useDispatch, useSelector } from "react-redux";
-import { setNumCases, toggleDemoClicked } from "../../../../store/slices/demoSlice";
+import {
+  setNumCases,
+  toggleDemoClicked,
+  toggleFastClicked,
+} from "../../../../store/slices/demoSlice";
 import { RootState } from "../../../../store";
 
 interface CaseMetaDataProps {
@@ -23,6 +27,7 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
 }) => {
   const dispatch = useDispatch();
   const demoClicked = useSelector((state: RootState) => state.demo.demoClicked);
+  const fastClicked = useSelector((state: RootState) => state.demo.fastClicked);
   const numCases = useSelector((state: RootState) => state.demo.numCases);
 
   return (
@@ -46,9 +51,9 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
           {Array.from({ length: 4 }, (_, index) => (
             <button
               key={index}
-              className={`bg-custom_gray group hover:bg-gray-700 rounded-md w-12 h-12 p-2 ${
-                index + 1 === numCases ? "bg-gray-700" : ""
-              } ${
+              className={`bg-custom_gray group hover:${
+                demoClicked ? "" : "bg-gray-700"
+              } rounded-md w-12 h-12 p-2 ${index + 1 === numCases ? "bg-gray-700" : ""} ${
                 demoClicked
                   ? `opacity-50 cursor-not-allowed ${
                       index + 1 === numCases ? "" : "hover:bg-custom_gray"
@@ -95,12 +100,24 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             <span className="text-white">Demo</span>
           </button>
           <button
-            className={`flex justify-center items-center bg-custom_gray rounded-md h-12 p-3 ${
+            className={`flex justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-1 ${
               demoClicked ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={demoClicked}
           >
-            <span className="text-white">Quick</span>
+            <div
+              className={`rounded-full w-2 h-2 ${fastClicked ? "bg-green-500" : "bg-red-700"}`}
+            ></div>
+            <span
+              className="text-white"
+              onClick={() => {
+                if (!demoClicked) {
+                  dispatch(toggleFastClicked());
+                }
+              }}
+            >
+              Quick
+            </span>
           </button>
         </div>
       </div>

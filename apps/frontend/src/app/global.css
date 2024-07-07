@@ -103,8 +103,19 @@
   0% {
     transform: scale(0.9);
   }
+
   100% {
     transform: scale(1.1);
+  }
+}
+
+@keyframes scale-down {
+  0% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(0.9);
   }
 }
 
@@ -120,6 +131,11 @@
 .animate-middle-item {
   animation: middle-item 700ms linear forwards;
   opacity: 1;
+}
+
+.animate-scale-down {
+  animation: scale-down 300ms linear forwards;
+  opacity: 0.5;
 }
 
 .final-item {

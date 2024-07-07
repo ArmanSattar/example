@@ -48,7 +48,7 @@ export const NavBar = () => {
     <header className="text-white top-0 left-0 bg-background w-full border-b-green-400 gradient-border-bottom shadow-2xl sticky z-50 h-20 pr-3">
       <div className="flex justify-between items-center w-full h-full z-10">
         <div className="flex items-center justify-between h-full">
-          <div className="flex items-center w-[320px] justify-center">
+          <div className="flex items-center w-[100px] lg:w-[320px] justify-center">
             <Image src="/icons/logo.webp" alt="logo" width={90} height={90} />
           </div>
           <ul className="hidden xl:space-x-8 lg:flex h-full">

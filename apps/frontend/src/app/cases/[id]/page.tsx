@@ -10,6 +10,7 @@ import { useWebSocket } from "../../context/WebSocketContext";
 import { toggleDemoClicked } from "../../../store/slices/demoSlice";
 import { ProvablyFair } from "./components/ProvablyFair";
 import { v4 as uuidv4 } from "uuid";
+import useWindowSize from "./hooks/useWindowResize";
 
 interface CaseItem {
   name: string;
@@ -41,6 +42,11 @@ export type ICarouselItem = {
   imagePath: string;
 };
 
+export enum Direction {
+  HORIZONTAL,
+  VERTICAL,
+}
+
 const generateCases = (numCases: number): ICarouselItem[][] => {
   return Array.from(
     { length: numCases },
@@ -59,6 +65,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const id = params.id;
   const isDemoClicked = useSelector((state: RootState) => state.demo.demoClicked);
   const numCases = useSelector((state: RootState) => state.demo.numCases);
+  const fastClicked = useSelector((state: RootState) => state.demo.fastClicked);
   const [serverSeedHash, setServerSeedHash] = useState<string | null>(null);
   const [clientSeed, setClientSeed] = useState<string>("");
   const { sendMessage, connectionStatus, socket } = useWebSocket();
@@ -66,6 +73,8 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [animationComplete, setAnimationComplete] = useState(0);
   const dispatch = useDispatch();
   const [cases, setCases] = useState<ICarouselItem[][]>(generateCases(numCases));
+  const windowSize = useWindowSize();
+
   const handleClientSeedChange = (newClientSeed: string) => {
     setClientSeed(newClientSeed);
   };
@@ -164,8 +173,10 @@ export default function CasePage({ params }: { params: { id: string } }) {
             key={index}
             items={cases}
             isDemoClicked={isDemoClicked}
+            isFastAnimationClicked={fastClicked}
             numCases={numCases}
             onAnimationComplete={handleAnimationComplete}
+            windowSize={windowSize}
           />
         ))}
       </div>

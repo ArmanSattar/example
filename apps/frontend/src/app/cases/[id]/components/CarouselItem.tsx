@@ -18,10 +18,18 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   isFinal,
   animationEnd,
 }) => {
+  const [shouldScaleDown, setShouldScaleDown] = React.useState(false);
+
+  if (isMiddle) {
+    if (!shouldScaleDown) {
+      setShouldScaleDown(true);
+    }
+  }
+
   return (
     <div
       className={`relative flex flex-col items-center justify-center w-[192px] h-[192px] scale-90 opacity-50 ${
-        isMiddle ? "animate-middle-item" : ""
+        isMiddle ? "animate-middle-item" : shouldScaleDown ? "animate-scale-down" : ""
       }`}
     >
       <div
