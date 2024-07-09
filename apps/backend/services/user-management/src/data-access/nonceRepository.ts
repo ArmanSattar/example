@@ -28,7 +28,6 @@ export const createNonce = async (nonce: Nonce): Promise<void> => {
     const params = {
       TableName: tableName,
       Item: nonce,
-      ConditionExpression: "attribute_not_exists(walletAddress)",
     };
 
     await ddbDocClient.send(new PutCommand(params));
