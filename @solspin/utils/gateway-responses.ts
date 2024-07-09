@@ -1,3 +1,5 @@
+import { GatewayResponse } from "@solspin/types";
+
 /**
  * Creates a success response object with the specified data and status code.
  *
@@ -9,7 +11,7 @@
  * @param statusCode The HTTP status code for the success response (default: 200).
  * @returns The success response object.
  */
-export const successResponse = (data: any, statusCode: number = 200) => {
+export const successResponse = (data: any, statusCode: number = 200): GatewayResponse => {
   return {
     statusCode,
     body: JSON.stringify(data),
@@ -28,7 +30,7 @@ export const successResponse = (data: any, statusCode: number = 200) => {
  * @param statusCode The HTTP status code for the error response (default: 500).
  * @returns The error response object.
  */
-export const errorResponse = (error: Error, statusCode: number = 500) => {
+export const errorResponse = (error: Error, statusCode: number = 500): GatewayResponse => {
   return {
     statusCode,
     body: JSON.stringify({

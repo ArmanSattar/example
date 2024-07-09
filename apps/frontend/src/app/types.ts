@@ -37,3 +37,16 @@ export enum CaseItemRarity {
   EXTROARDINARY = "Extraordinary",
   CONTRABAND = "Contraband",
 }
+
+export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+
+if (!process.env.NEXT_PUBLIC_HOUSE_WALLET_PUBLIC_KEY) {
+  throw new Error("House wallet address not provided");
+}
+
+if (!process.env.NEXT_PUBLIC_WALLETS_API_URL) {
+  throw new Error("Wallets API URL not provided");
+}
+
+export const HOUSE_WALLET_ADDRESS = process.env.NEXT_PUBLIC_HOUSE_WALLET_PUBLIC_KEY;
+export const WALLETS_API_URL = process.env.NEXT_PUBLIC_WALLETS_API_URL;

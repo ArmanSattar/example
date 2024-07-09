@@ -6,6 +6,7 @@ import {
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
+import bs58 from "bs58";
 import { BuildTransactionResponse } from "@solspin/types";
 import { FEE, HOUSE_WALLET_ADDRESS, HOUSE_WALLET_PRIVATE_KEY } from "../foundation/runtime";
 import { getLogger } from "@solspin/logger";
@@ -48,17 +49,17 @@ export const buildTransaction = async (
       })
     );
 
+    const privateKeyBytes = bs58.decode(HOUSE_WALLET_PRIVATE_KEY);
+
     // Create a Keypair from the private key
-    const houseWalletKeypair = Keypair.fromSecretKey(
-      Buffer.from(JSON.parse(HOUSE_WALLET_PRIVATE_KEY))
-    );
+    const houseWalletKeypair = Keypair.fromSecretKey(privateKeyBytes);
 
     // Sign the transaction
     transaction.sign(houseWalletKeypair);
     logger.info("Transaction signed successfully", { transaction });
 
     return {
-      transactionSignature: transaction,
+      signedTransaction: transaction,
       blockhash: blockhash,
       lastValidBlockHeight: lastValidBlockHeight,
     };

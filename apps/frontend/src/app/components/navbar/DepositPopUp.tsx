@@ -6,20 +6,13 @@ import { createAndSignTransaction } from "./utils/transactions";
 import { useSolPrice } from "./hooks/useSolPrice";
 import { useWalletBalance } from "./hooks/useWalletBalance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Dollar from "../../../../public/icons/dollar.svg";
+import { postData } from "./utils/requests";
+import { DepositResponse } from "@solspin/types";
+import { HOUSE_WALLET_ADDRESS, WALLETS_API_URL } from "../../types";
 
 interface DepositPopUpProps {
   handleClose: () => void;
-}
-
-const HOUSE_WALLET_ADDRESS = process.env.NEXT_PUBLIC_HOUSE_WALLET_PUBLIC_KEY;
-const WALLETS_API_URL = process.env.NEXT_PUBLIC_WALLETS_API_URL;
-
-if (!HOUSE_WALLET_ADDRESS) {
-  throw new Error("House wallet address not provided");
-}
-
-if (!WALLETS_API_URL) {
-  throw new Error("Wallets API URL not provided");
 }
 
 type DepositData = {
@@ -28,37 +21,19 @@ type DepositData = {
   userId: string;
 };
 
-const postData = async (data: DepositData): Promise<any> => {
-  const response = await fetch(`${WALLETS_API_URL}/deposit`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
-    body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-    let errorMessage;
-    try {
-      const errorData = await response.json();
-      errorMessage = errorData.message || errorData.error || "Unknown error occurred";
-    } catch {
-      errorMessage = "Failed to parse error message";
-    }
-    throw new Error(`${response.status}, message: ${errorMessage}`);
-  }
-  return response.json();
-};
-
 export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
   const [dollarValue, setDollarValue] = useState<string>("");
   const [cryptoValue, setCryptoValue] = useState<string>("");
   const queryClient = useQueryClient();
+  const connection = useConnection().connection;
+  const wallet = useWallet();
+  const { data: priceSol, isLoading: isPriceSolLoading, isError: isPriceSolError } = useSolPrice();
+  const balance = useWalletBalance(wallet.publicKey, connection);
 
   const { mutateAsync: postDataMutation } = useMutation({
-    mutationFn: postData,
+    mutationFn: (data: DepositData) =>
+      postData<DepositData, DepositResponse>(data, `${WALLETS_API_URL}/deposit`, "POST"),
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ["walletBalance"] });
 
@@ -76,11 +51,6 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
     },
     retry: 0,
   });
-
-  const connection = useConnection().connection;
-  const wallet = useWallet();
-  const { data: priceSol, isLoading: isPriceSolLoading, isError: isPriceSolError } = useSolPrice();
-  const balance = useWalletBalance(wallet.publicKey, connection);
 
   const handleClickOutside = useCallback(
     (event: MouseEvent) => {
@@ -203,8 +173,8 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
             </div>
           </div>
           <div className="flex items-center justify-between w-full space-x-2">
-            <div className="rounded-sm bg-black py-2 px-4 flex space-x-2 h-12 flex-grow">
-              <Image src="/icons/dollar.svg" alt="Coin" width={20} height={20} />
+            <div className="rounded-sm bg-black py-2 px-4 flex space-x-2 h-12 flex-grow justify-center items-center">
+              <Dollar className={"text-yellow-400 w-6 h-6 align-text-bottom"} />
               <input
                 className="w-full bg-transparent text-white focus:outline-none"
                 type="text"

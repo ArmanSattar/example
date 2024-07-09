@@ -49,6 +49,11 @@ export const WithdrawFromWalletResponseSchema = BaseWalletsSchema;
 export const UpdateUserBalanceResponseSchema = BaseWalletsSchema;
 export const ReserveBalanceResponseSchema = BaseWalletsSchema;
 export const ReleaseBalanceReservationResponseSchema = BaseWalletsSchema;
+export const GatewayResponseSchema = z.object({
+  statusCode: z.number(),
+  body: z.string(),
+});
 
 //type definitions
 export type Wallet = z.infer<typeof BaseWalletsSchema>;
+export type GatewayResponse = z.infer<typeof GatewayResponseSchema>;

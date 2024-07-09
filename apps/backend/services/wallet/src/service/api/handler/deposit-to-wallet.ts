@@ -1,6 +1,10 @@
 import { ZodError } from "zod";
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { DepositToWalletRequestSchema } from "@solspin/types";
+import {
+  DepositResponse,
+  DepositToWalletRequestSchema,
+  GatewayResponseSchema,
+} from "@solspin/types";
 import { errorResponse, successResponse } from "@solspin/gateway-responses";
 import { getLogger } from "@solspin/logger";
 import { v4 as uuidv4 } from "uuid";
@@ -48,16 +52,17 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         }),
       };
 
-      const responsePayload = await lambda.invoke(params).promise();
+      const response = await lambda.invoke(params).promise();
+      const responsePayload = GatewayResponseSchema.parse(JSON.parse(response.Payload as string));
 
-      if (responsePayload.StatusCode !== 200) {
+      if (response.StatusCode !== 200 || responsePayload.statusCode !== 200) {
         logger.error("Error processing deposit request", { responsePayload, depositId });
         return errorResponse(new Error("Internal server error"), 500);
       }
 
       // TODO - add schema validation
       const { depositAmount: depositAmountInCrypto, transactionId } = JSON.parse(
-        JSON.parse(responsePayload.Payload as string).body
+        responsePayload.body
       );
 
       logger.info("Deposit request processed", { depositAmountInCrypto, transactionId });
@@ -72,7 +77,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         message: "Deposit successful",
         txnId: txnSignature,
         depositAmount: depositAmountInUsdFpn / 100,
-      });
+      } as DepositResponse);
     } catch (error) {
       logger.error("Error processing deposit request", { error, depositId });
 

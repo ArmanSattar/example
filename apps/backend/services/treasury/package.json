@@ -1,7 +1,8 @@
 {
   "name": "treasury",
   "scripts": {
-    "sst": "sst"
+    "sst": "sst",
+    "dev": "sst dev"
   },
   "dependencies": {
     "@solana/web3.js": "^1.93.1",

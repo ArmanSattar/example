@@ -1,6 +1,10 @@
 import { ZodError } from "zod";
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { WithdrawFromWalletRequestSchema } from "@solspin/types";
+import {
+  GatewayResponseSchema,
+  WithdrawFromWalletRequestSchema,
+  WithdrawResponse,
+} from "@solspin/types";
 import { errorResponse, successResponse } from "@solspin/gateway-responses";
 import { getLogger } from "@solspin/logger";
 import { v4 as uuidv4 } from "uuid";
@@ -44,8 +48,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       if (!wallet) {
         return errorResponse(new Error("Wallet not found"), 404);
       }
+      const currentPriceSolFpn = Math.round((await getCurrentPrice()) * 100);
 
-      if (wallet.balance < amount) {
+      if (wallet.balance < fpnAmount) {
+        console.log("gsg", wallet.balance, currentPriceSolFpn);
         return errorResponse(new Error("Insufficient balance"), 400);
       }
 
@@ -53,29 +59,39 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         return errorResponse(new Error("You still have an active wager requirement"), 400);
       }
 
-      const currentPriceSolFpn = Math.round((await getCurrentPrice()) * 100);
       const withdrawalAmountInSol = fpnAmount / currentPriceSolFpn;
 
       const params = {
         FunctionName: WITHDRAW_TREASURY_FUNCTION_ARN,
         InvocationType: "RequestResponse",
         Payload: JSON.stringify({
-          userId,
-          walletAddress,
-          withdrawalAmountInSol,
+          userId: userId,
+          walletAddress: walletAddress,
+          amount: withdrawalAmountInSol,
         }),
       };
 
-      const responsePayload = await lambda.invoke(params).promise();
+      const response = await lambda.invoke(params).promise();
+      const responsePayload = GatewayResponseSchema.parse(JSON.parse(response.Payload as string));
 
-      // TODO - add schema validation
-      const { signature } = JSON.parse(responsePayload.Payload as string);
+      if (response.StatusCode !== 200 || responsePayload.statusCode !== 200) {
+        logger.error("Error processing withdraw request", { responsePayload, withdrawId });
+        return errorResponse(
+          new Error(JSON.parse(responsePayload.body).error || "Internal server error"),
+          responsePayload.statusCode
+        );
+      }
 
-      logger.info("Withdrawal request processed on the blockchain", { signature });
+      const { txnSignature } = JSON.parse(responsePayload.body);
+
+      logger.info("Withdrawal request processed on the blockchain", { txnSignature });
 
       await withdraw(wallet, fpnAmount);
 
-      return successResponse({ message: "Withdrawal successful", txnId: signature });
+      return successResponse({
+        message: "Withdrawal successful",
+        txnId: txnSignature,
+      } as WithdrawResponse);
     } catch (error) {
       logger.error("Error processing withdrawal request", { error, withdrawId });
 

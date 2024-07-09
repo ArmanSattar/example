@@ -29,7 +29,6 @@ export const handler = async (event: DepositRequest, context: Context) => {
       logger.info("Created new Solana connection", { rpcUrl: SOLANA_RPC_URL });
     }
 
-    console.log(event);
     const parsedBody = event || "{}";
     const depositRequest = DepositRequestSchema.parse(parsedBody);
     ({ userId, walletAddress, base64Transaction } = depositRequest);

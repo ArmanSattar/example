@@ -44,6 +44,7 @@ export function ApiStack({ stack }: StackContext) {
               resources: [transactionsTableArn],
             }),
           ],
+          timeout: 60,
         },
       },
     },

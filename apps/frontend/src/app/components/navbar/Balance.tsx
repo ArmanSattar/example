@@ -22,12 +22,14 @@ export const Balance = () => {
     }
   }, [isError]);
 
+  const balance = wallet?.balance ?? 0;
+
   return (
     <div className="rounded-lg bg-gray-700 flex items-center justify-between">
       {isLoading ? (
         <div className="px-4">Loading...</div>
       ) : (
-        <Money amount={fromMinorAmount(wallet?.balance) ?? 0} className="px-4" />
+        <Money amount={fromMinorAmount(balance)} className="px-4" />
       )}
       <button
         className="rounded-lg bg-green-500 p-2 w-12 h-12 hover:bg-green-400 hover:scale-105 duration-100"

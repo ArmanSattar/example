@@ -4,6 +4,12 @@ import { PublicKey } from "@solana/web3.js";
 import { toast } from "sonner";
 import { useSolPrice } from "./hooks/useSolPrice";
 import { useWalletInfo } from "./hooks/useWalletInfo";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { fromMinorAmount } from "./utils/money";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { postData } from "./utils/requests";
+import { WithdrawRequest, WithdrawResponse } from "@solspin/types";
+import { WALLETS_API_URL } from "../../types";
 
 interface WithdrawPopUpProps {
   handleClose: () => void;
@@ -14,12 +20,34 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
   const [dollarValue, setDollarValue] = React.useState<string>("");
   const [walletAddressValue, setWalletAddressValue] = React.useState<string>("");
   const { data: priceSol, isLoading: isPriceSolLoading, isError: isPriceSolError } = useSolPrice();
-
+  const wallet = useWallet();
   const {
     data: walletInfo,
     isLoading: isWalletInfoLoading,
     isError: isWalletInfoError,
   } = useWalletInfo();
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: postDataMutation } = useMutation({
+    mutationFn: (data: WithdrawRequest) =>
+      postData<WithdrawRequest, WithdrawResponse>(data, `${WALLETS_API_URL}/withdraw`, "POST"),
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({ queryKey: ["walletBalance"] });
+      console.log(data);
+      if (data.txnId) {
+        toast.success(`Withdrawal request processed successfully. Txn: ${data.txnId}`);
+      } else {
+        toast.success("Withdrawal request processed successfully.");
+      }
+    },
+    onError: (error: Error) => {
+      toast.error(`Error processing Withdrawal request: ${error.message}`);
+    },
+    onMutate: () => {
+      toast.info("Processing Withdrawal request...");
+    },
+    retry: 0,
+  });
 
   function isValidSolanaAddress(address: string): boolean {
     try {
@@ -66,12 +94,56 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
     [handleClose]
   );
 
-  const handleWithdrawClick = () => {
-    if (dollarValue === "") {
-      toast.error("Please enter a valid amount");
-    } else if (!isValidSolanaAddress(walletAddressValue)) {
-      toast.error("Invalid wallet address");
-      setWalletAddressValue("");
+  const handleWithdrawClick = async () => {
+    try {
+      if (!walletInfo) {
+        toast.error("Failed to fetch wallet info");
+        return;
+      }
+
+      if (dollarValue === "") {
+        toast.error("Please enter a valid amount");
+        return;
+      } else if (!isValidSolanaAddress(walletAddressValue)) {
+        toast.error("Invalid wallet address");
+        setWalletAddressValue("");
+        return;
+      }
+
+      if (!wallet.publicKey) {
+        toast.error("Wallet not connected!");
+        return;
+      }
+      const dollarValueFloat = parseFloat(dollarValue);
+
+      if (dollarValueFloat <= 0) {
+        toast.error("Amount must be greater than 0");
+        return;
+      }
+
+      if (fromMinorAmount(walletInfo?.balance) < dollarValueFloat) {
+        toast.error("Insufficient balance");
+        return;
+      }
+
+      if (walletInfo?.wagerRequirement > 0) {
+        toast.error("You still have an active wager requirement");
+        return;
+      }
+
+      await postDataMutation({
+        userId: "c37bcf2a-8e11-41bf-aeeb-e43765b47742",
+        walletAddress: wallet.publicKey.toString(),
+        amount: dollarValueFloat,
+      });
+
+      handleClose();
+    } catch (error) {
+      toast.error(
+        `Error processing Withdrawal request: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
     }
   };
 
@@ -79,8 +151,6 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
     if (isWalletInfoError) {
       toast.error("Failed to fetch wallet info");
     }
-
-    console.log(walletInfo);
   }, [walletInfo]);
 
   useEffect(() => {
@@ -92,6 +162,16 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [handleKeyPress, handleClickOutside]);
+
+  if (walletInfo && walletInfo.wagerRequirement > 0) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <span className="text-2xl text-white font-semibold">
+          Active wager requirement of ${fromMinorAmount(walletInfo.wagerRequirement).toFixed(2)}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -129,6 +209,7 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
               <input
                 className="w-full bg-transparent text-white focus:outline-none"
                 type="text"
+                placeholder={wallet.publicKey?.toString() ?? undefined}
                 value={walletAddressValue}
                 onChange={handleWalletAddressInputChange}
               />
@@ -136,7 +217,15 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
           </div>
         </div>
         <p className="text-white text-sm mt-2 text-center">
-          {`Current SOL price: ${priceSol ? "$" + priceSol.toFixed(2) : "Loading..."}`}
+          {`Current SOL price: ${
+            isPriceSolLoading
+              ? "Loading..."
+              : isPriceSolError
+              ? "Error"
+              : priceSol
+              ? "$" + priceSol.toFixed(2)
+              : "Loading..."
+          }`}
         </p>
         <button
           className="bg-green-500 text-white py-2 px-5 rounded-md"

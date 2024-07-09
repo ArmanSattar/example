@@ -1,4 +1,3 @@
-export const TRANSACTIONS_TABLE_ARN = process.env.TRANSACTIONS_TABLE_ARN || "";
 export const SOLANA_RPC_URL = process.env.SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com";
 export const HOUSE_WALLET_ADDRESS = process.env.HOUSE_WALLET_ADDRESS || "";
 export const HOUSE_WALLET_PRIVATE_KEY = process.env.HOUSE_SECRET_KEY || "";

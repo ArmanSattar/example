@@ -23,6 +23,8 @@ export const getTransactionValueAndVerify = async (
       housePubKey = new PublicKey(HOUSE_WALLET_ADDRESS);
     }
 
+    console.log("House Pub Key", { housePubKey });
+
     // Get the transaction details
     const txDetail = await connection.getParsedTransaction(transaction, {
       commitment: COMMITMENT_LEVEL as Finality,
@@ -51,8 +53,10 @@ export const getTransactionValueAndVerify = async (
       throw new InvalidInputError("Invalid deposit amount");
     }
 
-    logger.info("Transaction value verified", { depositAmount, transaction });
-    return depositAmount / LAMPORTS_PER_SOL;
+    const depositAmountInSol = depositAmount / LAMPORTS_PER_SOL;
+
+    logger.info("Transaction value verified", { depositAmountInSol, transaction });
+    return depositAmountInSol;
   } catch (error) {
     logger.error("Error in getTransactionValueAndVerify", { error });
     throw error;
