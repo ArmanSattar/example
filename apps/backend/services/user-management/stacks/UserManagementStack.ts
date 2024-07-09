@@ -127,12 +127,12 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
           handler: "../user-management/src/handlers/walletConnect.handler",
           permissions: [
             new PolicyStatement({
-              actions: ["dynamodb:GetItem", "dyamodb:PutItem"],
-              resources: [userTable.tableArn],
+              actions: ["dynamodb:GetItem", "dyamodb:PutItem", "dynamodb:DeleteItem"],
+              resources: [userTable.tableArn, nonceTable.tableArn],
             }),
           ],
-          bind: [userTable, TEST_SECRET],
-          environment: { TABLE_NAME: userTable.tableName },
+          bind: [userTable, nonceTable, TEST_SECRET],
+          environment: { TABLE_NAME: userTable.tableName, NONCE_TABLE_NAME: nonceTable.tableName },
         },
       },
       "POST /auth/disconnect": {
@@ -158,7 +158,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
             }),
           ],
           bind: [nonceTable],
-          environment: { TABLE_NAME: nonceTable.tableName },
+          environment: { NONCE_TABLE_NAME: nonceTable.tableName },
         },
       },
     },
