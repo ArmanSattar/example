@@ -1,6 +1,5 @@
 import { ConnectionInfo } from "@solspin/websocket-types";
 import { CaseItem, Case } from "@solspin/game-engine-types";
-import { getUserFromWebSocket } from "../helpers/getUserFromWebSocket";
 import { getConnectionInfo } from "../helpers/handleConnections";
 import { debitUser } from "../helpers/debitUser";
 import { callGetCase } from "../helpers/getCaseHelper";
@@ -63,16 +62,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     if (!connectionInfo) {
       throw new Error("ConnectionId not found");
     }
-    const user = connectionInfo;
-    // let user: ConnectionInfo;
-    // try {
-    //   user = JSON.parse(connectionInfoPayload.body).connectionInfo;
-    // } catch (error) {
-    //   return {
-    //     statusCode: 400,
-    //     body: JSON.stringify({ message: "Invalid JSON format" }),
-    //   };
-    // }
+    const user: ConnectionInfo = connectionInfo;
     logger.info(`Received connection info from getUserFromWebSocket lambda.`);
 
     if (!user || !user.isAuthenticated) {
@@ -122,12 +112,8 @@ export const handler = WebSocketApiHandler(async (event) => {
       caseRolledItem,
     };
 
-    try {
-      const messageEndpoint = `${domainName}/${stage}`;
-      await sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
-    } catch (error) {
-      logger.error("Error posting to connection:", error);
-    }
+    const messageEndpoint = `${domainName}/${stage}`;
+    await sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
 
     const outcome =
       caseModel.casePrice < caseRolledItem.price

@@ -23,10 +23,7 @@ export default {
         },
       },
     });
-    app.stack(DatabaseStack);
-    app.stack(ApiStack);
-    app.stack(UserManagementHandlerAPI);
-    app.stack(GameEngineHandlerAPI);
+
     app.stack(WebSocketHandlerAPI);
     app.stack(WebSocketGateway);
   },

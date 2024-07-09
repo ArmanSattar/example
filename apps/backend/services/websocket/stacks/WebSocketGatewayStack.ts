@@ -1,4 +1,4 @@
-import { StackContext, WebSocketApi, use, Cron, Config } from "sst/constructs";
+import { StackContext, WebSocketApi, use, Cron, Config, Function } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { WebSocketHandlerAPI } from "./WebSocketHandlerStack";
 import { GameEngineHandlerAPI } from "../../game-engine/stacks/GameEngineStack";
@@ -7,11 +7,7 @@ import { ApiStack } from "../../wallet/stacks/Api";
 import * as cdk from "aws-cdk-lib";
 
 export function WebSocketGateway({ stack }: StackContext) {
-  const { getConnectionFunction, websocketTable } = use(WebSocketHandlerAPI);
-  const { casesTable, getCaseFunction, performSpinFunction } = use(GameEngineHandlerAPI);
-  const { callAuthorizerFunction, TEST_SECRET } = use(UserManagementHandlerAPI);
-  const { betTransactionHandler } = use(ApiStack);
-
+  const { websocketTable } = use(WebSocketHandlerAPI);
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
   const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
     stack,
@@ -26,10 +22,29 @@ export function WebSocketGateway({ stack }: StackContext) {
     },
   });
 
-  callAuthorizerFunction.attachPermissions(["lambda:InvokeFunction"]);
-  getConnectionFunction.attachPermissions(["lambda:InvokeFunction"]);
-  getCaseFunction.attachPermissions(["lambda:InvokeFunction"]);
-  betTransactionHandler.attachPermissions(["lambda:InvokeFunction"]);
+  const callAuthorizerFunction = Function.fromFunctionName(
+    stack,
+    "CallAuthorizerFunction",
+    "dev-user-management-UserManagementHandlerAPI-authorizer"
+  );
+
+  const getCaseFunction = Function.fromFunctionName(
+    stack,
+    "GetCaseFunction",
+    "dev-game-engine-GameEngineHandlerAPI-getCase"
+  );
+
+  const performSpinFunction = Function.fromFunctionName(
+    stack,
+    "PerformSpinFunction",
+    "dev-game-engine-GameEngineHandlerAPI-performSpin"
+  );
+
+  const betTransactionFunction = Function.fromFunctionName(
+    stack,
+    "BetTransactionFunction",
+    "dev-game-engine-GameEngineHandlerAPI-performSpin"
+  );
 
   const eventBusPolicy = new PolicyStatement({
     actions: ["events:PutEvents"],
@@ -41,7 +56,6 @@ export function WebSocketGateway({ stack }: StackContext) {
       function: {
         timeout: 20,
         environment: {
-          CASES_TABLE_NAME: casesTable.tableName,
           WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketTable.tableName,
         },
       },
@@ -108,13 +122,9 @@ export function WebSocketGateway({ stack }: StackContext) {
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:PutItem", "dynamodb:GetItem", "lambda:InvokeFunction"],
-              resources: [websocketTable.tableArn, callAuthorizerFunction.functionArn],
+              resources: [websocketTable.tableArn],
             }),
           ],
-          bind: [TEST_SECRET],
-          environment: {
-            AUTHORIZER_FUNCTION_NAME: callAuthorizerFunction.functionName,
-          },
         },
       },
       unauthenticate: {
@@ -137,22 +147,15 @@ export function WebSocketGateway({ stack }: StackContext) {
             new PolicyStatement({
               actions: ["lambda:InvokeFunction", "dynamodb:GetItem", "events:PutEvents"],
               resources: [
-                casesTable.tableArn,
-                getConnectionFunction.functionArn,
                 getCaseFunction.functionArn,
                 performSpinFunction.functionArn,
-                betTransactionHandler.functionArn,
                 eventBusArn,
                 websocketTable.tableArn,
               ],
             }),
           ],
           environment: {
-            GET_USER_FROM_WEBSOCKET_FUNCTION_NAME: getConnectionFunction.functionName,
-            GET_CASE_FUNCTION_NAME: getCaseFunction.functionName,
-            PERFORM_SPIN_FUNCTION_NAME: performSpinFunction.functionName,
             EVENT_BUS_ARN: eventBusArn,
-            BET_TRANSACTION_FUNCTION_NAME: betTransactionHandler.functionName,
           },
         },
       },

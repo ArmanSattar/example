@@ -14,6 +14,7 @@ export function ApiStack({ stack }: StackContext) {
   );
 
   const createBetHandler = new Function(stack, "CreateBetHandler", {
+    functionName: `${stack.stackName}-createBet`,
     handler: "src/service/events/handler/create-bet.handler",
     environment: {
       BETS_TABLE_ARN: betsTableArn,

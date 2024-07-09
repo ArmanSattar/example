@@ -49,12 +49,16 @@ export const handler = ApiHandler(async (event) => {
     // Generate a new nonce
     const nonce = uuidv4();
     const createdAt = new Date().toISOString();
-
+    const now = Math.floor(Date.now() / 1000); // Current time in seconds
+    const fiveMinutesInSeconds = 5 * 60;
+    let expiresAtNumber: number = now + fiveMinutesInSeconds;
+    let expiresAt: string = expiresAtNumber.toString();
     // Save the nonce
     await createNonce({
       walletAddress,
       nonce,
       createdAt,
+      expiresAt,
     });
 
     return {

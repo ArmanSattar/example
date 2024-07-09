@@ -4,7 +4,7 @@ const lambda = new AWS.Lambda();
 
 export const callAuthorizer = async (token: string) => {
   const params = {
-    FunctionName: process.env.AUTHORIZER_FUNCTION_NAME,
+    FunctionName: process.env.JWT_AUTHORIZER_FUNCTION_NAME,
     Payload: JSON.stringify({
       queryStringParameters: {
         token,

@@ -12,6 +12,7 @@ interface Nonce {
   walletAddress: string;
   nonce: string;
   createdAt: string;
+  expiresAt: string;
 }
 
 const client = new DynamoDBClient({ region: "eu-west-2" });

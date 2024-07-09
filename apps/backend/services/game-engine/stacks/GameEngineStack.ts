@@ -22,6 +22,7 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
     },
   });
   const getCaseFunction = new Function(stack, "getCaseFunction", {
+    functionName: `${stack.stackName}-getCase`,
     handler: "../game-engine/src/handlers/getCase.handler",
     environment: {
       TABLE_NAME: casesTable.tableName,
@@ -30,6 +31,7 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
   getCaseFunction.attachPermissions("*");
 
   const performSpinFunction = new Function(stack, "performSpinFunction", {
+    functionName: `${stack.stackName}-performSpin`,
     handler: "../game-engine/src/handlers/spin.handler",
     environment: {
       TABLE_NAME: casesTable.tableName,
@@ -53,7 +55,7 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
     },
 
     routes: {
-      "GET /case": "src/handlers/getCase.handler",
+      "GET /case": "../game-engine/src/handlers/getCase.handler",
       "GET /cases": "../game-engine/src/handlers/getAllCases.handler",
       "GET /initialize": "../game-engine/src/handlers/initializeDatabase.handler",
       "POST /spin": "../game-engine/src/handlers/spin.handler",
@@ -63,11 +65,7 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
   stack.addOutputs({
     ApiEndpoint: api.url,
     TableName: casesTable.tableName,
-    test: getCaseFunction.functionName,
+    getCaseFunctionName: getCaseFunction.functionName,
+    performSpinFunctionName: performSpinFunction.functionName,
   });
-  return {
-    getCaseFunction,
-    casesTable,
-    performSpinFunction,
-  };
 }

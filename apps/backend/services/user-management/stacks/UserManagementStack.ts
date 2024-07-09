@@ -32,17 +32,20 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
       walletAddress: "string",
       nonce: "string",
       createdAt: "string",
+      expiresAt: "string",
     },
     primaryIndex: { partitionKey: "walletAddress" },
     cdk: {
       table: {
         removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
+        timeToLiveAttribute: "expiresAt",
       },
     },
   });
 
   const TEST_SECRET = new Config.Secret(stack, "TEST_SECRET");
   const callAuthorizerFunction = new Function(stack, "authorizerFunction", {
+    functionName: `${stack.stackName}-authorizer`,
     handler: "../user-management/src/handlers/authorize.handler",
     bind: [TEST_SECRET],
     environment: { TABLE_NAME: userTable.tableName },
@@ -166,10 +169,6 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
 
   stack.addOutputs({
     ApiEndpoint: api.url,
+    authorizerFunctionName: callAuthorizerFunction.functionName,
   });
-
-  return {
-    callAuthorizerFunction,
-    TEST_SECRET,
-  };
 }
