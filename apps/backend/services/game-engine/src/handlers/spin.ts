@@ -1,6 +1,6 @@
 import { ApiHandler } from "sst/node/api";
 import { handleSpin } from "../helpers/caseOpeningService";
-import { SpinPayloadSchema, CreateSpinPayloadRequestSchema } from "@solspin/orchestration-types";
+import { CreateSpinPayloadRequestSchema } from "@solspin/orchestration-types";
 import { ZodError } from "zod";
 import { getLogger } from "@solspin/logger";
 
@@ -36,8 +36,8 @@ export const handler = ApiHandler(async (event) => {
       statusCode: 200,
       body: JSON.stringify(rewardItem),
     };
-  } catch (error) {
-    logger.error(`Error in handleSpin: ${error}`);
+  } catch (error: any) {
+    logger.error("Error in handleSpin:", error);
     return {
       statusCode: 500,
       body: JSON.stringify({

@@ -1,20 +1,22 @@
-import { StackContext, Api, Table, Function } from "sst/constructs";
+import { Api, Function, StackContext, Table } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { RemovalPolicy } from "aws-cdk-lib/core";
+
 export function GameEngineHandlerAPI({ stack }: StackContext) {
   const removeOnDelete = stack.stage !== "prod";
   const casesTable = new Table(stack, "cases", {
     fields: {
       id: "string",
+      type: "string",
       name: "string",
       price: "number",
-      rarity: "string",
-      highestPrice: "number",
-      lowestPrice: "number",
-      tag: "string",
-      image: "string",
+      imagePath: "string",
       items: "string",
       itemPrefixSums: "string",
+      highestPrice: "number",
+      lowestPrice: "number",
+      rarity: "string",
+      tag: "string",
     },
     primaryIndex: { partitionKey: "id" },
     cdk: {
@@ -23,9 +25,7 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
       },
     },
   });
-
   const getCaseFunction = new Function(stack, "getCaseFunction", {
-    functionName: `${stack.stackName}-getCase`,
     handler: "../game-engine/src/handlers/getCase.handler",
     environment: {
       TABLE_NAME: casesTable.tableName,
@@ -34,7 +34,6 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
   getCaseFunction.attachPermissions("*");
 
   const performSpinFunction = new Function(stack, "performSpinFunction", {
-    functionName: `${stack.stackName}-performSpin`,
     handler: "../game-engine/src/handlers/spin.handler",
     environment: {
       TABLE_NAME: casesTable.tableName,
@@ -58,7 +57,7 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
     },
 
     routes: {
-      "GET /case": "../game-engine/src/handlers/getCase.handler",
+      "GET /case": "src/handlers/getCase.handler",
       "GET /cases": "../game-engine/src/handlers/getAllCases.handler",
       "GET /initialize": "../game-engine/src/handlers/initializeDatabase.handler",
       "POST /spin": "../game-engine/src/handlers/spin.handler",
@@ -68,7 +67,11 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
   stack.addOutputs({
     ApiEndpoint: api.url,
     TableName: casesTable.tableName,
-    getCaseFunctionName: getCaseFunction.functionName,
-    performSpinFunctionName: performSpinFunction.functionName,
+    test: getCaseFunction.functionName,
   });
+  return {
+    getCaseFunction,
+    casesTable,
+    performSpinFunction,
+  };
 }

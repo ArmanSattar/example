@@ -7,12 +7,11 @@ export const callGetCase = async (caseId: string) => {
     FunctionName: process.env.GET_CASE_FUNCTION_NAME,
     Payload: JSON.stringify({
       queryStringParameters: {
-        caseId,
+        id: caseId,
       },
     }),
   };
 
   const response = await lambda.invoke(params).promise();
-  const payload = JSON.parse(response.Payload as string);
-  return payload;
+  return JSON.parse(response.Payload as string);
 };

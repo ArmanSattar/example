@@ -1,7 +1,8 @@
-import { CaseSchema } from "../game-engine/types";
 import { z } from "zod";
+import { BaseCaseSchema } from "@solspin/game-engine-types";
+
 const SpinPayloadSchema = z.object({
-  caseModel: CaseSchema,
+  caseModel: BaseCaseSchema,
   serverSeed: z.string(),
   clientSeed: z.string(),
 });

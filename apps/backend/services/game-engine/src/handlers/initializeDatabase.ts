@@ -8,7 +8,7 @@ export const handler = ApiHandler(async (event) => {
       statusCode: 200,
       body: JSON.stringify({ message: "Database initialized successfully" }),
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error initializing database:", error);
     return {
       statusCode: 500,

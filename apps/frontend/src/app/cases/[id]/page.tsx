@@ -155,6 +155,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const dispatch = useDispatch();
   const [cases, setCases] = useState<ICaseItem[][]>(generateCases(numCases));
   const windowSize = useWindowSize();
+  const [itemWon, setItemWon] = useState<ICaseItem | null>(null);
 
   const handleClientSeedChange = (newClientSeed: string) => {
     setClientSeed(newClientSeed);
@@ -218,8 +219,9 @@ export default function CasePage({ params }: { params: { id: string } }) {
           console.log("Server Seed Hash set:", data["server-seed-hash"]);
         }
 
-        if ("spin-result" in data) {
-          console.log("Spin result:", data["spin-result"]);
+        if ("caseRolledItem" in data) {
+          setItemWon(data["caseRolledItem"] as ICaseItem);
+          console.log("Spin result:", data["caseRolledItem"]);
         }
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);

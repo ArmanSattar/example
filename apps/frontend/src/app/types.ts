@@ -20,13 +20,6 @@ export type ICase = {
   items: ICaseItem[];
 };
 
-export type ICarouselItem = {
-  name: string;
-  price: number;
-  rarity: string;
-  imagePath: string;
-};
-
 export enum CaseItemRarity {
   CONSUMER_GRADE = "Consumer Grade",
   INDUSTRIAL_GRADE = "Industrial Grade",
@@ -36,6 +29,14 @@ export enum CaseItemRarity {
   COVERT = "Covert",
   EXTROARDINARY = "Extraordinary",
   CONTRABAND = "Contraband",
+}
+
+export enum CaseItemWear {
+  FACTORY_NEW = "Factory New",
+  MINIMAL_WEAR = "Minimal Wear",
+  FIELD_TESTED = "Field Tested",
+  WELL_WORN = "Well Worn",
+  BATTLE_SCARRED = "Battle Scarred",
 }
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";

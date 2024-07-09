@@ -1,115 +1,106 @@
-import { CaseItem } from "../models/case_item_model";
-import { Case } from "../models/case_model";
+import { BaseCaseItem, CaseItemRarity, CaseItemWear, ICase } from "@solspin/types";
 import { CaseType } from "../enums/caseType";
 import { randomUUID } from "crypto";
 
-
-const mockCsgoCaseItem1: CaseItem = {
-    price: 10.5,
-    probability: 0.05, // 5%
-    item_id: 1,
-    item_type: 'weapon',
-    item_name: 'AK-47 | Redline',
-    image_url: 'https://example.com/ak47_redline.png',
-    number_range: { start: 0, end: 4999 },
-    rarity: 'covert',
-    is_stattrak: true,
-    is_souvenir: false,
-    item_wear: 'Field-Tested'
+const mockCsgoCaseItem1: BaseCaseItem = {
+  id: 1,
+  price: 10.5,
+  chance: 0.05, // 5%
+  type: "AK-47",
+  name: "Redline",
+  imagePath: "https://example.com/ak47_redline.png",
+  rollNumbers: [0, 4999],
+  rarity: CaseItemRarity.COVERT,
+  wear: CaseItemWear.FIELD_TESTED,
 };
 
-const mockCsgoCaseItem2: CaseItem = {
-    price: 15,
-    probability: 0.10, // 10%
-    item_id: 2,
-    item_type: 'weapon',
-    item_name: 'AWP | Asiimov',
-    image_url: 'https://example.com/awp_asiimov.png',
-    number_range: { start: 5000, end: 14999 },
-    rarity: 'classified',
-    is_stattrak: false,
-    is_souvenir: true,
-    item_wear: 'Minimal Wear'
+const mockCsgoCaseItem2: BaseCaseItem = {
+  id: 2,
+  price: 15,
+  chance: 0.1, // 10%
+  type: "AWP",
+  name: "Asiimov",
+  imagePath: "https://example.com/awp_asiimov.png",
+  rollNumbers: [5000, 14999],
+  rarity: CaseItemRarity.CLASSIFIED,
+  wear: CaseItemWear.MINIMAL_WEAR,
 };
 
-const mockCsgoCaseItem3: CaseItem = {
-    price: 5,
-    probability: 0.20, // 20%
-    item_id: 3,
-    item_type: 'weapon',
-    item_name: 'Desert Eagle | Blaze',
-    image_url: 'https://example.com/deagle_blaze.png',
-    number_range: { start: 15000, end: 34999 },
-    rarity: 'restricted',
-    is_stattrak: false,
-    is_souvenir: false,
-    item_wear: 'Factory New'
+const mockCsgoCaseItem3: BaseCaseItem = {
+  id: 3,
+  price: 5,
+  chance: 0.2, // 20%
+  type: "Desert Eagle",
+  name: "Blaze",
+  imagePath: "https://example.com/deagle_blaze.png",
+  rollNumbers: [15000, 34999],
+  rarity: CaseItemRarity.RESTRICTED,
+  wear: CaseItemWear.FACTORY_NEW,
 };
 
-const mockNftCaseItem1: CaseItem = {
-    price: 20,
-    probability: 0.01, // 1%
-    item_id: 4,
-    item_type: 'nft',
-    item_name: 'CryptoPunk #1234',
-    image_url: 'https://example.com/cryptopunk_1234.png',
-    number_range: { start: 35000, end: 35999 },
-    rarity: 'legendary'
+const mockNftCaseItem1: BaseCaseItem = {
+  id: 4,
+  price: 20,
+  chance: 0.01, // 1%
+  type: "NFT",
+  name: "CryptoPunk #1234",
+  imagePath: "https://example.com/cryptopunk_1234.png",
+  rollNumbers: [35000, 35999],
+  rarity: CaseItemRarity.CONTRABAND,
+  wear: CaseItemWear.NOT_APPLICABLE,
 };
 
-const mockNftCaseItem2: CaseItem = {
-    price: 18,
-    probability: 0.05, // 5%
-    item_id: 5,
-    item_type: 'nft',
-    item_name: 'Bored Ape #5678',
-    image_url: 'https://example.com/boredape_5678.png',
-    number_range: { start: 36000, end: 40999 },
-    rarity: 'epic'
+const mockNftCaseItem2: BaseCaseItem = {
+  id: 5,
+  price: 18,
+  chance: 0.05, // 5%
+  type: "NFT",
+  name: "Bored Ape #5678",
+  imagePath: "https://example.com/boredape_5678.png",
+  rollNumbers: [36000, 40999],
+  rarity: CaseItemRarity.COVERT,
+  wear: CaseItemWear.NOT_APPLICABLE,
 };
 
-const mockNftCaseItem3: CaseItem = {
-    price: 12,
-    probability: 0.59, // 59%
-    item_id: 6,
-    item_type: 'nft',
-    item_name: 'Art Block #9012',
-    image_url: 'https://example.com/artblock_9012.png',
-    number_range: { start: 41000, end: 99999 },
-    rarity: 'common'
+const mockNftCaseItem3: BaseCaseItem = {
+  id: 6,
+  price: 12,
+  chance: 0.59, // 59%
+  type: "NFT",
+  name: "Art Block #9012",
+  imagePath: "https://example.com/artblock_9012.png",
+  rollNumbers: [41000, 99999],
+  rarity: CaseItemRarity.MIL_SPEC,
+  wear: CaseItemWear.NOT_APPLICABLE,
 };
 
-const mockCase: Case = {
-    caseType: CaseType.CSGO,
-    caseName: 'test-case',
-    caseId: randomUUID(),
-    casePrice: 2.5,
-    image_url: 'https://example.com/bravo_case.png',
-    caseHash: 'abc123def456',
-    items: [
-        mockCsgoCaseItem1,
-        mockCsgoCaseItem2,
-        mockCsgoCaseItem3,
-        mockNftCaseItem1,
-        mockNftCaseItem2,
-        mockNftCaseItem3
-    ],
-    item_prefix_sums: [
-        4999, 
-        14999, 
-        34999, 
-        35999, 
-        40999, 
-        99999  
-    ]
-};
-
-export {
+const mockCase: ICase = {
+  type: CaseType.CSGO,
+  name: "test-case",
+  id: randomUUID(),
+  price: 2.5,
+  imagePath: "https://example.com/bravo_case.png",
+  rarity: CaseItemRarity.COVERT,
+  highestPrice: 20,
+  lowestPrice: 5,
+  tag: "Hot",
+  items: [
     mockCsgoCaseItem1,
     mockCsgoCaseItem2,
     mockCsgoCaseItem3,
     mockNftCaseItem1,
     mockNftCaseItem2,
     mockNftCaseItem3,
-    mockCase
+  ],
+  itemPrefixSums: [4999, 14999, 34999, 35999, 40999, 99999],
+};
+
+export {
+  mockCsgoCaseItem1,
+  mockCsgoCaseItem2,
+  mockCsgoCaseItem3,
+  mockNftCaseItem1,
+  mockNftCaseItem2,
+  mockNftCaseItem3,
+  mockCase,
 };

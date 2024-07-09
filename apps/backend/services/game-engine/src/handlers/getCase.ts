@@ -23,8 +23,8 @@ export const handler = ApiHandler(async (event) => {
       statusCode: 200,
       body: JSON.stringify(response),
     };
-  } catch (error) {
-    logger.error(`Error getting case data: ${error}`);
+  } catch (error: any) {
+    logger.error(`Error getting case data:`, error);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Internal Server Error" }),

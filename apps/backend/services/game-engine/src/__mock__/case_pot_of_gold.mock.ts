@@ -1,213 +1,232 @@
-import { ICaseItem, ICase, CaseType } from "@solspin/game-engine-types";
 import { randomUUID } from "crypto";
+import { BaseCaseItem, CaseItemRarity, CaseItemWear, CaseType, ICase } from "@solspin/types";
 
-const mockCsgoCaseItem1: ICaseItem = {
-  type: "csgo",
-  name: "AK-47 | Gold Arabesque",
-  wear: "Minimal Wear",
+const mockCsgoCaseItem1: BaseCaseItem = {
   price: 2998.81,
-  rarity: "extraordinary",
   chance: 0.012, // 1.20%
-  rollNumbers: [0, 11],
+  id: "1",
+  type: "weapon",
+  name: "AK-47 | Gold Arabesque",
   imagePath: "https://example.com/ak47_gold_arabesque.png",
+  rollNumbers: [0, 11],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.MINIMAL_WEAR,
 };
 
-const mockCsgoCaseItem2: ICaseItem = {
-  type: "csgo",
-  name: "M9 Bayonet | Lore",
-  wear: "Minimal Wear",
+const mockCsgoCaseItem2: BaseCaseItem = {
   price: 2875.02,
-  rarity: "extraordinary",
   chance: 0.025, // 2.50%
-  rollNumbers: [12, 36],
+  id: "2",
+  type: "weapon",
+  name: "M9 Bayonet | Lore",
   imagePath: "https://example.com/m9_bayonet_lore.png",
+  rollNumbers: [12, 36],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.MINIMAL_WEAR,
 };
 
-const mockCsgoCaseItem3: ICaseItem = {
-  type: "csgo",
-  name: "Butterfly Knife | Tiger Tooth",
-  wear: "Minimal Wear",
+const mockCsgoCaseItem3: BaseCaseItem = {
   price: 2164.85,
-  rarity: "extraordinary",
   chance: 0.028, // 2.80%
-  rollNumbers: [37, 64],
+  id: "3",
+  type: "weapon",
+  name: "Butterfly Knife | Tiger Tooth",
   imagePath: "https://example.com/butterfly_knife_tiger_tooth.png",
+  rollNumbers: [37, 64],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.MINIMAL_WEAR,
 };
 
-const mockCsgoCaseItem4: ICaseItem = {
-  type: "csgo",
-  name: "Sport Gloves | Superconductor",
-  wear: "Field-Tested",
+const mockCsgoCaseItem4: BaseCaseItem = {
   price: 2051.09,
-  rarity: "extraordinary",
   chance: 0.03, // 3.00%
-  rollNumbers: [65, 94],
+  id: "4",
+  type: "gloves",
+  name: "Sport Gloves | Superconductor",
   imagePath: "https://example.com/sport_gloves_superconductor.png",
+  rollNumbers: [65, 94],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.FIELD_TESTED,
 };
 
-const mockCsgoCaseItem5: ICaseItem = {
-  type: "csgo",
-  name: "Butterfly Knife | Case Hardened",
-  wear: "Factory New",
+const mockCsgoCaseItem5: BaseCaseItem = {
   price: 1830.57,
-  rarity: "extraordinary",
   chance: 0.045, // 4.50%
-  rollNumbers: [95, 139],
+  id: "5",
+  type: "weapon",
+  name: "Butterfly Knife | Case Hardened",
   imagePath: "https://example.com/butterfly_knife_case_hardened.png",
+  rollNumbers: [95, 139],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.FACTORY_NEW,
 };
 
-const mockCsgoCaseItem6: ICaseItem = {
-  type: "csgo",
-  name: "Karambit | Blue Steel",
-  wear: "Factory New",
+const mockCsgoCaseItem6: BaseCaseItem = {
   price: 1402.36,
-  rarity: "extraordinary",
   chance: 0.08, // 8.00%
-  rollNumbers: [140, 219],
+  id: "6",
+  type: "weapon",
+  name: "Karambit | Blue Steel",
   imagePath: "https://example.com/karambit_blue_steel.png",
+  rollNumbers: [140, 219],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.FACTORY_NEW,
 };
 
-const mockCsgoCaseItem7: ICaseItem = {
-  type: "csgo",
-  name: "Driver Gloves | Black Tie",
-  wear: "Minimal Wear",
+const mockCsgoCaseItem7: BaseCaseItem = {
   price: 828.57,
-  rarity: "extraordinary",
   chance: 0.18, // 18.00%
-  rollNumbers: [220, 399],
+  id: "7",
+  type: "gloves",
+  name: "Driver Gloves | Black Tie",
   imagePath: "https://example.com/driver_gloves_black_tie.png",
+  rollNumbers: [220, 399],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.MINIMAL_WEAR,
 };
 
-const mockCsgoCaseItem8: ICaseItem = {
-  type: "csgo",
-  name: "Talon Knife | Case Hardened",
-  wear: "Battle-Scarred",
+const mockCsgoCaseItem8: BaseCaseItem = {
   price: 552.38,
-  rarity: "extraordinary",
   chance: 0.455, // 45.50%
-  rollNumbers: [400, 854],
+  id: "8",
+  type: "weapon",
+  name: "Talon Knife | Case Hardened",
   imagePath: "https://example.com/talon_knife_case_hardened.png",
+  rollNumbers: [400, 854],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.BATTLE_SCARRED,
 };
 
-const mockCsgoCaseItem9: ICaseItem = {
-  type: "csgo",
-  name: "Stiletto Knife | Blue Steel",
-  wear: "Minimal Wear",
+const mockCsgoCaseItem9: BaseCaseItem = {
   price: 417.49,
-  rarity: "extraordinary",
   chance: 1.345, // 134.50%
-  rollNumbers: [855, 2199],
+  id: "9",
+  type: "weapon",
+  name: "Stiletto Knife | Blue Steel",
   imagePath: "https://example.com/stiletto_knife_blue_steel.png",
+  rollNumbers: [855, 2199],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.MINIMAL_WEAR,
 };
 
-const mockCsgoCaseItem10: ICaseItem = {
-  type: "csgo",
-  name: "Survival Knife | Case Hardened",
-  wear: "Minimal Wear",
+const mockCsgoCaseItem10: BaseCaseItem = {
   price: 331.86,
-  rarity: "extraordinary",
   chance: 3.89, // 389.00%
-  rollNumbers: [2200, 6089],
+  id: "10",
+  type: "weapon",
+  name: "Survival Knife | Case Hardened",
   imagePath: "https://example.com/survival_knife_case_hardened.png",
+  rollNumbers: [2200, 6089],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.MINIMAL_WEAR,
 };
 
-const mockCsgoCaseItem11: ICaseItem = {
-  type: "csgo",
-  name: "Falchion Knife | Case Hardened",
-  wear: "Factory New",
+const mockCsgoCaseItem11: BaseCaseItem = {
   price: 322.43,
-  rarity: "extraordinary",
   chance: 5.0, // 500.00%
-  rollNumbers: [6090, 11089],
+  id: "11",
+  type: "weapon",
+  name: "Falchion Knife | Case Hardened",
   imagePath: "https://example.com/falchion_knife_case_hardened.png",
+  rollNumbers: [6090, 11089],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.FACTORY_NEW,
 };
 
-const mockCsgoCaseItem12: ICaseItem = {
-  type: "csgo",
-  name: "Ursus Knife | Case Hardened",
-  wear: "Field-Tested",
+const mockCsgoCaseItem12: BaseCaseItem = {
   price: 301.81,
-  rarity: "extraordinary",
   chance: 7.75, // 775.00%
-  rollNumbers: [11090, 18639],
+  id: "12",
+  type: "weapon",
+  name: "Ursus Knife | Case Hardened",
   imagePath: "https://example.com/ursus_knife_case_hardened.png",
+  rollNumbers: [11090, 18639],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.FIELD_TESTED,
 };
 
-const mockCsgoCaseItem13: ICaseItem = {
-  type: "csgo",
-  name: "StatTrak™ Bowie Knife | Case Hardened",
-  wear: "Field-Tested",
+const mockCsgoCaseItem13: BaseCaseItem = {
   price: 285.91,
-  rarity: "extraordinary",
   chance: 13.15, // 1315.00%
-  rollNumbers: [18640, 31789],
+  id: "13",
+  type: "weapon",
+  name: "StatTrak™ Bowie Knife | Case Hardened",
   imagePath: "https://example.com/bowie_knife_case_hardened.png",
+  rollNumbers: [18640, 31789],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.FIELD_TESTED,
 };
 
-const mockCsgoCaseItem14: ICaseItem = {
-  type: "csgo",
-  name: "Moto Gloves | Smoke Out",
-  wear: "Field-Tested",
+const mockCsgoCaseItem14: BaseCaseItem = {
   price: 256.86,
-  rarity: "extraordinary",
   chance: 16.0, // 1600.00%
-  rollNumbers: [31790, 47789],
+  id: "14",
+  type: "gloves",
+  name: "Moto Gloves | Smoke Out",
   imagePath: "https://example.com/moto_gloves_smoke_out.png",
+  rollNumbers: [31790, 47789],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.FIELD_TESTED,
 };
 
-const mockCsgoCaseItem15: ICaseItem = {
-  type: "csgo",
-  name: "AK-47 | Jet Set",
-  wear: "Factory New",
+const mockCsgoCaseItem15: BaseCaseItem = {
   price: 233.37,
-  rarity: "extraordinary",
   chance: 15.0, // 1500.00%
-  rollNumbers: [47790, 62789],
+  id: "15",
+  type: "weapon",
+  name: "AK-47 | Jet Set",
   imagePath: "https://example.com/ak47_jet_set.png",
+  rollNumbers: [47790, 62789],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.FACTORY_NEW,
 };
 
-const mockCsgoCaseItem16: ICaseItem = {
-  type: "csgo",
-  name: "Survival Knife | Night Stripe",
-  wear: "Battle-Scarred",
+const mockCsgoCaseItem16: BaseCaseItem = {
   price: 136.81,
-  rarity: "extraordinary",
   chance: 9.61, // 961.00%
-  rollNumbers: [62790, 72399],
+  id: "16",
+  type: "weapon",
+  name: "Survival Knife | Night Stripe",
   imagePath: "https://example.com/survival_knife_night_stripe.png",
+  rollNumbers: [62790, 72399],
+  rarity: CaseItemRarity.EXTROARDINARY,
+  wear: CaseItemWear.BATTLE_SCARRED,
 };
 
-const mockCsgoCaseItem17: ICaseItem = {
-  type: "csgo",
-  name: "StatTrak™ M4A1-S | Guardian",
-  wear: "Battle-Scarred",
+const mockCsgoCaseItem17: BaseCaseItem = {
   price: 63.37,
-  rarity: "restricted",
   chance: 7.45, // 745.00%
-  rollNumbers: [72400, 79899],
+  id: "17",
+  type: "weapon",
+  name: "StatTrak™ M4A1-S | Guardian",
   imagePath: "https://example.com/m4a1s_guardian.png",
+  rollNumbers: [72400, 79899],
+  rarity: CaseItemRarity.RESTRICTED,
+  wear: CaseItemWear.BATTLE_SCARRED,
 };
 
-const mockCsgoCaseItem18: ICaseItem = {
-  type: "csgo",
-  name: "Tec-9 | Hades",
-  wear: "Factory New",
+const mockCsgoCaseItem18: BaseCaseItem = {
   price: 20.96,
-  rarity: "mil-spec",
   chance: 19.95, // 1995.00%
-  rollNumbers: [79900, 99899],
+  id: "18",
+  type: "weapon",
+  name: "Tec-9 | Hades",
   imagePath: "https://example.com/tec9_hades.png",
+  rollNumbers: [79900, 99899],
+  rarity: CaseItemRarity.MIL_SPEC,
+  wear: CaseItemWear.FACTORY_NEW,
 };
 
 const mockCase: ICase = {
-  id: randomUUID(),
+  type: CaseType.CSGO,
   name: "pot-of-gold",
   price: 220,
-  rarity: "legendary",
+  id: randomUUID(),
+  imagePath: "https://example.com/bravo_case.png",
+  rarity: CaseItemRarity.COVERT,
   highestPrice: 2998.81,
   lowestPrice: 20.96,
-  tag: "csgo",
-  image: "https://example.com/bravo_case.png",
+  tag: "Hot",
   items: [
     mockCsgoCaseItem1,
     mockCsgoCaseItem2,

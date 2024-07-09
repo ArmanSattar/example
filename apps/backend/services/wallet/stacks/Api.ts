@@ -4,7 +4,7 @@ import * as cdk from "aws-cdk-lib";
 import { DatabaseStack } from "./Database";
 
 export function ApiStack({ stack }: StackContext) {
-  const { walletsTableArn } = use(DatabaseStack);
+  const { walletsTableArn, walletsTableName } = use(DatabaseStack);
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
 
   const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
@@ -28,7 +28,7 @@ export function ApiStack({ stack }: StackContext) {
   const betTransactionHandler = new Function(stack, "BetTransactionHandler", {
     handler: "../wallet/src/service/event/handler/update-balance.handler",
     environment: {
-      WALLETS_TABLE_ARN: walletsTableArn,
+      WALLETS_TABLE_ARN: walletsTableName,
     },
     permissions: [
       new iam.PolicyStatement({
@@ -52,7 +52,7 @@ export function ApiStack({ stack }: StackContext) {
     defaults: {
       function: {
         environment: {
-          WALLETS_TABLE_ARN: walletsTableArn,
+          WALLETS_TABLE_ARN: walletsTableName,
           DEPOSIT_TREASURY_FUNCTION_ARN: depositTreasuryFunction.functionArn,
           WITHDRAW_TREASURY_FUNCTION_ARN: withdrawTreasuryFunction.functionArn,
         },
