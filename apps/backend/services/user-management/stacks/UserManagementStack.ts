@@ -170,5 +170,6 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
 
   return {
     callAuthorizerFunction,
+    TEST_SECRET,
   };
 }

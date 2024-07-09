@@ -28,7 +28,7 @@ export const handler = async (
   event: APIGatewayTokenAuthorizerEvent
 ): Promise<APIGatewayAuthorizerResult> => {
   const secret = await getSecret();
-
+  console.log(event);
   if (!event.authorizationToken) {
     logger.error("No authorization token provided");
     return generatePolicy("user", "Deny", event.methodArn);

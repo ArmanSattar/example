@@ -1,7 +1,8 @@
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { authenticateUser } from "../helpers/handleConnections";
-import { callAuthorizer } from "../helpers/callAuthorizer";
 import { getLogger } from "@solspin/logger";
+import jwt from "jsonwebtoken";
+import { Config } from "sst/node/config";
 
 const logger = getLogger("authenticate-user-handler");
 
@@ -37,30 +38,31 @@ export const handler = WebSocketApiHandler(async (event) => {
   }
 
   try {
-    const authorizerResponse = await callAuthorizer(token);
-    if (authorizerResponse.statusCode !== 200) {
-      logger.error(`Authorizer returned status code: ${authorizerResponse.statusCode}`);
-      return {
-        statusCode: 401,
-        body: JSON.stringify({ message: "Unauthorized" }),
-      };
-    }
-    const parsedBody = JSON.parse(authorizerResponse.body);
-    const userId = parsedBody.userId;
+    const decodedToken = jwt.verify(token, Config.TEST_SECRET) as { sub: string };
+
+    const userId = decodedToken.sub;
 
     if (!userId) {
       return {
         statusCode: 401,
-        body: JSON.stringify({ message: "UserId not found in authorizer payload" }),
+        body: JSON.stringify({ message: "UserId not found in token payload" }),
       };
     }
-    await authenticateUser(connectionId, userId);
 
+    await authenticateUser(connectionId, userId);
+    logger.info(`Authenticated user successfully`);
     return {
       statusCode: 200,
       body: JSON.stringify({ message: "User has been marked as authenticated" }),
     };
   } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      logger.error(`JWT verification failed: ${error.message}`);
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ message: "Invalid token" }),
+      };
+    }
     logger.error(`Error in authenticate user lambda: ${(error as Error).message}`);
     return {
       statusCode: 500,

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { toast } from "sonner";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { sendSolTransaction } from "./utils/transactions";
 import { useSolPrice } from "./hooks/useSolPrice";
 import { useWalletBalance } from "./hooks/useWalletBalance";
@@ -21,7 +20,6 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
   const [dollarValue, setDollarValue] = useState<string>("");
   const [cryptoValue, setCryptoValue] = useState<string>("");
-  const [availableBalance, setAvailableBalance] = useState<number>(0);
 
   const connection = useConnection().connection;
   const wallet = useWallet();
@@ -63,7 +61,7 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
 
   const handleDollarInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (/^\d*\.?\d*$/.test(value)) {
+    if (/^\d*\.?\d{0,2}$/.test(value)) {
       setDollarValue(value);
       setCryptoValue((parseFloat(value || "0") / (priceSol || 1)).toFixed(2));
     }
@@ -77,11 +75,10 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
     }
   };
 
-  const handleMaxClick = () => {
-    const maxSol = balance / LAMPORTS_PER_SOL;
-    setCryptoValue(maxSol.toString());
-    setDollarValue((maxSol * (priceSol || 0)).toFixed(2));
-  };
+  const handleMaxClick = useCallback(() => {
+    setCryptoValue(balance.toString());
+    setDollarValue((balance * (priceSol || 0)).toFixed(2));
+  }, [balance, priceSol]);
 
   /**
    * Validate input and send deposit transaction
@@ -98,12 +95,13 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
       return;
     }
 
-    if (amount * LAMPORTS_PER_SOL > balance) {
+    if (amount > balance) {
       toast.error("Insufficient balance");
       return;
     }
 
     try {
+      console.log(connection, wallet, HOUSE_WALLET_ADDRESS, amount);
       const signature = await sendSolTransaction(connection, wallet, HOUSE_WALLET_ADDRESS, amount);
       toast.success(
         `The transaction is processing. You can follow it here: https://https://solscan.io/tx/${signature}`
@@ -132,7 +130,7 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
             <span className="text-white text-sm">Conversion</span>
             <div className="flex items-center space-x-2 justify-between">
               <div className="flex items-center space-x-1">
-                <span className="text-white text-sm">{availableBalance}</span>
+                <span className="text-white text-sm">{balance}</span>
                 <span className="text-white text-sm">SOL</span>
               </div>
               <span className="text-white text-sm hover:cursor-pointer" onClick={handleMaxClick}>

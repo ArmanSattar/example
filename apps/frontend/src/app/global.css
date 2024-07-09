@@ -44,12 +44,108 @@
   background: var(--filter-dropdown-hover);
 }
 
-.case-exceptional {
-  background: linear-gradient(180deg, var(--case-background) 30%, var(--case-restricted-color) 100%) !important;
+.case-consumer-grade {
+  background: radial-gradient(circle, rgb(176, 195, 217) 0%, rgba(44, 49, 54, 0.2) 60%, transparent 80%) !important;
 }
 
-.case-exotic {
-  background: linear-gradient(180deg, var(--case-background) 30%, rgba(255, 105, 180, 0.5) 100%) !important;
+.case-industrial-grade {
+  background: radial-gradient(circle, rgb(94, 152, 217) 0%, rgba(24, 38, 54, 0.2) 60%, transparent 80%) !important;
+}
+
+.case-mil-spec {
+  background: radial-gradient(circle, rgb(75, 105, 255) 0%, rgba(19, 26, 64, 0.2) 60%, transparent 80%) !important;
+}
+
+.case-restricted {
+  background: radial-gradient(circle, rgb(136, 71, 255) 0%, rgba(34, 18, 64, 0.2) 60%, transparent 80%) !important;
+}
+
+.case-classified {
+  background: radial-gradient(circle, rgb(211, 44, 230) 0%, rgba(53, 11, 58, 0.2) 60%, transparent 80%) !important;
+}
+
+.case-covert {
+  background: radial-gradient(circle, rgb(235, 75, 75) 0%, rgba(74, 34, 34, 0.2) 60%, transparent 80%) !important;
+}
+
+.case-extraordinary {
+  background: radial-gradient(circle, rgb(255, 215, 0) 0%, rgba(64, 54, 0, 0.2) 60%, transparent 80%) !important;
+}
+
+.case-contraband {
+  background: radial-gradient(circle, rgb(228, 174, 57) 0%, rgba(57, 44, 14, 0.2) 60%, transparent 80%) !important;
+}
+
+.case-consumer-grade-beam {
+  background-color: rgb(176, 195, 217);
+  box-shadow: 0px 0px 10px 2px rgba(176, 195, 217, 0.75);
+}
+
+.case-industrial-grade-beam {
+  background-color: rgb(94, 152, 217);
+  box-shadow: 0px 0px 10px 2px rgba(94, 152, 217, 0.75);
+}
+
+.case-mil-spec-beam {
+  background-color: rgb(75, 105, 255);
+  box-shadow: 0px 0px 10px 2px rgba(75, 105, 255, 0.75);
+}
+
+.case-restricted-beam {
+  background-color: rgb(136, 71, 255);
+  box-shadow: 0px 0px 10px 2px rgba(136, 71, 255, 0.75);
+}
+
+.case-classified-beam {
+  background-color: rgb(211, 44, 230);
+  box-shadow: 0px 0px 10px 2px rgba(211, 44, 230, 0.75);
+}
+
+.case-covert-beam {
+  background-color: rgb(235, 75, 75);
+  box-shadow: 0px 0px 10px 2px rgba(235, 75, 75, 0.75);
+}
+
+.case-extraordinary-beam {
+  background-color: rgb(255, 215, 0);
+  box-shadow: 0px 0px 10px 2px rgba(255, 215, 0, 0.75);
+}
+
+.case-contraband-beam {
+  background-color: rgb(228, 174, 32);
+  box-shadow: 0px 0px 10px 2px rgba(228, 174, 57, 0.75);
+}
+
+.case-consumer-grade-gradient {
+  background: radial-gradient(50% 50% at 50% 50%, rgb(176, 195, 217) 0%, rgba(44, 49, 54, 0) 100%);
+}
+
+.case-industrial-grade-gradient {
+  background: radial-gradient(50% 50% at 50% 50%, rgb(94, 152, 217) 0%, rgba(24, 38, 54, 0) 100%);
+}
+
+.case-mil-spec-gradient {
+  background: radial-gradient(50% 50% at 50% 50%, rgb(75, 105, 255) 0%, rgba(19, 26, 64, 0) 100%);
+}
+
+.case-restricted-gradient {
+  background: radial-gradient(50% 50% at 50% 50%, rgb(136, 71, 255) 0%, rgba(34, 18, 64, 0) 100%);
+}
+
+.case-classified-gradient {
+  background: radial-gradient(50% 50% at 50% 50%, rgb(211, 44, 230) 0%, rgba(53, 11, 58, 0) 100%);
+}
+
+.case-covert-gradient {
+  background: radial-gradient(50% 50% at 50% 50%, rgb(235, 75, 75) 0%, rgba(59, 19, 19, 0) 100%);
+}
+
+.case-extraordinary-gradient {
+  background: radial-gradient(50% 50% at 50% 50%, rgb(255, 215, 0) 0%, rgba(64, 54, 0, 0) 100%);
+}
+
+.case-contraband-gradient {
+  background: radial-gradient(50% 50% at 50% 50%, rgb(228, 174, 57) 0%, rgba(57, 44, 14, 0) 100%);
 }
 
 .case {
@@ -97,4 +193,48 @@
   background: linear-gradient(to right, #2c3440 8%, #3c4858 18%, #2c3440 33%);
   background-size: 800px 104px;
   animation: shimmer 1.5s linear infinite;
+}
+
+@keyframes middle-item {
+  0% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes scale-down {
+  0% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(0.9);
+  }
+}
+
+@keyframes final-item {
+  0% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1.25);
+  }
+}
+
+.animate-middle-item {
+  animation: middle-item 700ms linear forwards;
+  opacity: 1;
+}
+
+.animate-scale-down {
+  animation: scale-down 300ms linear forwards;
+  opacity: 0.5;
+}
+
+.final-item {
+  opacity: 1;
+  transform: translateY(20px);
 }

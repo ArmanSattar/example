@@ -9,22 +9,9 @@ import { CaseCarousel } from "./components/CaseCarousel";
 import { useWebSocket } from "../../context/WebSocketContext";
 import { toggleDemoClicked } from "../../../store/slices/demoSlice";
 import { ProvablyFair } from "./components/ProvablyFair";
-
-interface CaseItem {
-  name: string;
-  price: number;
-  rarity: string;
-  tag: string;
-  image: string;
-}
-
-const caseExample: CaseItem = {
-  name: "Watson Power",
-  price: 4.99,
-  rarity: "Extraordinary",
-  tag: "Hot",
-  image: "/cases/dota_3.svg",
-};
+import { v4 as uuidv4 } from "uuid";
+import useWindowSize from "./hooks/useWindowResize";
+import { Back } from "../../components/Back";
 
 const generateClientSeed = async (): Promise<string> => {
   const array = new Uint8Array(16);
@@ -32,17 +19,169 @@ const generateClientSeed = async (): Promise<string> => {
   return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
 };
 
-const generateCases = (numCases: number): CaseItem[][] => {
-  return Array.from(
-    { length: numCases },
-    () =>
-      Array.from({ length: 51 }, () => ({
-        name: Math.random() < 0.5 ? "XXX" : "YYY",
-        price: 4.99,
-        rarity: "Extraordinary",
-        tag: "Hot",
-        image: Math.random() < 0.5 ? "/cases/dota_3.svg" : "/cases/gun.svg",
-      })) as CaseItem[]
+export type ICaseItem = {
+  type: string;
+  name: string;
+  wear: string;
+  price: number;
+  rarity: string;
+  chance: number;
+  rollNumbers: number[];
+  imagePath: string;
+};
+
+export type ICase = {
+  name: string;
+  price: number;
+  rarity: string;
+  highestPrice: number;
+  lowestPrice: number;
+  tag: string;
+  image: string;
+  items: ICaseItem[];
+};
+
+export type ICarouselItem = {
+  name: string;
+  price: number;
+  rarity: string;
+  imagePath: string;
+};
+
+export enum CaseItemRarity {
+  CONSUMER_GRADE = "Consumer Grade",
+  INDUSTRIAL_GRADE = "Industrial Grade",
+  MIL_SPEC = "Mil-Spec",
+  RESTRICTED = "Restricted",
+  CLASSIFIED = "Classified",
+  COVERT = "Covert",
+  EXTROARDINARY = "Extraordinary",
+  CONTRABAND = "Contraband",
+}
+
+let exampleCase: ICase = {
+  name: "Watson Power",
+  price: 5.42,
+  rarity: "Extraordinary",
+  highestPrice: 123.23,
+  lowestPrice: 0.98,
+  tag: "Hot",
+  image: "/cases/dota_3.svg",
+  items: [
+    {
+      type: "Gloves",
+      name: "Cobalt Gloves",
+      wear: "Factory New",
+      price: 42.42,
+      rarity: CaseItemRarity.EXTROARDINARY,
+      chance: 0.0001,
+      rollNumbers: [0, 9],
+      imagePath: "/cases/gloves.svg",
+    },
+    {
+      type: "AK-47",
+      name: "Hyper Beast",
+      wear: "Minimal Wear",
+      price: 27.28,
+      rarity: CaseItemRarity.COVERT,
+      chance: 0.005,
+      rollNumbers: [10, 509],
+      imagePath: "/cases/ak47-pink.svg",
+    },
+    {
+      type: "AUG",
+      name: "Momentum",
+      wear: "Well-Worn",
+      price: 42.42,
+      rarity: CaseItemRarity.COVERT,
+      chance: 0.005,
+      rollNumbers: [510, 1009],
+      imagePath: "/cases/aug.svg",
+    },
+    {
+      type: "AK-47",
+      name: "Asiimov",
+      wear: "Field-Tested",
+      price: 42.42,
+      rarity: CaseItemRarity.COVERT,
+      chance: 0.02,
+      rollNumbers: [1010, 3009],
+      imagePath: "/cases/ak47-orange.svg",
+    },
+    {
+      type: "USP-S",
+      name: "Neo-Noir",
+      wear: "Factory New",
+      price: 123.23,
+      rarity: CaseItemRarity.CLASSIFIED,
+      chance: 0.04,
+      rollNumbers: [3010, 7009],
+      imagePath: "/cases/usp.svg",
+    },
+    {
+      type: "Five-Seven",
+      name: "Graffiti",
+      wear: "Battle-Scarred",
+      price: 42.42,
+      rarity: CaseItemRarity.RESTRICTED,
+      chance: 0.08,
+      rollNumbers: [7010, 15009],
+      imagePath: "/cases/five-seven.svg",
+    },
+    {
+      type: "Famas",
+      name: "Neural Net",
+      wear: "Battle-Scarred",
+      price: 42.42,
+      rarity: CaseItemRarity.MIL_SPEC,
+      chance: 0.16,
+      rollNumbers: [15010, 31009],
+      imagePath: "/cases/gun.svg",
+    },
+    {
+      type: "Tec-9",
+      name: "Decimator",
+      wear: "Field-Tested",
+      price: 42.42,
+      rarity: CaseItemRarity.INDUSTRIAL_GRADE,
+      chance: 0.32,
+      rollNumbers: [31010, 63009],
+      imagePath: "/cases/tec-9.svg",
+    },
+    {
+      type: "Nova",
+      name: "Clear Polymer",
+      wear: "Well-Worn",
+      price: 0.98,
+      rarity: CaseItemRarity.CONSUMER_GRADE,
+      chance: 0.3699,
+      rollNumbers: [63010, 99999],
+      imagePath: "/cases/nova.svg",
+    },
+  ],
+};
+
+exampleCase.items = exampleCase.items.sort((a, b) => a.chance - b.chance);
+
+export enum Direction {
+  HORIZONTAL,
+  VERTICAL,
+}
+
+const generateCases = (numCases: number): ICaseItem[][] => {
+  return Array.from({ length: numCases }, () =>
+    Array.from({ length: 51 }, () => {
+      const roll = Math.floor(Math.random() * 100000); // Generate a random number between 0 and 99999
+      const selectedItem = exampleCase.items.find(
+        (item) => roll >= item.rollNumbers[0] && roll <= item.rollNumbers[1]
+      );
+
+      if (!selectedItem) {
+        throw new Error("No item found for roll number: " + roll);
+      }
+
+      return { ...selectedItem, id: uuidv4() };
+    })
   );
 };
 
@@ -50,13 +189,16 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const id = params.id;
   const isDemoClicked = useSelector((state: RootState) => state.demo.demoClicked);
   const numCases = useSelector((state: RootState) => state.demo.numCases);
+  const fastClicked = useSelector((state: RootState) => state.demo.fastClicked);
   const [serverSeedHash, setServerSeedHash] = useState<string | null>(null);
   const [clientSeed, setClientSeed] = useState<string>("");
   const { sendMessage, connectionStatus, socket } = useWebSocket();
   const [generateSeed, setGenerateSeed] = useState(true);
   const [animationComplete, setAnimationComplete] = useState(0);
   const dispatch = useDispatch();
-  const [cases, setCases] = useState<CaseItem[][]>(generateCases(numCases));
+  const [cases, setCases] = useState<ICaseItem[][]>(generateCases(numCases));
+  const windowSize = useWindowSize();
+
   const handleClientSeedChange = (newClientSeed: string) => {
     setClientSeed(newClientSeed);
   };
@@ -93,8 +235,6 @@ export default function CasePage({ params }: { params: { id: string } }) {
       }
     }
   }, [isDemoClicked, animationComplete, numCases, connectionStatus, sendMessage, clientSeed, id]);
-
-  console.log(cases);
 
   useEffect(() => {
     if (animationComplete === numCases && isDemoClicked) {
@@ -142,24 +282,27 @@ export default function CasePage({ params }: { params: { id: string } }) {
 
   return (
     <div className="w-full h-full flex flex-col space-y-10 p-2">
-      <CaseDetails {...caseExample} />
+      <Back text="Back to Cases" to={""} />
+      <CaseDetails {...exampleCase} />
       <ProvablyFair
         serverSeedHash={serverSeedHash || "Please Login"}
         clientSeed={clientSeed || "Generating..."}
         onClientSeedChange={handleClientSeedChange}
       />
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-2">
-        {cases.map((cases, index) => (
+        {cases.map((items, index) => (
           <CaseCarousel
             key={index}
-            cases={cases}
+            items={items}
             isDemoClicked={isDemoClicked}
+            isFastAnimationClicked={fastClicked}
             numCases={numCases}
             onAnimationComplete={handleAnimationComplete}
+            windowSize={windowSize}
           />
         ))}
       </div>
-      <CaseItems />
+      {<CaseItems items={exampleCase.items} />}
       {/*<PreviousDrops />*/}
     </div>
   );

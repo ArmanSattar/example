@@ -1,4 +1,4 @@
-import { StackContext, WebSocketApi, use, Cron } from "sst/constructs";
+import { StackContext, WebSocketApi, use, Cron, Config } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { WebSocketHandlerAPI } from "./WebSocketHandlerStack";
 import { GameEngineHandlerAPI } from "../../game-engine/stacks/GameEngineStack";
@@ -9,7 +9,7 @@ import * as cdk from "aws-cdk-lib";
 export function WebSocketGateway({ stack }: StackContext) {
   const { getConnectionFunction, websocketTable } = use(WebSocketHandlerAPI);
   const { casesTable, getCaseFunction, performSpinFunction } = use(GameEngineHandlerAPI);
-  const { callAuthorizerFunction } = use(UserManagementHandlerAPI);
+  const { callAuthorizerFunction, TEST_SECRET } = use(UserManagementHandlerAPI);
   const { betTransactionHandler } = use(ApiStack);
 
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
@@ -111,6 +111,7 @@ export function WebSocketGateway({ stack }: StackContext) {
               resources: [websocketTable.tableArn, callAuthorizerFunction.functionArn],
             }),
           ],
+          bind: [TEST_SECRET],
           environment: {
             AUTHORIZER_FUNCTION_NAME: callAuthorizerFunction.functionName,
           },
