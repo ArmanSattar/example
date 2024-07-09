@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export const UserProfile: React.FC = () => {
   const { connected } = useWallet();
-  const { getUser, logout } = useAuth();  // Changed from getUser to user
+  const { user, logout } = useAuth(); 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
@@ -23,19 +23,19 @@ export const UserProfile: React.FC = () => {
     };
   }, []);
 
-  if (!connected || !getUser) {  // Check if user is null/undefined
+  if (!connected || !user) { 
     return null;
   }
 
   // Truncate the username if it's too long
   const maxUsernameLength = 10;
-  const truncatedUsername = getUser.username.length > maxUsernameLength 
-    ? getUser.username.slice(0, maxUsernameLength) + '...' 
-    : getUser.username;
+  const truncatedUsername = user.username.length > maxUsernameLength 
+    ? user.username.slice(0, maxUsernameLength) + '...' 
+    : user.username;
 
   const handleLogout = async () => {
     try {
-      logout();
+      await logout();
     } catch (error) {
       console.error('Error during logout:', error);
     }

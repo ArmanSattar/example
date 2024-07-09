@@ -36,9 +36,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const { connection } = useConnection();
 
   useEffect(() => {
-    if (connected && publicKey && signMessage) {
-      login();
-    } else {
+    if (!connected || !publicKey || !signMessage) {
       setUser(null);
       localStorage.removeItem("token");
     }
@@ -74,7 +72,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const signature = bs58.encode(signedMessage);
 
       // Send the signed message to the server
-      const loginResponse = await fetch(`${apiUrl}/auth/login`, {
+      const loginResponse = await fetch(`${apiUrl}/auth/connect`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -85,8 +83,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       });
 
       if (loginResponse.ok) {
-        const { user, token } = await loginResponse.json();
-        setUser(user);
+        const { message, data } = await loginResponse.json();
+        
+        if (data && data.user && data.token) {
+          const token = data.token
+          const user = data.user
+
+          setUser(user);
         localStorage.setItem("token", token);
         if (connectionStatus === "connected") {
           sendMessage(
@@ -97,6 +100,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
           );
         }
         toast.success("Successfully logged in!");
+        }
+        
       } else {
         throw new Error('Login failed');
       }

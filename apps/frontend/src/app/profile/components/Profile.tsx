@@ -8,7 +8,7 @@ interface UserInfoProps {
 }
 
 const Profile: React.FC<UserInfoProps> = ({ username }) => {
-  const { getUser } = useAuth();
+  const { user } = useAuth();
 
   const [isLoading, setIsLoading] = useState(true);
   const [showSelfExcludePopup, setShowSelfExcludePopup] = useState(false);
@@ -21,13 +21,13 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
   const [profilePicture, setProfilePicture] = useState('/header-image.png');
 
   useEffect(() => {
-    if (getUser) {
-      setCurrentUsername(getUser.username);
-      setNewUsername(getUser.username);
-      setIsMuted(getUser.muteAllSounds)
+    if (user) {
+      setCurrentUsername(user.username);
+      setNewUsername(user.username);
+      setIsMuted(user.muteAllSounds)
       setIsLoading(false);
     }
-  }, [getUser]);
+  }, [user]);
 
   if (isLoading) {
     return <div>Loading...</div>;

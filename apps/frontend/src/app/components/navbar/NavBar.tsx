@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useAuth } from '../../context/AuthContext';
 import { UserProfile } from "./UserProfile";
 import Hamburger from "./Hamburger";
 import { CasesIcon, GamesIcon, LeaderboardsIcon, RewardsIcon } from "./NavIcon";
-import { WalletSignInButton } from "../sign-in/WalletSignIn";
+import CustomWalletMultiButton  from "../sign-in/WalletSignIn";
 import { Balance } from "./Balance";
 import { useDispatch } from "react-redux";
 import { toggleWithdrawClicked } from "../../../store/slices/navbarSlice";
@@ -38,6 +39,7 @@ const navLinks = [
 export const NavBar = () => {
   const [navActiveLink, setNavActiveLink] = useState("/cases");
   const { connected, publicKey } = useWallet();
+  const { user, logout } = useAuth(); 
   const dispatch = useDispatch();
 
   const handleWithdrawClick = () => {
@@ -92,11 +94,11 @@ export const NavBar = () => {
               Withdraw
             </button>
           )}
-          {connected && publicKey ? (
+          {user ? (
             <UserProfile />
           ) : (
             <div className="hidden xl:block">
-              <WalletSignInButton />
+              <CustomWalletMultiButton />
             </div>
           )}
           <Hamburger className={"lg:hidden"} />
