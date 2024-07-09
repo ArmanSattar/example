@@ -1,5 +1,5 @@
 import * as AWS from "aws-sdk";
-import logger from "@solspin/logger";
+
 const lambda = new AWS.Lambda();
 
 export const callGetCase = async (caseId: string) => {

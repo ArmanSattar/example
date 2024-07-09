@@ -1,7 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand, ScanCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
-import { CaseItem, Case, CaseOverview } from "@solspin/game-engine-types";
-import { CaseType } from "../foundation/caseType";
+import { ICaseItem, ICase } from "@solspin/game-engine-types";
 import { randomUUID } from "crypto";
 import { CaseDoesNotExistError, EnvironmentVariableError, FetchCasesError } from "@solspin/errors"; // Update with actual path
 import { mockCase } from "../__mock__/case_pot_of_gold.mock";
@@ -15,13 +14,13 @@ if (!tableName) {
 }
 
 // Helper method to calculate item prefix sums based on probabilities
-const calculateItemPrefixSums = (items: CaseItem[]): number[] => {
+const calculateItemPrefixSums = (items: ICaseItem[]): number[] => {
   const prefixSums: number[] = [];
   let sum = 0;
   const maxRange = 99999;
 
   items.forEach((item) => {
-    sum += item.probability * maxRange;
+    sum += item.chance * maxRange;
     prefixSums.push(Math.floor(sum));
   });
 
@@ -30,25 +29,28 @@ const calculateItemPrefixSums = (items: CaseItem[]): number[] => {
 
 // Method to add a new case
 export const addCase = async (
-  caseName: string,
-  casePrice: number,
-  caseType: CaseType,
-  imageUrl: string,
-  items: CaseItem[],
+  name: string,
+  price: number,
+  rarity: string,
+  highestPrice: number,
+  lowestPrice: number,
+  tag: string,
+  image: string,
+  items: ICaseItem[],
   itemPrefixSums: Array<number>
 ): Promise<void> => {
   const caseId = randomUUID();
-  const caseHash = randomUUID();
-
-  const newCase: Case = {
-    caseType: caseType,
-    caseName: caseName,
-    casePrice: casePrice,
-    caseId: caseId,
-    image_url: imageUrl,
-    caseHash: caseHash,
+  const newCase: ICase = {
+    id: caseId,
+    name: name,
+    price: price,
+    rarity: rarity,
+    highestPrice: highestPrice,
+    lowestPrice: lowestPrice,
+    tag: tag,
+    image: image,
     items: items,
-    item_prefix_sums: itemPrefixSums,
+    itemPrefixSums,
   };
 
   const params = {
@@ -60,7 +62,7 @@ export const addCase = async (
 };
 
 // Method to retrieve a case by ID
-export const getCase = async (caseId: string): Promise<Case> => {
+export const getCase = async (caseId: string): Promise<ICase> => {
   const params = {
     TableName: tableName,
     Key: {
@@ -74,27 +76,30 @@ export const getCase = async (caseId: string): Promise<Case> => {
     throw new CaseDoesNotExistError(caseId);
   }
 
-  return result.Item as Case;
+  return result.Item as ICase;
 };
 
 // Method to list all cases (overview)
-export const listCases = async (): Promise<CaseOverview[]> => {
+export const listCases = async (): Promise<ICase[]> => {
   const params = {
     TableName: tableName,
   };
 
   const result = await ddbDocClient.send(new ScanCommand(params));
-  return result.Items as CaseOverview[];
+  return result.Items as ICase[];
 };
 
 // Method to initialize database with mock data
 export const initializeDatabase = async (): Promise<void> => {
   await addCase(
-    mockCase.caseName,
-    mockCase.casePrice,
-    mockCase.caseType,
-    mockCase.image_url,
+    mockCase.name,
+    mockCase.price,
+    mockCase.rarity,
+    mockCase.highestPrice,
+    mockCase.lowestPrice,
+    mockCase.tag,
+    mockCase.image,
     mockCase.items,
-    mockCase.item_prefix_sums
+    mockCase.itemPrefixSums
   );
 };

@@ -37,7 +37,7 @@ export const handler = ApiHandler(async (event) => {
       body: JSON.stringify(rewardItem),
     };
   } catch (error) {
-    logger.error("Error in handleSpin:", error);
+    logger.error(`Error in handleSpin: ${error}`);
     return {
       statusCode: 500,
       body: JSON.stringify({

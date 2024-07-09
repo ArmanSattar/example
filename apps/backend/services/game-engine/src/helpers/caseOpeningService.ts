@@ -1,11 +1,11 @@
 import { generateRollValue, determineItem } from "./caseItemDeterminationService";
-import { Case, CaseItem } from "@solspin/game-engine-types";
+import { ICase, ICaseItem } from "@solspin/game-engine-types";
 
 export const handleSpin = async (
-  caseModel: Case,
+  caseModel: ICase,
   serverSeed: string,
   clientSeed: string
-): Promise<CaseItem | null> => {
+): Promise<ICaseItem | null> => {
   if (!caseModel || !serverSeed || !clientSeed) {
     throw new Error("caseId, serverSeed, or clientSeed is missing");
   }
@@ -20,7 +20,7 @@ export const handleSpin = async (
   }
 };
 
-const performSpin = (caseModel: Case, serverSeed: string, clientSeed: string): CaseItem => {
+const performSpin = (caseModel: ICase, serverSeed: string, clientSeed: string): ICaseItem => {
   const rollValue = generateRollValue(serverSeed, clientSeed);
   console.log("Roll value is: ", rollValue);
   const rewardItem = determineItem(rollValue, caseModel);

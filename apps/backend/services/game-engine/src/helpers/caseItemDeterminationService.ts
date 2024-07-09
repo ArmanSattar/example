@@ -1,4 +1,4 @@
-import { Case, CaseItem } from "@solspin/game-engine-types";
+import { ICase, ICaseItem } from "@solspin/game-engine-types";
 import { createHmac } from "crypto";
 const findItem = (rollNumber: number, prefixSums: Array<number>): number => {
   let leftPointer = 0;
@@ -17,8 +17,8 @@ const findItem = (rollNumber: number, prefixSums: Array<number>): number => {
   return leftPointer;
 };
 
-export const determineItem = (rollNumber: number, caseModel: Case): CaseItem => {
-  const caseItemPrefixSums = caseModel.item_prefix_sums;
+export const determineItem = (rollNumber: number, caseModel: ICase): ICaseItem => {
+  const caseItemPrefixSums = caseModel.itemPrefixSums;
   const itemIndex = findItem(rollNumber, caseItemPrefixSums);
   const rewardItem = caseModel.items[itemIndex];
 

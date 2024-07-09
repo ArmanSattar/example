@@ -5,22 +5,25 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
   const removeOnDelete = stack.stage !== "prod";
   const casesTable = new Table(stack, "cases", {
     fields: {
-      caseId: "string",
-      caseType: "string",
-      caseName: "string",
-      casePrice: "number",
-      image_url: "string",
-      caseHash: "string",
+      id: "string",
+      name: "string",
+      price: "number",
+      rarity: "string",
+      highestPrice: "number",
+      lowestPrice: "number",
+      tag: "string",
+      image: "string",
       items: "string",
-      item_prefix_sums: "string",
+      itemPrefixSums: "string",
     },
-    primaryIndex: { partitionKey: "caseId" },
+    primaryIndex: { partitionKey: "id" },
     cdk: {
       table: {
         removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
       },
     },
   });
+
   const getCaseFunction = new Function(stack, "getCaseFunction", {
     functionName: `${stack.stackName}-getCase`,
     handler: "../game-engine/src/handlers/getCase.handler",

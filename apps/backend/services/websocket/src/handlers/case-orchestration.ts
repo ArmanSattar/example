@@ -1,5 +1,5 @@
 import { ConnectionInfo } from "@solspin/websocket-types";
-import { CaseItem, Case } from "@solspin/game-engine-types";
+import { ICaseItem, ICase } from "@solspin/game-engine-types";
 import { getConnectionInfo } from "../helpers/handleConnections";
 import { debitUser } from "../helpers/debitUser";
 import { callGetCase } from "../helpers/getCaseHelper";
@@ -22,7 +22,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       body: JSON.stringify({ message: "Request body is missing" }),
     };
   }
-  logger.info("Orchestration service was initiated with event body: ", event.body);
+  logger.info(`Orchestration service was initiated with event body: ${event.body}`);
 
   const parsedBody = JSON.parse(event.body || "{}");
 
@@ -56,7 +56,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       };
     }
 
-    logger.info("Invoking getUserFromWebSocket lambda with connectionId: ", connectionId);
+    logger.info(`Invoking getUserFromWebSocket lambda with connectionId: ${connectionId}`);
     const connectionInfo: ConnectionInfo | null = await getConnectionInfo(connectionId);
 
     if (!connectionInfo) {
@@ -85,16 +85,16 @@ export const handler = WebSocketApiHandler(async (event) => {
 
     const serverSeed = user.serverSeed;
     const userId = user.userId as string;
-    logger.info("Invoking getCase lambda with caseId: ", caseId);
+    logger.info(`Invoking getCase lambda with caseId: ${caseId}`);
     const caseData = await callGetCase(caseId);
 
     if (caseData.statusCode !== 200) {
       throw new Error("Failed to fetch case details");
     }
 
-    const caseModel: Case = JSON.parse(caseData.body);
-    const amount = -1 * caseModel.casePrice;
-    logger.info(`Case price is :${caseModel.casePrice}`);
+    const caseModel: ICase = JSON.parse(caseData.body);
+    const amount = -1 * caseModel.price;
+    logger.info(`Case price is :${caseModel.price}`);
     const updateBalance = await debitUser(userId, amount);
 
     if (updateBalance.statusCode !== 200) {
@@ -105,7 +105,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     );
     const caseRollResult = await performSpin(caseModel, clientSeed, serverSeed);
 
-    const caseRolledItem: CaseItem = JSON.parse(caseRollResult.body);
+    const caseRolledItem: ICaseItem = JSON.parse(caseRollResult.body);
 
     logger.info(`Case roll result is: ${{ caseRollResult }}`);
     const responseMessage = {
@@ -116,9 +116,9 @@ export const handler = WebSocketApiHandler(async (event) => {
     await sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
 
     const outcome =
-      caseModel.casePrice < caseRolledItem.price
+      caseModel.price < caseRolledItem.price
         ? GameOutcome.WIN
-        : caseModel.casePrice > caseRolledItem.price
+        : caseModel.price > caseRolledItem.price
         ? GameOutcome.LOSE
         : GameOutcome.NEUTRAL;
 
@@ -129,7 +129,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       {
         userId,
         gameType: GameResult.GameType.CASES,
-        amountBet: caseModel.casePrice,
+        amountBet: caseModel.price,
         outcome,
         outcomeAmount,
         timestamp: new Date().toISOString(),
@@ -139,7 +139,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     logger.info("Event published with data: ", {
       userId,
       gameType: GameResult.GameType.CASES,
-      amountBet: caseModel.casePrice,
+      amountBet: caseModel.price,
       outcome,
       outcomeAmount,
       timestamp: new Date().toISOString(),
@@ -150,7 +150,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       body: JSON.stringify(responseMessage),
     };
   } catch (error) {
-    logger.error("Error in orchestration handler:", error);
+    logger.error(`Error in orchestration handler: ${error}`);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Internal Server Error" }),
