@@ -1,8 +1,9 @@
-// contexts/AuthContext.tsx
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { useWebSocket } from "./WebSocketContext";
 import { toast } from 'sonner';
+import bs58 from 'bs58';
+
 interface User {
   userId: string;
   username: string;
@@ -16,7 +17,7 @@ interface User {
 }
 
 interface AuthContextType {
-  getUser: User | null;
+  user: User | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -29,35 +30,62 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [getUser, setUser] = useState<User | null>(null);
-  const { connected, disconnect, publicKey } = useWallet();
+  const [user, setUser] = useState<User | null>(null);
+  const { connected, disconnect, publicKey, signMessage } = useWallet();
   const { sendMessage, connectionStatus } = useWebSocket();
+  const { connection } = useConnection();
 
   useEffect(() => {
-    if (connected && publicKey) {
+    if (connected && publicKey && signMessage) {
       login();
     } else {
       setUser(null);
       localStorage.removeItem("token");
     }
-  }, [connected, publicKey]);
+  }, [connected, publicKey, signMessage, connection, connectionStatus, sendMessage]);
 
-  const login = async () => {
-
-    if (!publicKey) return;
+  const login = useCallback(async () => {
+    if (!publicKey || !signMessage) {
+      toast.error('Wallet not connected or does not support message signing!');
+      return;
+    }
 
     try {
-      const response = await fetch(`${apiUrl}/auth/connect`, {
+      // Request a nonce from the server
+      const nonceResponse = await fetch(`${apiUrl}/auth/nonce`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ walletAddress: publicKey.toString() }),
       });
 
-      if (response.ok) {
-        const responsePayload = await response.json();
-        const data = responsePayload.data;
-        const user: User = data.user;
-        const token: string = data.token;
+      if (!nonceResponse.ok) {
+        throw new Error('Failed to get nonce from server');
+      }
+
+      const { nonce } = await nonceResponse.json();
+
+      // Create the message to be signed
+      const message = new TextEncoder().encode(
+        `Sign this message to log in to Solspin:\nNonce: ${nonce}`
+      );
+
+      // Sign the message
+      const signedMessage = await signMessage(message);
+      const signature = bs58.encode(signedMessage);
+
+      // Send the signed message to the server
+      const loginResponse = await fetch(`${apiUrl}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: publicKey.toString(),
+          signature,
+          nonce,
+        }),
+      });
+
+      if (loginResponse.ok) {
+        const { user, token } = await loginResponse.json();
         setUser(user);
         localStorage.setItem("token", token);
         if (connectionStatus === "connected") {
@@ -68,17 +96,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
             })
           );
         }
-        toast.success("Successfully logged in!")
-
+        toast.success("Successfully logged in!");
       } else {
-        toast.error("Failed to establish websocket connection!")
-        setUser(null);
+        throw new Error('Login failed');
       }
     } catch (error) {
-      toast.error("Failed to log in!")
+      console.error('Login error:', error);
+      toast.error("Failed to log in!");
       setUser(null);
     }
-  };
+  }, [publicKey, signMessage, connectionStatus, sendMessage]);
 
   const logout = async () => {
     try {
@@ -94,16 +121,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         })
       );
       localStorage.removeItem("token");
-      
-      
-
     } catch (error) {
-      toast.error('Error occured during logout!');
+      toast.error('Error occurred during logout!');
     }
   };
 
   const contextValue: AuthContextType = {
-    getUser,
+    user,
     login,
     logout,
   };
