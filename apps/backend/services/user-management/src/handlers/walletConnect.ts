@@ -1,11 +1,15 @@
 import { ApiHandler } from "sst/node/api";
 import { createUser, getUserByWalletAddress } from "../data-access/userRepository";
-import { CreateUserRequestSchema, User, UserSchema } from "@solspin/user-management-types";
+import { nonceExists, deleteNonce } from "../data-access/nonceRepository"; // Import necessary functions
+import { UserSchema } from "@solspin/user-management-types";
+import { PublicKey } from "@solana/web3.js";
+import nacl from "tweetnacl";
 import jwt from "jsonwebtoken";
 import { Config } from "sst/node/config";
 import { randomUUID } from "crypto";
 import { getLogger } from "@solspin/logger";
 import { ZodError } from "zod";
+import bs58 from "bs58";
 
 const logger = getLogger("wallet-auth-handler");
 
@@ -42,12 +46,33 @@ const validateUser = (user: any) => {
 export const handler = ApiHandler(async (event) => {
   try {
     const payload = JSON.parse(event.body || "{}");
-    const { walletAddress } = payload;
+    const { walletAddress, signature, nonce } = payload;
 
-    if (!walletAddress) {
+    if (!walletAddress || !signature || !nonce) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ message: "walletAddress is required" }),
+        body: JSON.stringify({ message: "walletAddress, signedMessage, and nonce are required" }),
+      };
+    }
+
+    const nonceRecord = await nonceExists(walletAddress);
+    if (!nonceRecord) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: "Invalid nonce" }),
+      };
+    }
+    await deleteNonce(walletAddress);
+    const message = new TextEncoder().encode(
+      `Sign this message to log in to Solspin:\nNonce: ${nonce}`
+    );
+    const publicKey = new PublicKey(walletAddress);
+    const signatureUint8 = bs58.decode(signature);
+
+    if (!nacl.sign.detached.verify(message, signatureUint8, publicKey.toBytes())) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "Invalid signature" }),
       };
     }
 
@@ -74,11 +99,11 @@ export const handler = ApiHandler(async (event) => {
       await createUser(user);
     }
 
-    const jwtpayload = {
+    const jwtPayload = {
       sub: user.userId,
     };
     const secret = await getSecret();
-    const token = jwt.sign(jwtpayload, secret, { algorithm: "HS256", expiresIn: "24h" });
+    const token = jwt.sign(jwtPayload, secret, { algorithm: "HS256", expiresIn: "24h" });
 
     // Set the expiration date for the cookie
     const expirationDate = new Date();

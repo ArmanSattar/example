@@ -26,6 +26,21 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
       },
     },
   });
+
+  const nonceTable = new Table(stack, "nonces", {
+    fields: {
+      walletAddress: "string",
+      nonce: "string",
+      createdAt: "string",
+    },
+    primaryIndex: { partitionKey: "walletAddress" },
+    cdk: {
+      table: {
+        removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
+      },
+    },
+  });
+
   const TEST_SECRET = new Config.Secret(stack, "TEST_SECRET");
   const callAuthorizerFunction = new Function(stack, "authorizerFunction", {
     handler: "../user-management/src/handlers/authorize.handler",
@@ -131,6 +146,19 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
           ],
           bind: [userTable, TEST_SECRET],
           environment: { TABLE_NAME: userTable.tableName },
+        },
+      },
+      "POST /auth/nonce": {
+        function: {
+          handler: "../user-management/src/handlers/nonce.handler",
+          permissions: [
+            new PolicyStatement({
+              actions: ["dynamodb:GetItem", "dyamodb:PutItem", "dyamodb:DeleteItem"],
+              resources: [nonceTable.tableArn],
+            }),
+          ],
+          bind: [nonceTable],
+          environment: { TABLE_NAME: nonceTable.tableName },
         },
       },
     },
