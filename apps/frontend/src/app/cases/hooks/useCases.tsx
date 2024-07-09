@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { v4 as uuidv4 } from "uuid";
+import { CaseItemRarity } from "../../types";
 
 export interface ICase {
   id: string;
@@ -45,7 +46,12 @@ export const useCases = () => {
       id: uuidv4(),
       name: Math.random() < 0.5 ? "Watson Power" : "Fire Hand Mystery",
       price: Math.round(Math.random() * 1000),
-      rarity: Math.random() < 0.5 ? "Exceptional" : "Exotic",
+      rarity:
+        Math.random() < 0.2
+          ? CaseItemRarity.INDUSTRIAL_GRADE
+          : Math.random() < 0.2
+          ? CaseItemRarity.RESTRICTED
+          : CaseItemRarity.COVERT,
       tag: Math.random() < 0.33 ? "Hot" : Math.random() < 0.66 ? "New" : "Special",
       image:
         Math.random() < 0.33

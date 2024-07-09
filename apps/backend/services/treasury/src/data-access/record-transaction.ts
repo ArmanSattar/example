@@ -1,7 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { TransactionsDBObject, TransactionType } from "../foundation/types";
-import { TRANSACTIONS_TABLE_ARN } from "../foundation/runtime";
 import { getLogger } from "@solspin/logger";
 
 const client = new DynamoDBClient({});
@@ -16,24 +15,29 @@ export const recordTransaction = async (
   txnId: string,
   type: TransactionType
 ): Promise<void> => {
-  const createdAt = new Date().toISOString();
+  try {
+    const createdAt = new Date().toISOString();
 
-  const transaction: TransactionsDBObject = {
-    id: id,
-    userId: userId,
-    amount: amount,
-    createdAt: createdAt,
-    walletAddress: walletAddress,
-    txnId: txnId,
-    type: type,
-  };
+    const transaction: TransactionsDBObject = {
+      id: id,
+      userId: userId,
+      amount: amount,
+      createdAt: createdAt,
+      walletAddress: walletAddress,
+      txnId: txnId,
+      type: type,
+    };
 
-  await docClient.send(
-    new PutCommand({
-      TableName: TRANSACTIONS_TABLE_ARN,
-      Item: transaction,
-    })
-  );
+    await docClient.send(
+      new PutCommand({
+        TableName: process.env.TRANSACTIONS_TABLE_NAME,
+        Item: transaction,
+      })
+    );
 
-  logger.info("Transaction recorded successfully", { transaction });
+    logger.info("Transaction recorded successfully", { transaction });
+  } catch (error) {
+    logger.error("Error in recordTransaction", { error });
+    throw error;
+  }
 };

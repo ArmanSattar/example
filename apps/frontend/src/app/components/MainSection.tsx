@@ -30,12 +30,12 @@ export const MainSection = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="flex flex-1 overflow-hidden relative w-full max-w-full">
+    <div className="flex flex-1 overflow-hidden relative w-full max-w-full custom-scroll-container">
       {isDepositOpen && <DepositPopUp handleClose={toggleDepositOpen} />}
       {isWithdrawOpen && <WithdrawPopUp handleClose={toggleWithdrawOpen} />}
       {isRarityInfoOpen && <RarityInfoPopup />}
       <Chatbar chatOpenCallback={toggleChatOpen} />
-      <main className="flex-grow overflow-y-auto relative h-full transition-all duration-500 ease-in-out bg-main_background overflow-x-hidden min-h-full p-4">
+      <main className="flex-grow overflow-y-auto relative transition-all duration-500 ease-in-out bg-main_background overflow-x-hidden min-h-full p-4">
         {children}
       </main>
     </div>

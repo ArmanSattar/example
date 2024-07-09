@@ -22,3 +22,5 @@ export const DepositRequestSchema = BaseTreasurySchema.extend({
 });
 
 // Response Schemas
+
+export type DepositRequest = z.infer<typeof DepositRequestSchema>;

@@ -1,9 +1,9 @@
 import { ZodError } from "zod";
-import { APIGatewayProxyHandlerV2 } from "aws-lambda";
+import { Context } from "aws-lambda";
 import { errorResponse, successResponse } from "@solspin/gateway-responses";
 import { getLogger } from "@solspin/logger";
 import { v4 as uuidv4 } from "uuid";
-import { DepositRequestSchema } from "@solspin/types";
+import { DepositRequest, DepositRequestSchema } from "@solspin/types";
 import { Commitment, Connection, Transaction } from "@solana/web3.js";
 import { COMMITMENT_LEVEL, SOLANA_RPC_URL } from "../../../foundation/runtime";
 import { broadcastTransactionAndVerify } from "../../../blockchain/broadcastTransactionAndVerify";
@@ -15,7 +15,7 @@ import { getTransactionValueAndVerify } from "../../../blockchain/getTransaction
 const logger = getLogger("treasury-deposit-handler");
 let connection: Connection;
 
-export const handler: APIGatewayProxyHandlerV2 = async (event) => {
+export const handler = async (event: DepositRequest, context: Context) => {
   const depositId = uuidv4();
   logger.info("Received deposit request", { depositId, event });
 
@@ -29,7 +29,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       logger.info("Created new Solana connection", { rpcUrl: SOLANA_RPC_URL });
     }
 
-    const parsedBody = JSON.parse(event.body || "{}");
+    console.log(event);
+    const parsedBody = event || "{}";
     const depositRequest = DepositRequestSchema.parse(parsedBody);
     ({ userId, walletAddress, base64Transaction } = depositRequest);
 
@@ -51,6 +52,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       connection,
       COMMITMENT_LEVEL
     );
+
     logger.info("Transaction broadcasted and verified", { transactionSignature, depositId });
 
     const depositAmount = await getTransactionValueAndVerify(transactionSignature, connection);

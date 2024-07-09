@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { Tag } from "./Tag";
 import Link from "next/link";
+import Dollar from "../../../../public/icons/dollar.svg";
 
 export interface CaseProps {
   name: string;
@@ -27,7 +28,9 @@ const Case: React.FC<CaseProps> = ({
   return (
     <Link href={`/cases/${name}`}>
       <div
-        className={`relative rounded-md hover:cursor-pointer shadow-lg case case-${rarity.toLowerCase()} p-2 group overflow-hidden`}
+        className={`relative rounded-md hover:cursor-pointer shadow-lg case cases-${rarity
+          .toLowerCase()
+          .replace(" ", "-")} p-2 group overflow-hidden`}
       >
         <Tag name={tag} customStyle={"absolute top-4 left-4"} />
         <div className="relative -top-4">
@@ -40,8 +43,8 @@ const Case: React.FC<CaseProps> = ({
             className="group-hover:scale-95 duration-300 ease-in-out"
           />
         </div>
-        <div className="absolute bottom-6 left-6 right-4 flex justify-between items-end">
-          <div className="relative">
+        <div className="absolute bottom-6 inset-x-0 flex justify-between items-end">
+          <div className="absolute left-4">
             <span className="text-white font-bold text-sm absolute bottom-0 left-0 group-hover:opacity-0 transition-opacity duration-300">
               {name}
             </span>
@@ -54,9 +57,13 @@ const Case: React.FC<CaseProps> = ({
               </span>
             </div>
           </div>
-          <div className="flex items-center justify-end gap-1 group-hover:opacity-0 transition-opacity duration-300">
-            <img src="/icons/dollar.svg" alt="Dollar" className="h-6 w-6" />
-            <span className="gradient-text">{price}</span>
+          <div className="absolute right-4">
+            <div className="flex items-end justify-end gap-1 group-hover:opacity-0 transition-opacity duration-300">
+              <Dollar className="text-yellow-500" />
+              <div className="h-5 flex items-center justify-center">
+                <span className="text-white">{price}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

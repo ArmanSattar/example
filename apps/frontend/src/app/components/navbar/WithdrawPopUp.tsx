@@ -3,6 +3,7 @@ import Image from "next/image";
 import { PublicKey } from "@solana/web3.js";
 import { toast } from "sonner";
 import { useSolPrice } from "./hooks/useSolPrice";
+import { useWalletInfo } from "./hooks/useWalletInfo";
 
 interface WithdrawPopUpProps {
   handleClose: () => void;
@@ -13,6 +14,12 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
   const [dollarValue, setDollarValue] = React.useState<string>("");
   const [walletAddressValue, setWalletAddressValue] = React.useState<string>("");
   const { data: priceSol, isLoading: isPriceSolLoading, isError: isPriceSolError } = useSolPrice();
+
+  const {
+    data: walletInfo,
+    isLoading: isWalletInfoLoading,
+    isError: isWalletInfoError,
+  } = useWalletInfo();
 
   function isValidSolanaAddress(address: string): boolean {
     try {
@@ -67,6 +74,14 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
       setWalletAddressValue("");
     }
   };
+
+  useEffect(() => {
+    if (isWalletInfoError) {
+      toast.error("Failed to fetch wallet info");
+    }
+
+    console.log(walletInfo);
+  }, [walletInfo]);
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyPress);

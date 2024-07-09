@@ -11,7 +11,7 @@ import { deposit } from "../../../data-access/deposit";
 import { Lambda } from "aws-sdk";
 import { DEPOSIT_TREASURY_FUNCTION_ARN } from "../../../foundation/runtime";
 
-const logger = getLogger("withdraw-handler");
+const logger = getLogger("deposit-handler");
 const lambda = new Lambda();
 
 /**
@@ -22,8 +22,8 @@ const lambda = new Lambda();
  **/
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
-  const withdrawId = uuidv4(); // Generate a unique ID for this withdrawal attempt
-  logger.info("Received deposit request", { event, withdrawId });
+  const depositId = uuidv4(); // Generate a unique ID for this withdrawal attempt
+  logger.info("Received deposit request", { event, depositId });
 
   try {
     const parsedBody = JSON.parse(event.body || "{}");
@@ -35,24 +35,29 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     if (!walletAddress || !txnSignature) {
       return errorResponse(new Error("Invalid request"), 400);
     }
+
     try {
       const wallet = await lockWallet(userId);
-
       const params = {
         FunctionName: DEPOSIT_TREASURY_FUNCTION_ARN,
         InvocationType: "RequestResponse",
         Payload: JSON.stringify({
           userId,
           walletAddress,
-          txnSignature,
+          base64Transaction: txnSignature,
         }),
       };
 
       const responsePayload = await lambda.invoke(params).promise();
 
+      if (responsePayload.StatusCode !== 200) {
+        logger.error("Error processing deposit request", { responsePayload, depositId });
+        return errorResponse(new Error("Internal server error"), 500);
+      }
+
       // TODO - add schema validation
-      const { depositAmountInCrypto, transactionId } = JSON.parse(
-        responsePayload.Payload as string
+      const { depositAmount: depositAmountInCrypto, transactionId } = JSON.parse(
+        JSON.parse(responsePayload.Payload as string).body
       );
 
       logger.info("Deposit request processed", { depositAmountInCrypto, transactionId });
@@ -69,7 +74,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         depositAmount: depositAmountInUsdFpn / 100,
       });
     } catch (error) {
-      logger.error("Error processing deposit request", { error, withdrawId });
+      logger.error("Error processing deposit request", { error, depositId });
 
       if (error instanceof ZodError) {
         return errorResponse(error, 400);
@@ -81,7 +86,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       await unlockWallet(userId);
     }
   } catch (error) {
-    logger.error("Error processing deposit request", { error, withdrawId });
+    logger.error("Error processing deposit request", { error, depositId });
 
     if (error instanceof ZodError) {
       return errorResponse(error, 400);

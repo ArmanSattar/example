@@ -50,28 +50,32 @@ export const NavBar = () => {
     <header className="text-white top-0 left-0 bg-background w-full border-b-green-400 gradient-border-bottom shadow-2xl sticky z-50 h-20 pr-3">
       <div className="flex justify-between items-center w-full h-full z-10">
         <div className="flex items-center justify-between h-full">
-          <div className="flex items-center w-[100px] lg:w-[320px] justify-center">
+          <div className="flex items-center w-[100px] sm:w-[320px] justify-center">
             <Image src="/icons/logo.webp" alt="logo" width={90} height={90} />
           </div>
           <ul className="hidden xl:space-x-8 lg:flex h-full">
             {navLinks.map((navLink, index) => (
-              <li
-                className="relative flex items-center space-x-3 group hover:cursor-pointer pr-4 first:pl-2"
-                key={index}
+              <Link
+                onClick={() => setNavActiveLink(navLink.href)}
+                href={navLink.href}
+                className={"h-full flex items-center"}
               >
-                <div
-                  className={`absolute inset-x-0 bottom-0 h-1 rounded-t-md bg-red-500 origin-center ${
-                    navLink.href === navActiveLink
-                      ? ""
-                      : "transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"
-                  }`}
-                ></div>
-                <navLink.icon
-                  className={`h-6 w-6 text-gray-400 group-hover:text-red-500 duration-75 ${
-                    navActiveLink === navLink.href ? "text-red-500" : ""
-                  }`}
-                />
-                <Link onClick={() => setNavActiveLink(navLink.href)} href={navLink.href}>
+                <li
+                  className="relative flex items-center space-x-3 group hover:cursor-pointer pr-4 first:pl-2 h-full"
+                  key={index}
+                >
+                  <div
+                    className={`absolute inset-x-0 bottom-0 h-1 rounded-t-md bg-red-500 origin-center ${
+                      navLink.href === navActiveLink
+                        ? ""
+                        : "transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"
+                    }`}
+                  ></div>
+                  <navLink.icon
+                    className={`h-6 w-6 text-gray-400 group-hover:text-red-500 duration-75 ${
+                      navActiveLink === navLink.href ? "text-red-500" : ""
+                    }`}
+                  />
                   <span
                     className={`text-gray-400 group-hover:text-white duration-75 ${
                       navActiveLink === navLink.href ? "text-white" : ""
@@ -79,8 +83,8 @@ export const NavBar = () => {
                   >
                     {navLink.name}
                   </span>
-                </Link>
-              </li>
+                </li>
+              </Link>
             ))}
           </ul>
         </div>

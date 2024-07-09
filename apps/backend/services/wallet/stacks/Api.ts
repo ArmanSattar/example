@@ -73,7 +73,7 @@ export function ApiStack({ stack }: StackContext) {
       },
       "GET /wallets/{userId}": {
         function: {
-          handler: "src/service/api/handler/get-wallet-by-id.handler",
+          handler: "src/service/api/handler/get-wallet-by-userid.handler",
           permissions: [
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
@@ -98,6 +98,7 @@ export function ApiStack({ stack }: StackContext) {
               resources: [depositTreasuryFunction.functionArn],
             }),
           ],
+          timeout: 60,
         },
       },
       "POST /wallets/withdraw": {
@@ -115,6 +116,7 @@ export function ApiStack({ stack }: StackContext) {
               resources: [withdrawTreasuryFunction.functionArn],
             }),
           ],
+          timeout: 60,
         },
       },
     },

@@ -2,24 +2,80 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { toast } from "sonner";
-import { sendSolTransaction } from "./utils/transactions";
+import { createAndSignTransaction } from "./utils/transactions";
 import { useSolPrice } from "./hooks/useSolPrice";
 import { useWalletBalance } from "./hooks/useWalletBalance";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface DepositPopUpProps {
   handleClose: () => void;
 }
 
 const HOUSE_WALLET_ADDRESS = process.env.NEXT_PUBLIC_HOUSE_WALLET_PUBLIC_KEY;
+const WALLETS_API_URL = process.env.NEXT_PUBLIC_WALLETS_API_URL;
 
 if (!HOUSE_WALLET_ADDRESS) {
   throw new Error("House wallet address not provided");
 }
 
+if (!WALLETS_API_URL) {
+  throw new Error("Wallets API URL not provided");
+}
+
+type DepositData = {
+  walletAddress: string;
+  txnSignature: string;
+  userId: string;
+};
+
+const postData = async (data: DepositData): Promise<any> => {
+  const response = await fetch(`${WALLETS_API_URL}/deposit`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    let errorMessage;
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorData.error || "Unknown error occurred";
+    } catch {
+      errorMessage = "Failed to parse error message";
+    }
+    throw new Error(`${response.status}, message: ${errorMessage}`);
+  }
+  return response.json();
+};
+
 export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
   const [dollarValue, setDollarValue] = useState<string>("");
   const [cryptoValue, setCryptoValue] = useState<string>("");
+  const queryClient = useQueryClient();
+
+  const { mutateAsync: postDataMutation } = useMutation({
+    mutationFn: postData,
+    onSuccess: (data, variables, context) => {
+      queryClient.invalidateQueries({ queryKey: ["walletBalance"] });
+
+      if (data.txnId) {
+        toast.success(`Deposit request processed successfully. Txn: ${data.txnId}`);
+      } else {
+        toast.success("Deposit request processed successfully.");
+      }
+    },
+    onError: (error: Error) => {
+      toast.error(`Error processing deposit request: ${error.message}`);
+    },
+    onMutate: () => {
+      toast.info("Processing deposit request...");
+    },
+    retry: 0,
+  });
 
   const connection = useConnection().connection;
   const wallet = useWallet();
@@ -102,10 +158,18 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
 
     try {
       console.log(connection, wallet, HOUSE_WALLET_ADDRESS, amount);
-      const signature = await sendSolTransaction(connection, wallet, HOUSE_WALLET_ADDRESS, amount);
-      toast.success(
-        `The transaction is processing. You can follow it here: https://https://solscan.io/tx/${signature}`
+      const signature = await createAndSignTransaction(
+        connection,
+        wallet,
+        HOUSE_WALLET_ADDRESS,
+        amount
       );
+
+      await postDataMutation({
+        walletAddress: wallet.publicKey.toString(),
+        txnSignature: signature,
+        userId: "c37bcf2a-8e11-41bf-aeeb-e43765b47742",
+      });
       handleClose();
     } catch (error) {
       toast.error(`Error sending transaction. Please try again later. ${error}`);

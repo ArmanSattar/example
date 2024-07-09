@@ -12,52 +12,14 @@ import { ProvablyFair } from "./components/ProvablyFair";
 import { v4 as uuidv4 } from "uuid";
 import useWindowSize from "./hooks/useWindowResize";
 import { Back } from "../../components/Back";
+import { PreviousDrops } from "./components/PreviousDrops";
+import { CaseItemRarity, ICase, ICaseItem } from "../../types";
 
 const generateClientSeed = async (): Promise<string> => {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
   return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
 };
-
-export type ICaseItem = {
-  type: string;
-  name: string;
-  wear: string;
-  price: number;
-  rarity: string;
-  chance: number;
-  rollNumbers: number[];
-  imagePath: string;
-};
-
-export type ICase = {
-  name: string;
-  price: number;
-  rarity: string;
-  highestPrice: number;
-  lowestPrice: number;
-  tag: string;
-  image: string;
-  items: ICaseItem[];
-};
-
-export type ICarouselItem = {
-  name: string;
-  price: number;
-  rarity: string;
-  imagePath: string;
-};
-
-export enum CaseItemRarity {
-  CONSUMER_GRADE = "Consumer Grade",
-  INDUSTRIAL_GRADE = "Industrial Grade",
-  MIL_SPEC = "Mil-Spec",
-  RESTRICTED = "Restricted",
-  CLASSIFIED = "Classified",
-  COVERT = "Covert",
-  EXTROARDINARY = "Extraordinary",
-  CONTRABAND = "Contraband",
-}
 
 let exampleCase: ICase = {
   name: "Watson Power",
@@ -149,24 +111,19 @@ let exampleCase: ICase = {
       imagePath: "/cases/tec-9.svg",
     },
     {
-      type: "Nova",
-      name: "Clear Polymer",
-      wear: "Well-Worn",
-      price: 0.98,
-      rarity: CaseItemRarity.CONSUMER_GRADE,
+      type: "Talon Knife",
+      name: "Doppler",
+      wear: "Factory New",
+      price: 2400.21,
+      rarity: CaseItemRarity.COVERT,
       chance: 0.3699,
       rollNumbers: [63010, 99999],
-      imagePath: "/cases/nova.svg",
+      imagePath: "/cases/talon-knife.webp",
     },
   ],
 };
 
 exampleCase.items = exampleCase.items.sort((a, b) => a.chance - b.chance);
-
-export enum Direction {
-  HORIZONTAL,
-  VERTICAL,
-}
 
 const generateCases = (numCases: number): ICaseItem[][] => {
   return Array.from({ length: numCases }, () =>
@@ -281,7 +238,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   }, [socket]);
 
   return (
-    <div className="w-full h-full flex flex-col space-y-10 p-2">
+    <div className="w-full h-full flex flex-col space-y-10 py-2">
       <Back text="Back to Cases" to={""} />
       <CaseDetails {...exampleCase} />
       <ProvablyFair
@@ -302,8 +259,8 @@ export default function CasePage({ params }: { params: { id: string } }) {
           />
         ))}
       </div>
-      {<CaseItems items={exampleCase.items} />}
-      {/*<PreviousDrops />*/}
+      {<CaseItems items={exampleCase.items} activeCase={exampleCase} />}
+      <PreviousDrops />
     </div>
   );
 }

@@ -85,7 +85,9 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             Open {numCases} Case{numCases > 1 ? "s" : ""}
           </span>
           <span className="hidden sm:block text-white font-semibold text-sm">·</span>
-          <span className="text-white font-semibold">${price * numCases}</span>
+          <span className="text-white font-semibold">
+            ${Math.round(price * numCases * 100) / 100}
+          </span>
         </button>
         <div className="flex justify-between items-center space-x-2">
           <button

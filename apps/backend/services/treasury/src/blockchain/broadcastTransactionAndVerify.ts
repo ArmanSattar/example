@@ -21,6 +21,7 @@ export const broadcastTransactionAndVerify = async (
   lastValidBlockHeight?: number
 ): Promise<TransactionSignature> => {
   try {
+    console.log(commitment);
     // Get the latest blockhash and block height if not provided (only in deposits is it not provided)
     if (!blockhash || !lastValidBlockHeight) {
       const latestBlock = await connection.getLatestBlockhash();

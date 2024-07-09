@@ -12,6 +12,7 @@ export default function CasesPage() {
     <div className="w-full h-full flex-col justify-between items-center px-8">
       <CasesHeader updateFilters={updateFilters} handleSearch={handleSearch} />
       <Cases cases={cases} />
+      <div className="h-8 w-full"></div>
     </div>
   );
 }

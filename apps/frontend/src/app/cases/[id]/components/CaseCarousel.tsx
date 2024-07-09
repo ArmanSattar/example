@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
-import Image from "next/image";
-import { CaseItem, Direction } from "../page";
 import dynamic from "next/dynamic";
 import { WindowSize } from "../hooks/useWindowResize";
+import { ICaseItem } from "../../../types";
 
 const CarouselItem = dynamic(() => import("./CarouselItem"), { ssr: false });
 
@@ -14,7 +13,7 @@ type AnimationCalculation = {
 };
 
 interface CaseCarouselProps {
-  items: CaseItem[];
+  items: ICaseItem[];
   isDemoClicked: boolean;
   isFastAnimationClicked: boolean;
   numCases: number;
@@ -58,6 +57,11 @@ type State = {
   animationStage: number;
   offset: AnimationCalculation;
 };
+
+enum Direction {
+  HORIZONTAL,
+  VERTICAL,
+}
 
 function carouselReducer(state: State, action: Action): State {
   switch (action) {
@@ -220,17 +224,6 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           numCases > 1 ? "py-0 lg:py-0" : "lg:py-2"
         } rounded-md main-element flex-grow w-full`}
       >
-        <Image
-          src={
-            direction === Direction.HORIZONTAL ? "/icons/down-arrow.svg" : "/icons/right-arrow.svg"
-          }
-          alt={direction === Direction.HORIZONTAL ? "Arrow Down" : "Arrow Right"}
-          width={24}
-          height={24}
-          className={`absolute ${
-            numCases > 1 ? "inset-y-0 left-[-10px] my-auto" : "inset-x-0 top-[-10px] mx-auto"
-          } z-10 transition-colors duration-1000 text-yellow-2 bg-amber-300`}
-        />
         <div className={`mt-md flex overflow-hidden rounded-sm flex-col gap-xs h-[310px]`}>
           <div className="relative mx-auto my-0 flex h-full items-center justify-center overflow-hidden bg-dark-4 w-full">
             <div
@@ -247,6 +240,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
                   isMiddle={index === Math.round(items.length / 2) - 1 + middleItem}
                   isFinal={index === Math.round(items.length / 2) - 1 + distanceInItems}
                   animationEnd={state.animationStage === 2 || state.animationStage === 3}
+                  animationStart={state.animationStage === 1}
                 />
               ))}
             </div>

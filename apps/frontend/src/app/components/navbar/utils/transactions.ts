@@ -7,15 +7,19 @@ import {
 } from "@solana/web3.js";
 import { WalletContextState } from "@solana/wallet-adapter-react";
 
-export const sendSolTransaction = async (
+export const createAndSignTransaction = async (
   connection: Connection,
   wallet: WalletContextState,
   toAddress: string,
   amount: number
-) => {
+): Promise<string> => {
+  if (!wallet.publicKey) {
+    throw new Error("Wallet not connected");
+  }
+
   const transaction = new Transaction().add(
     SystemProgram.transfer({
-      fromPubkey: wallet.publicKey!,
+      fromPubkey: wallet.publicKey,
       toPubkey: new PublicKey(toAddress),
       lamports: amount * LAMPORTS_PER_SOL,
     })
@@ -23,10 +27,15 @@ export const sendSolTransaction = async (
 
   const { blockhash } = await connection.getLatestBlockhash();
   transaction.recentBlockhash = blockhash;
-  transaction.feePayer = wallet.publicKey!;
+  transaction.feePayer = wallet.publicKey;
 
-  const signature = await wallet.sendTransaction(transaction, connection);
-  await connection.confirmTransaction(signature, "confirmed");
+  if (!wallet.signTransaction) {
+    throw new Error("Wallet does not support signing transactions");
+  }
 
-  return signature;
+  const signedTransaction = await wallet.signTransaction(transaction);
+
+  // Serialize the signed transaction
+  const serializedTransaction = signedTransaction.serialize({ requireAllSignatures: false });
+  return serializedTransaction.toString("base64");
 };

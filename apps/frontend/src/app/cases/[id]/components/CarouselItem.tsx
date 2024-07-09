@@ -1,17 +1,18 @@
 import Image from "next/image";
-import React, { memo } from "react";
-import { CaseItem } from "../page";
+import React, { memo, useEffect, useRef, useState } from "react";
+import { ICaseItem } from "../../../types";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../store";
-import Dollar from "../../../../../public/icons/dollar.svg";
+import { Money } from "../../../components/Money";
 
-interface CarouselItemProps extends CaseItem {
+interface CarouselItemProps extends ICaseItem {
   isMiddle: boolean;
   isFinal: boolean;
   animationEnd: boolean;
+  animationStart: boolean;
 }
 
-const wearToColorAndAbbrev = new Map<string, [string, string]>([
+export const wearToColorAndAbbrev = new Map<string, [string, string]>([
   ["Factory New", ["FN", "text-yellow-500"]],
   ["Minimal Wear", ["MW", "text-green-400"]],
   ["Field-Tested", ["FT", "text-blue-400"]],
@@ -31,42 +32,72 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   type,
   wear,
   chance,
+  animationStart,
 }) => {
-  const [shouldScaleDown, setShouldScaleDown] = React.useState(false);
-  const audioTickRef = React.useRef<HTMLAudioElement | null>(null);
-  const audioChaChingRef = React.useRef<HTMLAudioElement | null>(null);
+  const [shouldScaleDown, setShouldScaleDown] = useState(false);
+  const [isInfiniteAnimating, setIsInfiniteAnimating] = useState(false);
+  const audioTickRef = useRef<HTMLAudioElement | null>(null);
+  const audioChaChingRef = useRef<HTMLAudioElement | null>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
   const soundClicked = useSelector((state: RootState) => state.demo.soundClicked);
 
   const [wearAbbrev, wearColor] = wearToColorAndAbbrev.get(wear) || ["", "text-gray-400"];
 
-  if (isMiddle && soundClicked) {
-    const audioToPlay = animationEnd ? audioChaChingRef.current : audioTickRef.current;
+  useEffect(() => {
+    if (isMiddle && soundClicked) {
+      const audioToPlay = animationEnd ? audioChaChingRef.current : audioTickRef.current;
 
-    if (audioToPlay) {
-      audioToPlay.currentTime = 0;
-      audioToPlay.play().catch((error) => console.error("Audio playback failed:", error));
-    }
+      if (audioToPlay) {
+        audioToPlay.currentTime = 0;
+        audioToPlay.play().catch((error) => console.error("Audio playback failed:", error));
+      }
 
-    if (!shouldScaleDown) {
-      setShouldScaleDown(true);
+      if (!shouldScaleDown) {
+        setShouldScaleDown(true);
+      }
     }
-  }
+  }, [isMiddle, soundClicked, animationEnd, shouldScaleDown]);
+
+  useEffect(() => {
+    if (animationStart) {
+      setShouldScaleDown(false);
+      setIsInfiniteAnimating(false);
+    }
+  }, [animationStart]);
+
+  useEffect(() => {
+    const imageContainer = imageContainerRef.current;
+    if (!imageContainer) return;
+
+    const handleTransitionEnd = () => {
+      if (isFinal && isMiddle && animationEnd) {
+        setIsInfiniteAnimating(true);
+      }
+    };
+
+    imageContainer.addEventListener("transitionend", handleTransitionEnd);
+
+    return () => {
+      imageContainer.removeEventListener("transitionend", handleTransitionEnd);
+    };
+  }, [isFinal, isMiddle, animationEnd]);
 
   return (
     <>
       <audio ref={audioTickRef} src="/sounds/tick.wav" />
       <audio ref={audioChaChingRef} src="/sounds/cashier-cha-ching.mp3" />
       <div
-        className={`relative flex flex-col items-center justify-center w-[192px] h-[192px] scale-90 opacity-50 ${
+        className={`relative flex flex-col items-center justify-center w-[192px] h-[192px] scale-90 opacity-50 will-change-transform ${
           isMiddle ? "animate-middle-item z-10" : shouldScaleDown ? "animate-scale-down" : ""
         }`}
       >
         <div
+          ref={imageContainerRef}
           className={`relative flex justify-center items-center h-full w-full mt-10 ${
             isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000" : ""
-          }`}
+          } ${isInfiniteAnimating ? "animate-final-item" : ""}`}
         >
-          <Image src={imagePath} alt={"case"} width={175} height={175} />
+          <Image src={imagePath} alt={"Case item"} width={200} height={200} />
         </div>
         <div
           className={`absolute top-0 right-0 w-full h-full opacity-30 z-[-1] ${
@@ -84,10 +115,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
             <span className={"font-light italic text-xs text-gray-300"}>{type}</span>
           </div>
           <span className={"text-white font-semibold"}>{name}</span>
-          <div className="flex items-center justify-center w-full space-x-1">
-            <Dollar className={"text-yellow-400"} />
-            <span className={"text-white font-semibold"}>{price}</span>
-          </div>
+          <Money amount={price} />
         </div>
       </div>
     </>
