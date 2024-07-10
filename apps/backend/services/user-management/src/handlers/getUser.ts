@@ -4,8 +4,7 @@ import { ValidationError } from "@solspin/errors";
 import { GetUserByIdRequestSchema } from "@solspin/user-management-types";
 import { ZodError } from "zod";
 import { getLogger } from "@solspin/logger";
-import { APIGatewayProxyEventV2WithJWTAuthorizer } from "aws-lambda";
-
+import { errorResponse, successResponse } from "@solspin/gateway-responses";
 const logger = getLogger("get-user-handler");
 
 export const handler = ApiHandler(async (event) => {
@@ -52,7 +51,7 @@ export const handler = ApiHandler(async (event) => {
       body: JSON.stringify(result),
     };
   } catch (error) {
-    logger.error("Error fetching user data:", error as Error);
+    logger.error(`Error fetching user data:" ${error as Error}`);
     if (error instanceof ValidationError) {
       return {
         statusCode: (error as ValidationError).statusCode,
@@ -62,9 +61,6 @@ export const handler = ApiHandler(async (event) => {
         }),
       };
     }
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: "Internal server error", error: (error as Error).message }),
-    };
+    errorResponse(error as Error);
   }
 });

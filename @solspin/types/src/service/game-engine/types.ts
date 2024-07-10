@@ -68,6 +68,10 @@ export const GetCaseByIdResponseSchema = BaseCaseSchema;
 
 export { BaseCaseItemSchema, BaseCaseSchema, CaseOverviewSchema };
 
+export type SpinResult = {
+  rewardItem: BaseCaseItem;
+  rollValue: number;
+};
 export type BaseCaseItem = z.infer<typeof BaseCaseItemSchema>;
 export type BaseCase = z.infer<typeof BaseCaseSchema>;
 export type Case = z.infer<typeof BaseCaseSchema>;

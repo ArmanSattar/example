@@ -30,11 +30,11 @@ export const handler = ApiHandler(async (event) => {
 
     const { caseModel, serverSeed, clientSeed } = spinPayload;
 
-    const rewardItem = await handleSpin(caseModel, serverSeed, clientSeed);
+    const spinResult = await handleSpin(caseModel, serverSeed, clientSeed);
 
     return {
       statusCode: 200,
-      body: JSON.stringify(rewardItem),
+      body: JSON.stringify(spinResult),
     };
   } catch (error: any) {
     logger.error("Error in handleSpin:", error);

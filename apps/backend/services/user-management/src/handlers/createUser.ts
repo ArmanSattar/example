@@ -6,6 +6,7 @@ import { ZodError } from "zod";
 import jwt from "jsonwebtoken";
 import { Config } from "sst/node/config";
 import { getLogger } from "@solspin/logger";
+import { errorResponse, successResponse } from "@solspin/gateway-responses";
 
 const logger = getLogger("create-user-handler");
 
@@ -63,7 +64,7 @@ export const handler = ApiHandler(async (event) => {
     const now = new Date().toISOString();
     const user: User = {
       userId: randomUUID(),
-      username: validatedPayload.walletAddress, // Use walletAddress as username if no username is provided
+      username: validatedPayload.walletAddress,
       walletAddress: validatedPayload.walletAddress,
       createdAt: now,
       updatedAt: now,
@@ -79,21 +80,14 @@ export const handler = ApiHandler(async (event) => {
 
     const userId = user.userId;
     const jwtpayload = {
-      sub: userId, // Use `sub` to store the userId
+      sub: userId,
     };
     const secret = await getSecret();
     const token = jwt.sign(jwtpayload, secret, { algorithm: "HS256", expiresIn: "24h" });
-    console.log(token);
-    return {
-      statusCode: 201,
-      body: JSON.stringify({ message: "User created successfully" }),
-    };
+    successResponse({ user, token }, 201);
   } catch (error) {
-    logger.error("Error creating user:", error);
-    const errorMessage = error instanceof Error ? error.message : "Internal server error";
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: errorMessage }),
-    };
+    logger.error(`Error creating user:" ${error}`);
+
+    errorResponse(error as Error);
   }
 });

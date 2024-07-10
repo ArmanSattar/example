@@ -66,7 +66,7 @@ export const handler = ApiHandler(async (event) => {
       body: JSON.stringify({ nonce }),
     };
   } catch (error) {
-    logger.error("Error generating nonce:", error);
+    logger.error(`Error generating nonce: ${error}`);
     if (error instanceof ValidationError) {
       return {
         statusCode: (error as ValidationError).statusCode,

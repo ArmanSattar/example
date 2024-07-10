@@ -131,6 +131,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
           bind: [userTable],
           environment: { TABLE_NAME: userTable.tableName },
         },
+        authorizer: "CustomAuthorizer",
       },
       "POST /auth/connect": {
         function: {

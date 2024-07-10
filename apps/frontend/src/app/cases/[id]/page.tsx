@@ -143,7 +143,7 @@ const generateCases = (numCases: number): ICaseItem[][] => {
 };
 
 export default function CasePage({ params }: { params: { id: string } }) {
-  const id = "5c87c242-dd8f-4a90-8565-fd0529334317";
+  const id = "3f0d3d4f-d9b0-4056-be44-b2053c521577";
   const isDemoClicked = useSelector((state: RootState) => state.demo.demoClicked);
   const isPaidSpinClicked = useSelector((state: RootState) => state.demo.paidSpinClicked);
   const numCases = useSelector((state: RootState) => state.demo.numCases);
@@ -157,6 +157,8 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [cases, setCases] = useState<ICaseItem[][]>(generateCases(numCases));
   const windowSize = useWindowSize();
   const [itemWon, setItemWon] = useState<ICaseItem | null>(null);
+  const [rollValue, setRollValue] = useState<number | null>(null);
+  const [serverSeed, setServerSeed] = useState<string | null>(null);
 
   const handleClientSeedChange = (newClientSeed: string) => {
     setClientSeed(newClientSeed);
@@ -236,9 +238,12 @@ export default function CasePage({ params }: { params: { id: string } }) {
           console.log("Server Seed Hash set:", data["server-seed-hash"]);
         }
 
-        if ("caseRolledItem" in data) {
-          setItemWon(data["caseRolledItem"] as ICaseItem);
-          console.log("Spin result:", data["caseRolledItem"]);
+        if ("case-result" in data) {
+          const { caseRolledItem, rollValue, serverSeed } = data["case-result"];
+          setItemWon(caseRolledItem as ICaseItem);
+          setRollValue(rollValue as number)
+          setServerSeed(serverSeed as string)
+          console.log("Spin result:", caseRolledItem);
         }
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
@@ -264,6 +269,8 @@ export default function CasePage({ params }: { params: { id: string } }) {
         serverSeedHash={serverSeedHash || "Please Login"}
         clientSeed={clientSeed || "Generating..."}
         onClientSeedChange={handleClientSeedChange}
+        rollValue={rollValue || ""}
+        serverSeed={serverSeed || ""}
       />
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-2">
         {cases.map((items, index) => (

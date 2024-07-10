@@ -10,7 +10,12 @@ import { GameResult, publishEvent } from "@solspin/events";
 import { BaseCaseItem, Service } from "@solspin/types";
 import { GameOutcome } from "@solspin/betting-types";
 import { getLogger } from "@solspin/logger";
-import { BaseCase, BaseCaseItemSchema, BaseCaseSchema } from "@solspin/game-engine-types";
+import {
+  BaseCase,
+  BaseCaseItemSchema,
+  BaseCaseSchema,
+  SpinResult,
+} from "@solspin/game-engine-types";
 
 const logger = getLogger("case-orchestration-handler");
 
@@ -47,7 +52,6 @@ export const handler = WebSocketApiHandler(async (event) => {
       throw new Error("ConnectionId not found");
     }
     const user = connectionInfo;
-    logger.info(`Received connection info from getUserFromWebSocket lambda.`);
 
     if (!user || !user.isAuthenticated) {
       logger.error(`User with connectionId: ${connectionId} is unauthenticated`);
@@ -89,13 +93,24 @@ export const handler = WebSocketApiHandler(async (event) => {
       `Invoking performSpin lambda with clientSeed: ${clientSeed} and serverSeed: ${serverSeed}`
     );
 
-    const caseRollResult = await performSpin(caseModel, clientSeed, serverSeed);
+    const spinResultPayload = await performSpin(caseModel, clientSeed, serverSeed);
+    if (spinResultPayload.statusCode !== 200) {
+      throw new Error("Error occured in case spin handler");
+    }
 
-    const caseRolledItem: BaseCaseItem = BaseCaseItemSchema.parse(JSON.parse(caseRollResult.body));
+    const spinResult: SpinResult = JSON.parse(spinResultPayload.body);
 
-    logger.info(`Case roll result is: ${{ caseRollResult }}`);
+    const caseRolledItem: BaseCaseItem = BaseCaseItemSchema.parse(spinResult.rewardItem);
+
+    const rollValue: number = spinResult.rollValue;
+
+    logger.info(`Case roll result is: ${{ caseRolledItem, rollValue }}`);
     const responseMessage = {
-      caseRolledItem,
+      "case-result": {
+        caseItem: caseRolledItem,
+        rollValue: rollValue,
+        serverSeed,
+      },
     };
 
     const messageEndpoint = `${domainName}/${stage}`;

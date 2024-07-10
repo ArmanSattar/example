@@ -17,7 +17,6 @@ export const performSpin = async (caseModel: Case, clientSeed: string, serverSee
   };
 
   const response = await lambda.invoke(params).promise();
-  console.log(response.Payload as string);
   const payload = JSON.parse(response.Payload as string);
   return payload;
 };

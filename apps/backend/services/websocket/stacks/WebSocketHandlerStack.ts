@@ -19,16 +19,7 @@ export function WebSocketHandlerAPI({ stack }: StackContext) {
     },
   });
 
-  const getConnectionFunction = new Function(stack, "getConnectionFunction", {
-    handler: "src/handlers/getConnectionInfo.handler",
-    environment: {
-      TABLE_NAME: websocketConnectionsTable.tableName,
-    },
-  });
-  getConnectionFunction.attachPermissions("*");
-
   return {
-    getConnectionFunction,
     websocketTable: websocketConnectionsTable,
   };
 }

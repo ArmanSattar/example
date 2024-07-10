@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { server } from "typescript";
 
 interface ProvablyFairProps {
   serverSeedHash: string;
   clientSeed: string;
+  rollValue: number | null;
+  serverSeed: string | null;
   onClientSeedChange: (newClientSeed: string) => void;
 }
 
 export const ProvablyFair: React.FC<ProvablyFairProps> = ({
   serverSeedHash,
   clientSeed,
+  rollValue,
+  serverSeed,
   onClientSeedChange
 }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -66,6 +71,19 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
               />
             </div>
             <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-2">Server Seed</label>
+              <input
+                type="text"
+                value={
+                  serverSeed !== null && typeof serverSeed === 'number'
+                    ? serverSeed
+                    : serverSeed || 'N/A'
+                }
+                readOnly
+                className="mt-1 block w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed"
+              />
+            </div>
+            <div className="mb-6">
               <label className="block text-sm font-medium text-gray-300 mb-2">Client Seed</label>
               <input
                 type="text"
@@ -75,16 +93,30 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
               />
             </div>
             <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-2">Roll Value</label>
+              <input
+                type="text"
+                value={
+                  rollValue !== null && typeof rollValue === 'number'
+                    ? rollValue
+                    : rollValue || 'N/A'
+                }
+                readOnly
+                className="mt-1 block w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed"
+              />
+            </div>
+            <div className="mb-6">
               <h3 className="text-lg font-semibold mb-2 text-white">How it works</h3>
               <p className="text-gray-300">
                 Our provably fair system ensures that the outcome of each case opening is random and verifiable. 
                 The server seed hash and client seed are combined to generate a unique outcome for each spin.
+                The roll value represents the result of this combination, determining the item you receive.
               </p>
             </div>
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-2 text-white">Verify Your Results</h3>
               <p className="text-gray-300">
-                You can use these seeds to independently verify the fairness of your case openings. 
+                You can use these seeds and the roll value to independently verify the fairness of your case openings. 
                 Visit our verification page to learn more about the process and try it yourself.
               </p>
             </div>
