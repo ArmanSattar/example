@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { CaseCarousel } from "./components/CaseCarousel";
 import { useWebSocket } from "../../context/WebSocketContext";
-import { toggleDemoClicked } from "../../../store/slices/demoSlice";
+import { toggleDemoClicked, togglePaidSpinClicked } from "../../../store/slices/demoSlice";
 import { ProvablyFair } from "./components/ProvablyFair";
 import { v4 as uuidv4 } from "uuid";
 import useWindowSize from "./hooks/useWindowResize";
@@ -145,6 +145,7 @@ const generateCases = (numCases: number): ICaseItem[][] => {
 export default function CasePage({ params }: { params: { id: string } }) {
   const id = params.id;
   const isDemoClicked = useSelector((state: RootState) => state.demo.demoClicked);
+  const isPaidSpinClicked = useSelector((state: RootState) => state.demo.paidSpinClicked);
   const numCases = useSelector((state: RootState) => state.demo.numCases);
   const fastClicked = useSelector((state: RootState) => state.demo.fastClicked);
   const [serverSeedHash, setServerSeedHash] = useState<string | null>(null);
@@ -179,7 +180,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   }, []);
 
   useEffect(() => {
-    if (isDemoClicked && animationComplete == 0) {
+    if (isPaidSpinClicked && animationComplete == 0) {
       console.log("Spinning cases");
       setCases(generateCases(numCases));
       if (connectionStatus === "connected") {
@@ -192,14 +193,30 @@ export default function CasePage({ params }: { params: { id: string } }) {
         );
       }
     }
-  }, [isDemoClicked, animationComplete, numCases, connectionStatus, sendMessage, clientSeed, id]);
+  }, [
+    isPaidSpinClicked,
+    animationComplete,
+    numCases,
+    connectionStatus,
+    sendMessage,
+    clientSeed,
+    id,
+  ]);
 
   useEffect(() => {
-    if (animationComplete === numCases && isDemoClicked) {
-      dispatch(toggleDemoClicked());
+    console.log(
+      "Animation complete:",
+      animationComplete,
+      numCases,
+      isDemoClicked,
+      isPaidSpinClicked
+    );
+    if (animationComplete === numCases && (isDemoClicked || isPaidSpinClicked)) {
+      if (isDemoClicked) dispatch(toggleDemoClicked());
+      if (isPaidSpinClicked) dispatch(togglePaidSpinClicked());
       setAnimationComplete(0);
     }
-  }, [animationComplete, numCases, isDemoClicked, dispatch]);
+  }, [animationComplete, numCases, isDemoClicked, dispatch, isPaidSpinClicked]);
 
   useEffect(() => {
     if (connectionStatus === "connected" && generateSeed) {
@@ -253,7 +270,8 @@ export default function CasePage({ params }: { params: { id: string } }) {
           <CaseCarousel
             key={index}
             items={items}
-            isDemoClicked={isDemoClicked}
+            spinClicked={isPaidSpinClicked || isDemoClicked}
+            itemWon={itemWon}
             isFastAnimationClicked={fastClicked}
             numCases={numCases}
             onAnimationComplete={handleAnimationComplete}

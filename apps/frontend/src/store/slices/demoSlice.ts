@@ -7,6 +7,7 @@ interface DemoState {
   fastClicked: boolean;
   soundClicked: boolean;
   rarityInfoPopup: boolean;
+  paidSpinClicked: boolean;
 }
 
 const initialState: DemoState = {
@@ -15,6 +16,7 @@ const initialState: DemoState = {
   fastClicked: false,
   soundClicked: true,
   rarityInfoPopup: false,
+  paidSpinClicked: false,
 };
 
 const demoSlice = createSlice({
@@ -36,6 +38,9 @@ const demoSlice = createSlice({
     toggleRarityInfoPopup(state) {
       state.rarityInfoPopup = !state.rarityInfoPopup;
     },
+    togglePaidSpinClicked(state) {
+      state.paidSpinClicked = !state.paidSpinClicked;
+    },
   },
 });
 
@@ -45,5 +50,6 @@ export const {
   toggleFastClicked,
   toggleRarityInfoPopup,
   toggleSoundClicked,
+  togglePaidSpinClicked,
 } = demoSlice.actions;
 export default demoSlice.reducer;

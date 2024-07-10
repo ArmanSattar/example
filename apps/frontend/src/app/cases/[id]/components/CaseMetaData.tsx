@@ -5,6 +5,7 @@ import {
   setNumCases,
   toggleDemoClicked,
   toggleFastClicked,
+  togglePaidSpinClicked,
   toggleRarityInfoPopup,
 } from "../../../../store/slices/demoSlice";
 import { RootState } from "../../../../store";
@@ -29,8 +30,10 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
 }) => {
   const dispatch = useDispatch();
   const demoClicked = useSelector((state: RootState) => state.demo.demoClicked);
+  const paidSpinClicked = useSelector((state: RootState) => state.demo.paidSpinClicked);
   const fastClicked = useSelector((state: RootState) => state.demo.fastClicked);
   const numCases = useSelector((state: RootState) => state.demo.numCases);
+  const spinClicked = paidSpinClicked || demoClicked;
 
   return (
     <div className="flex flex-col justify-between items-start w-full space-y-4">
@@ -54,16 +57,16 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             <button
               key={index}
               className={`bg-custom_gray group hover:${
-                demoClicked ? "" : "bg-gray-700"
+                spinClicked ? "" : "bg-gray-700"
               } rounded-md w-12 h-12 p-2 ${index + 1 === numCases ? "bg-gray-700" : ""} ${
-                demoClicked
+                spinClicked
                   ? `opacity-50 cursor-not-allowed ${
                       index + 1 === numCases ? "" : "hover:bg-custom_gray"
                     }`
                   : ""
               }`}
-              onClick={() => !demoClicked && dispatch(setNumCases(index + 1))}
-              disabled={demoClicked}
+              onClick={() => !spinClicked && dispatch(setNumCases(index + 1))}
+              disabled={spinClicked}
             >
               <span
                 className={`text-gray-300 group-hover:text-white ${
@@ -77,9 +80,14 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
         </div>
         <button
           className={`flex bg-green-500 rounded-md h-12 p-4 space-x-1 justify-center items-center ${
-            demoClicked ? "opacity-50 cursor-not-allowed" : ""
+            spinClicked ? "opacity-50 cursor-not-allowed" : ""
           }`}
-          disabled={demoClicked}
+          onClick={() => {
+            if (!spinClicked) {
+              dispatch(togglePaidSpinClicked());
+            }
+          }}
+          disabled={spinClicked}
         >
           <span className="text-white font-semibold">
             Open {numCases} Case{numCases > 1 ? "s" : ""}
@@ -92,22 +100,22 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
         <div className="flex justify-between items-center space-x-2">
           <button
             className={`flex justify-center items-center bg-custom_gray rounded-md h-12 p-3 ${
-              demoClicked ? "opacity-50 cursor-not-allowed" : ""
+              spinClicked ? "opacity-50 cursor-not-allowed" : ""
             }`}
             onClick={() => {
               if (!demoClicked) {
                 dispatch(toggleDemoClicked());
               }
             }}
-            disabled={demoClicked}
+            disabled={spinClicked}
           >
             <span className="text-white">Demo</span>
           </button>
           <button
             className={`flex justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-2 ${
-              demoClicked ? "opacity-50 cursor-not-allowed" : ""
+              spinClicked ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={demoClicked}
+            disabled={spinClicked}
           >
             <div
               className={`rounded-full w-2 h-2 ${fastClicked ? "bg-green-500" : "bg-red-700"}`}
@@ -115,7 +123,7 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             <span
               className="text-white"
               onClick={() => {
-                if (!demoClicked) {
+                if (!spinClicked) {
                   dispatch(toggleFastClicked());
                 }
               }}

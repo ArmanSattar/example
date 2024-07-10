@@ -14,7 +14,8 @@ type AnimationCalculation = {
 
 interface CaseCarouselProps {
   items: ICaseItem[];
-  isDemoClicked: boolean;
+  spinClicked: boolean;
+  itemWon: ICaseItem | null;
   isFastAnimationClicked: boolean;
   numCases: number;
   onAnimationComplete: () => void;
@@ -79,7 +80,15 @@ function carouselReducer(state: State, action: Action): State {
 }
 
 const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
-  ({ items, isDemoClicked, isFastAnimationClicked, numCases, onAnimationComplete, windowSize }) => {
+  ({
+    items,
+    spinClicked,
+    itemWon,
+    isFastAnimationClicked,
+    numCases,
+    onAnimationComplete,
+    windowSize,
+  }) => {
     const [state, dispatch] = useReducer(carouselReducer, {
       animationStage: 0,
       offset: { distance: 0, tickerOffset: 0 },
@@ -119,17 +128,17 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     }, []);
 
     useEffect(() => {
-      if ((state.animationStage === 3 || state.animationStage === 0) && isDemoClicked) {
+      if ((state.animationStage === 3 || state.animationStage === 0) && spinClicked) {
         dispatch(Action.RESET);
         currentPositionRef.current = 0;
       }
-    }, [items, isDemoClicked]);
+    }, [items, spinClicked]);
 
     useEffect(() => {
-      if (isDemoClicked && state.animationStage === 0) {
+      if (spinClicked && state.animationStage === 0) {
         dispatch(Action.START_ANIMATION);
       }
-    }, [isDemoClicked, state.animationStage]);
+    }, [spinClicked, state.animationStage]);
 
     useEffect(() => {
       const handleTransitionEnd = () => {
@@ -151,11 +160,12 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
 
     // Reset the ref when starting a new animation
     useEffect(() => {
-      if (isDemoClicked && state.animationStage === 0) {
+      console.log(spinClicked, state.animationStage);
+      if (spinClicked && state.animationStage === 0) {
         animationCompletedRef.current = false;
         dispatch(Action.START_ANIMATION);
       }
-    }, [isDemoClicked, state.animationStage]);
+    }, [spinClicked, state.animationStage]);
 
     useEffect(() => {
       let animationFrameId: number;
