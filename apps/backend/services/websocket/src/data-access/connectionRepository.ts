@@ -4,6 +4,7 @@ import {
   PutCommand,
   DeleteCommand,
   GetCommand,
+  UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { ConnectionInfo } from "@solspin/websocket-types";
 import {
@@ -35,7 +36,11 @@ export const saveConnectionInfo = async (
     },
   };
 
-  await ddbDocClient.send(new PutCommand(params));
+  try {
+    await ddbDocClient.send(new PutCommand(params));
+  } catch (error) {
+    throw new SaveConnectionInfoError(error as string);
+  }
 };
 
 export const deleteConnectionInfo = async (connectionId: string): Promise<void> => {
@@ -46,7 +51,11 @@ export const deleteConnectionInfo = async (connectionId: string): Promise<void> 
     },
   };
 
-  await ddbDocClient.send(new DeleteCommand(params));
+  try {
+    await ddbDocClient.send(new DeleteCommand(params));
+  } catch (error) {
+    throw new DeleteConnectionInfoError(error as string);
+  }
 };
 
 export const getConnectionInfoFromDB = async (
@@ -59,6 +68,37 @@ export const getConnectionInfoFromDB = async (
     },
   };
 
-  const data = await ddbDocClient.send(new GetCommand(params));
-  return data.Item as ConnectionInfo | null;
+  try {
+    const data = await ddbDocClient.send(new GetCommand(params));
+    return data.Item as ConnectionInfo | null;
+  } catch (error) {
+    throw new GetConnectionInfoError(error as string);
+  }
+};
+
+export const updateConnectionInfo = async (
+  connectionId: string,
+  updates: Partial<ConnectionInfo>
+): Promise<void> => {
+  const updateExpressions: string[] = [];
+  const expressionAttributeNames: { [key: string]: string } = {};
+  const expressionAttributeValues: { [key: string]: any } = {};
+
+  Object.entries(updates).forEach(([key, value], index) => {
+    updateExpressions.push(`#field${index} = :value${index}`);
+    expressionAttributeNames[`#field${index}`] = key;
+    expressionAttributeValues[`:value${index}`] = value;
+  });
+
+  const params = {
+    TableName: tableName,
+    Key: {
+      connectionId: connectionId,
+    },
+    UpdateExpression: `SET ${updateExpressions.join(", ")}`,
+    ExpressionAttributeNames: expressionAttributeNames,
+    ExpressionAttributeValues: expressionAttributeValues,
+  };
+
+  await ddbDocClient.send(new UpdateCommand(params));
 };

@@ -5,6 +5,7 @@ import {
   saveConnectionInfo,
   deleteConnectionInfo,
   getConnectionInfoFromDB,
+  updateConnectionInfo,
 } from "../data-access/connectionRepository";
 
 export const handleNewConnection = async (connectionId: string): Promise<string> => {
@@ -15,6 +16,14 @@ export const handleNewConnection = async (connectionId: string): Promise<string>
 
   await saveConnectionInfo(connectionId, connectionInfo);
   return connectionId;
+};
+
+export const removeServerSeed = async (connectionId: string): Promise<void> => {
+  const connectionInfo = await getConnectionInfoFromDB(connectionId);
+  if (connectionInfo) {
+    const { serverSeed, ...restInfo } = connectionInfo;
+    await saveConnectionInfo(connectionId, restInfo);
+  }
 };
 
 export const authenticateUser = async (connectionId: string, userId: string): Promise<void> => {

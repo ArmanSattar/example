@@ -1,5 +1,9 @@
 import { ConnectionInfo, WebSocketOrchestrationPayloadSchema } from "@solspin/websocket-types";
-import { getConnectionInfo } from "../helpers/handleConnections";
+import {
+  generateServerSeed,
+  getConnectionInfo,
+  removeServerSeed,
+} from "../helpers/handleConnections";
 import { debitUser } from "../helpers/debitUser";
 import { callGetCase } from "../helpers/getCaseHelper";
 import { performSpin } from "../helpers/performSpinHelper";
@@ -16,6 +20,7 @@ import {
   BaseCaseSchema,
   SpinResult,
 } from "@solspin/game-engine-types";
+import { hashString } from "@solspin/hash";
 
 const logger = getLogger("case-orchestration-handler");
 
@@ -105,6 +110,13 @@ export const handler = WebSocketApiHandler(async (event) => {
     const rollValue: number = spinResult.rollValue;
 
     logger.info(`Case roll result is: ${{ caseRolledItem, rollValue }}`);
+
+    // Invalidate server seed now to prevent malicious attacks on unhashed server seed
+
+    await removeServerSeed(connectionId);
+
+    const messageEndpoint = `${domainName}/${stage}`;
+    // Send result to client
     const responseMessage = {
       "case-result": {
         caseItem: caseRolledItem,
@@ -113,9 +125,18 @@ export const handler = WebSocketApiHandler(async (event) => {
       },
     };
 
-    const messageEndpoint = `${domainName}/${stage}`;
-    await sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
+    sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
 
+    // Send new server seed hash to user
+    const newServerSeed = await generateServerSeed(connectionId);
+    const hashedServerSeed = hashString(newServerSeed);
+    const serverSeedMessage = {
+      "server-seed-hash": hashedServerSeed,
+    };
+
+    sendWebSocketMessage(messageEndpoint, connectionId, serverSeedMessage);
+
+    // Publish outcome to event bridge
     const outcome =
       caseModel.price < caseRolledItem.price
         ? GameOutcome.WIN

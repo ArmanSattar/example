@@ -152,7 +152,12 @@ export function WebSocketGateway({ stack }: StackContext) {
           timeout: 10,
           permissions: [
             new PolicyStatement({
-              actions: ["lambda:InvokeFunction", "dynamodb:GetItem", "events:PutEvents"],
+              actions: [
+                "lambda:InvokeFunction",
+                "dynamodb:GetItem",
+                "events:PutEvents",
+                "dynamodb:PutItem",
+              ],
               resources: [
                 getCaseFunction.functionArn,
                 performSpinFunction.functionArn,
