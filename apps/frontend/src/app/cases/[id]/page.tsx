@@ -159,6 +159,8 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [itemWon, setItemWon] = useState<ICaseItem | null>(null);
   const [rollValue, setRollValue] = useState<number | null>(null);
   const [serverSeed, setServerSeed] = useState<string | null>(null);
+  const [previousServerSeedHash, setPreviousServerSeedHash] = useState<string | null>(null);
+  const [isFirstServerSeedHash, setIsFirstServerSeedHash] = useState(true);
 
   const handleClientSeedChange = (newClientSeed: string) => {
     setClientSeed(newClientSeed);
@@ -232,34 +234,43 @@ export default function CasePage({ params }: { params: { id: string } }) {
       try {
         const data = JSON.parse(event.data);
         console.log("Received WebSocket message:", data);
-
+  
         if ("server-seed-hash" in data) {
-          setServerSeedHash(data["server-seed-hash"]);
+          console.log("serverseedhash", isFirstServerSeedHash);
+          if (isFirstServerSeedHash) {
+            setServerSeedHash(data["server-seed-hash"]);
+            setIsFirstServerSeedHash(false);
+          } else {
+            console.log('here');
+            setPreviousServerSeedHash(serverSeedHash);
+            setServerSeedHash(data["server-seed-hash"]);
+          }
           console.log("Server Seed Hash set:", data["server-seed-hash"]);
         }
-
+  
         if ("case-result" in data) {
           const { caseRolledItem, rollValue, serverSeed } = data["case-result"];
           setItemWon(caseRolledItem as ICaseItem);
-          setRollValue(rollValue as number)
-          setServerSeed(serverSeed as string)
+          setRollValue(rollValue as number);
+          setServerSeed(serverSeed as string);
           console.log("Spin result:", caseRolledItem);
         }
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
       }
     };
-
+  
     if (socket) {
       socket.addEventListener("message", handleMessage);
     }
-
+  
     return () => {
       if (socket) {
         socket.removeEventListener("message", handleMessage);
       }
     };
-  }, [socket]);
+  }, [socket, isFirstServerSeedHash, serverSeedHash]);
+  
 
   return (
     <div className="w-full h-full flex flex-col space-y-10 py-2">
@@ -271,6 +282,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
         onClientSeedChange={handleClientSeedChange}
         rollValue={rollValue || ""}
         serverSeed={serverSeed || ""}
+        previousServerSeedHash={previousServerSeedHash}
       />
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-2">
         {cases.map((items, index) => (

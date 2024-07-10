@@ -6,6 +6,7 @@ interface ProvablyFairProps {
   clientSeed: string;
   rollValue: number | null;
   serverSeed: string | null;
+  previousServerSeedHash: string | null
   onClientSeedChange: (newClientSeed: string) => void;
 }
 
@@ -14,6 +15,7 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
   clientSeed,
   rollValue,
   serverSeed,
+  previousServerSeedHash,
   onClientSeedChange
 }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -62,7 +64,7 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
           <div className="bg-background p-8 rounded-lg shadow-lg w-11/12 max-w-4xl">
             <h2 className="text-2xl font-bold mb-6 text-white">Provably Fair System</h2>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-300 mb-2">Server Seed Hash</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Current Server Seed Hash</label>
               <input
                 type="text"
                 value={serverSeedHash}
@@ -71,7 +73,16 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
               />
             </div>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-300 mb-2">Server Seed</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Previous Server Seed Hash</label>
+              <input
+                type="text"
+                value={previousServerSeedHash || 'N/A'}
+                readOnly
+                className="mt-1 block w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed"
+              />
+          </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-2">Previous Server Seed Unhashed</label>
               <input
                 type="text"
                 value={
