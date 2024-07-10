@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { toast } from "sonner";
 import { createAndSignTransaction } from "./utils/transactions";
+import { useAuth } from "../../context/AuthContext";
 import { useSolPrice } from "./hooks/useSolPrice";
 import { useWalletBalance } from "./hooks/useWalletBalance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -25,12 +26,17 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
   const [dollarValue, setDollarValue] = useState<string>("");
   const [cryptoValue, setCryptoValue] = useState<string>("");
+  const {user} = useAuth()
   const queryClient = useQueryClient();
   const connection = useConnection().connection;
   const wallet = useWallet();
   const { data: priceSol, isLoading: isPriceSolLoading, isError: isPriceSolError } = useSolPrice();
   const balance = useWalletBalance(wallet.publicKey, connection);
 
+  if (!user) {
+    return null
+  }
+  
   const { mutateAsync: postDataMutation } = useMutation({
     mutationFn: (data: DepositData) =>
       postData<DepositData, DepositResponse>(data, `${WALLETS_API_URL}/deposit`, "POST"),
@@ -138,7 +144,7 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
       await postDataMutation({
         walletAddress: wallet.publicKey.toString(),
         txnSignature: signature,
-        userId: "c37bcf2a-8e11-41bf-aeeb-e43765b47742",
+        userId: user?.userId,
       });
       handleClose();
     } catch (error) {

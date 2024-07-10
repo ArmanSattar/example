@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { BaseCaseItem, CaseItemRarity, CaseItemWear, CaseType, ICase } from "@solspin/types";
+import { BaseCaseItem, CaseItemRarity, CaseItemWear, CaseType } from "@solspin/types";
 
 const mockCsgoCaseItem1: BaseCaseItem = {
   price: 2998.81,
@@ -220,7 +220,7 @@ const mockCsgoCaseItem18: BaseCaseItem = {
 const mockCase: ICase = {
   type: CaseType.CSGO,
   name: "pot-of-gold",
-  price: 220,
+  price: 10,
   id: randomUUID(),
   imagePath: "https://example.com/bravo_case.png",
   rarity: CaseItemRarity.COVERT,

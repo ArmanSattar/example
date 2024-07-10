@@ -10,6 +10,7 @@ import { randomUUID } from "crypto";
 import { getLogger } from "@solspin/logger";
 import { ZodError } from "zod";
 import bs58 from "bs58";
+import { callCreateWallet } from "../helpers/createWallet";
 
 const logger = getLogger("wallet-auth-handler");
 
@@ -96,6 +97,7 @@ export const handler = ApiHandler(async (event) => {
       };
 
       validateUser(user);
+      await callCreateWallet(user.userId, walletAddress);
       await createUser(user);
     }
 
@@ -105,9 +107,8 @@ export const handler = ApiHandler(async (event) => {
     const secret = await getSecret();
     const token = jwt.sign(jwtPayload, secret, { algorithm: "HS256", expiresIn: "24h" });
 
-    // Set the expiration date for the cookie
     const expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + 1); // 24 hours from now
+    expirationDate.setDate(expirationDate.getDate() + 1);
 
     return {
       statusCode: 200,
@@ -118,7 +119,7 @@ export const handler = ApiHandler(async (event) => {
       body: JSON.stringify({ message: "Authentication successful", data: { user, token } }),
     };
   } catch (error) {
-    logger.error("Error processing wallet authentication:", error);
+    logger.error(`Error processing wallet authentication: ${error}`);
     const errorMessage = error instanceof Error ? error.message : "Internal server error";
     return {
       statusCode: 500,

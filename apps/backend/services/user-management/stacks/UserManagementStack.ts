@@ -52,6 +52,12 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
   });
   callAuthorizerFunction.attachPermissions(["lambda:InvokeFunction"]);
 
+  const createWalletFunction = Function.fromFunctionName(
+    stack,
+    "CreateWalletFunction",
+    "dev-wallet-ApiStack-createWallet"
+  );
+
   const api = new Api(stack, "UserManagementApi", {
     authorizers: {
       CustomAuthorizer: {
@@ -97,6 +103,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
           bind: [userTable],
           environment: { TABLE_NAME: userTable.tableName },
         },
+        authorizer: "CustomAuthorizer",
       },
       "PUT /user": {
         function: {
@@ -133,9 +140,17 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
               actions: ["dynamodb:GetItem", "dyamodb:PutItem", "dynamodb:DeleteItem"],
               resources: [userTable.tableArn, nonceTable.tableArn],
             }),
+            new PolicyStatement({
+              actions: ["dyamodb:PutItem", "lambda:InvokeFunction"],
+              resources: [createWalletFunction.functionArn],
+            }),
           ],
           bind: [userTable, nonceTable, TEST_SECRET],
-          environment: { TABLE_NAME: userTable.tableName, NONCE_TABLE_NAME: nonceTable.tableName },
+          environment: {
+            TABLE_NAME: userTable.tableName,
+            NONCE_TABLE_NAME: nonceTable.tableName,
+            CREATE_WALLET_FUNCTION_NAME: createWalletFunction.functionName,
+          },
         },
       },
       "POST /auth/disconnect": {

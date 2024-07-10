@@ -20,6 +20,7 @@ interface AuthContextType {
   user: User | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  checkToken: () => Promise<boolean>;
 }
 
 const apiUrl: string = `${process.env.NEXT_PUBLIC_USER_MANAGEMENT_API_URL}`;
@@ -35,12 +36,36 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const { sendMessage, connectionStatus } = useWebSocket();
   const { connection } = useConnection();
 
-  useEffect(() => {
-    if (!connected || !publicKey || !signMessage) {
-      setUser(null);
-      localStorage.removeItem("token");
+  const checkToken = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const response = await fetch(`${apiUrl}/user`, {
+          method: 'GET',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+        });
+  
+        if (response.ok) {
+          const user = await response.json();
+          setUser(user);
+          return true;
+        } else {
+          localStorage.removeItem("token");
+        }
+      } catch (error) {
+        console.error('Token verification error:', error);
+        localStorage.removeItem("token");
+      }
     }
-  }, [connected, publicKey, signMessage, connection, connectionStatus, sendMessage]);
+    return false;
+  }, []);
+
+  useEffect(() => {
+    checkToken();
+  }, [checkToken]);
 
   const login = useCallback(async () => {
     if (!publicKey || !signMessage) {
@@ -86,22 +111,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const { message, data } = await loginResponse.json();
         
         if (data && data.user && data.token) {
-          const token = data.token
-          const user = data.user
+          const token = data.token;
+          const user = data.user;
 
           setUser(user);
-        localStorage.setItem("token", token);
-        if (connectionStatus === "connected") {
-          sendMessage(
-            JSON.stringify({
-              action: "authenticate",
-              token: token,
-            })
-          );
+          localStorage.setItem("token", token);
+          if (connectionStatus === "connected") {
+            sendMessage(
+              JSON.stringify({
+                action: "authenticate",
+                token: token,
+              })
+            );
+          }
+          toast.success("Successfully logged in!");
         }
-        toast.success("Successfully logged in!");
-        }
-        
       } else {
         throw new Error('Login failed');
       }
@@ -119,12 +143,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await disconnect();
       setUser(null);
       toast.success('Logged out successfully!');
-      sendMessage(
-        JSON.stringify({
-          action: "unauthenticate",
-          token: token,
-        })
-      );
+      if (connectionStatus === "connected") {
+        sendMessage(
+          JSON.stringify({
+            action: "unauthenticate",
+            token: token,
+          })
+        );
+      }
       localStorage.removeItem("token");
     } catch (error) {
       toast.error('Error occurred during logout!');
@@ -135,6 +161,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     login,
     logout,
+    checkToken,
   };
 
   return (

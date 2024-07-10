@@ -55,7 +55,6 @@ export const handler = async (
   }
 };
 
-// Helper function to generate an IAM policy
 function generatePolicy(
   principalId: string,
   effect: "Allow" | "Deny",

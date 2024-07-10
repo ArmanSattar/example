@@ -1,10 +1,7 @@
 import type { SSTConfig } from "sst";
 import { WebSocketGateway } from "./stacks/WebSocketGatewayStack";
 import { WebSocketHandlerAPI } from "./stacks/WebSocketHandlerStack";
-import { GameEngineHandlerAPI } from "../game-engine/stacks/GameEngineStack";
-import { UserManagementHandlerAPI } from "../user-management/stacks/UserManagementStack";
-import { ApiStack } from "../wallet/stacks/Api";
-import { DatabaseStack } from "../wallet/stacks/Database";
+
 export default {
   config() {
     return {

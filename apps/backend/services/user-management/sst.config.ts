@@ -13,6 +13,11 @@ export default {
     app.setDefaultFunctionProps({
       runtime: "nodejs18.x",
       architecture: "arm_64",
+      nodejs: {
+        esbuild: {
+          external: ["@solana/web3.js"],
+        },
+      },
     });
 
     app.stack(UserManagementHandlerAPI);

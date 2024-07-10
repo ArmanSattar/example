@@ -4,17 +4,18 @@ import { ValidationError } from "@solspin/errors";
 import { GetUserByIdRequestSchema } from "@solspin/user-management-types";
 import { ZodError } from "zod";
 import { getLogger } from "@solspin/logger";
+import { APIGatewayProxyEventV2WithJWTAuthorizer } from "aws-lambda";
 
 const logger = getLogger("get-user-handler");
 
 export const handler = ApiHandler(async (event) => {
-  const userId = event.queryStringParameters?.userId;
-  logger.info(`Get user lambda called with userId: ${userId}`);
+  const userId: string = event.requestContext.authorizer.lambda.userId;
+  logger.info(`Get user lambda called for authenticated user: ${userId}`);
 
   if (!userId) {
     return {
-      statusCode: 400,
-      body: JSON.stringify({ message: "userId is required" }),
+      statusCode: 401,
+      body: JSON.stringify({ message: "Unauthorized: User ID not found in token" }),
     };
   }
 
@@ -33,6 +34,7 @@ export const handler = ApiHandler(async (event) => {
     }
     throw error;
   }
+
   try {
     logger.info(`Fetching user data for userId: ${userId}`);
 

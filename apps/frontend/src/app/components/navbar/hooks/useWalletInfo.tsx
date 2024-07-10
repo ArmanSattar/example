@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Wallet } from "@solspin/types";
+import { useAuth } from "../../../context/AuthContext";
 
 const BALANCE_ENDPOINT = process.env.NEXT_PUBLIC_WALLETS_API_URL;
 
@@ -8,10 +9,13 @@ if (!BALANCE_ENDPOINT) {
 }
 
 export const useWalletInfo = () => {
+  const {user} = useAuth()
+  const userId = user?.userId
+
   return useQuery<Wallet, Error>({
     queryKey: ["walletBalance"],
     queryFn: async () => {
-      const response = await fetch(`${BALANCE_ENDPOINT}/c37bcf2a-8e11-41bf-aeeb-e43765b47742`);
+      const response = await fetch(`${BALANCE_ENDPOINT}/${userId}`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }

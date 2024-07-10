@@ -19,6 +19,21 @@ export function ApiStack({ stack }: StackContext) {
     "dev-treasury-ApiStack-deposit-to-wallet"
   );
 
+  const createWalletFunction = new Function(stack, "CreateWalletFunction", {
+    functionName: `${stack.stackName}-createWallet`,
+    handler: "../wallet/src/service/api/handler/create-wallet.handler",
+    environment: {
+      WALLETS_TABLE_ARN: walletsTableName,
+    },
+    permissions: [
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ["dynamodb:PutItem"],
+        resources: [walletsTableArn],
+      }),
+    ],
+  });
+
   const withdrawTreasuryFunction = Function.fromFunctionName(
     stack,
     "WithdrawTreasuryFunction",
@@ -125,6 +140,7 @@ export function ApiStack({ stack }: StackContext) {
 
   stack.addOutputs({
     ApiEndpoint: api.url,
+    createWalletFunctionName: createWalletFunction.functionName,
   });
 
   return {

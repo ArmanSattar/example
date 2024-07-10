@@ -143,7 +143,7 @@ const generateCases = (numCases: number): ICaseItem[][] => {
 };
 
 export default function CasePage({ params }: { params: { id: string } }) {
-  const id = params.id;
+  const id = "5c87c242-dd8f-4a90-8565-fd0529334317";
   const isDemoClicked = useSelector((state: RootState) => state.demo.demoClicked);
   const isPaidSpinClicked = useSelector((state: RootState) => state.demo.paidSpinClicked);
   const numCases = useSelector((state: RootState) => state.demo.numCases);

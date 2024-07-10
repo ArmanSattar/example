@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useSolPrice } from "./hooks/useSolPrice";
 import { useWalletInfo } from "./hooks/useWalletInfo";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useAuth } from "../../context/AuthContext";
 import { fromMinorAmount } from "./utils/money";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postData } from "./utils/requests";
@@ -20,6 +21,7 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
   const [dollarValue, setDollarValue] = React.useState<string>("");
   const [walletAddressValue, setWalletAddressValue] = React.useState<string>("");
   const { data: priceSol, isLoading: isPriceSolLoading, isError: isPriceSolError } = useSolPrice();
+  const {user} = useAuth()
   const wallet = useWallet();
   const {
     data: walletInfo,
@@ -96,6 +98,11 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
 
   const handleWithdrawClick = async () => {
     try {
+      if (!user) {
+        toast.error("User is not logged in");
+        return;
+      }
+
       if (!walletInfo) {
         toast.error("Failed to fetch wallet info");
         return;
@@ -132,7 +139,7 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
       }
 
       await postDataMutation({
-        userId: "c37bcf2a-8e11-41bf-aeeb-e43765b47742",
+        userId: user?.userId,
         walletAddress: wallet.publicKey.toString(),
         amount: dollarValueFloat,
       });

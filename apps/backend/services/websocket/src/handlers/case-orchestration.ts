@@ -15,33 +15,18 @@ import { BaseCase, BaseCaseItemSchema, BaseCaseSchema } from "@solspin/game-engi
 const logger = getLogger("case-orchestration-handler");
 
 export const handler = WebSocketApiHandler(async (event) => {
-  if (!event.body) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: "Request body is missing" }),
-    };
-  }
-  logger.info("Orchestration service was initiated with event body: ", event.body);
-
-  const parsedBody = JSON.parse(event.body || "{}");
-
-  let payload;
   try {
-    payload = WebSocketOrchestrationPayloadSchema.parse(parsedBody);
-  } catch (error) {
-    if (error instanceof ZodError) {
-      logger.error("Validation error in WebSocket orchestration payload", { error });
+    if (!event.body) {
       return {
         statusCode: 400,
-        body: JSON.stringify({
-          message: "Validation Error",
-          errors: error.errors,
-        }),
+        body: JSON.stringify({ message: "Request body is missing" }),
       };
     }
-    throw error;
-  }
-  try {
+    logger.info(`Orchestration service was initiated with event body: ${event.body}`);
+
+    const parsedBody = JSON.parse(event.body || "{}");
+
+    let payload = WebSocketOrchestrationPayloadSchema.parse(parsedBody);
     const { caseId, clientSeed } = payload;
     const connectionId = event.requestContext.connectionId;
     const { stage, domainName } = event.requestContext;
@@ -55,22 +40,13 @@ export const handler = WebSocketApiHandler(async (event) => {
       };
     }
 
-    logger.info("Invoking getUserFromWebSocket lambda with connectionId: ", connectionId);
+    logger.info(`Invoking getUserFromWebSocket lambda with connectionId: ${connectionId}`);
     const connectionInfo: ConnectionInfo | null = await getConnectionInfo(connectionId);
 
     if (!connectionInfo) {
       throw new Error("ConnectionId not found");
     }
     const user = connectionInfo;
-    // let user: ConnectionInfo;
-    // try {
-    //   user = JSON.parse(connectionInfoPayload.body).connectionInfo;
-    // } catch (error) {
-    //   return {
-    //     statusCode: 400,
-    //     body: JSON.stringify({ message: "Invalid JSON format" }),
-    //   };
-    // }
     logger.info(`Received connection info from getUserFromWebSocket lambda.`);
 
     if (!user || !user.isAuthenticated) {
@@ -93,7 +69,7 @@ export const handler = WebSocketApiHandler(async (event) => {
 
     const serverSeed = user.serverSeed;
     const userId = user.userId as string;
-    logger.info("Invoking getCase lambda with caseId: ", caseId);
+    logger.info(`Invoking getCase lambda with caseId: ${caseId}`);
     const caseData = await callGetCase(caseId);
 
     if (caseData.statusCode !== 200) {
@@ -122,12 +98,8 @@ export const handler = WebSocketApiHandler(async (event) => {
       caseRolledItem,
     };
 
-    try {
-      const messageEndpoint = `${domainName}/${stage}`;
-      await sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
-    } catch (error) {
-      logger.error("Error posting to connection:", error);
-    }
+    const messageEndpoint = `${domainName}/${stage}`;
+    await sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
 
     const outcome =
       caseModel.price < caseRolledItem.price
@@ -148,7 +120,7 @@ export const handler = WebSocketApiHandler(async (event) => {
         outcomeAmount,
         timestamp: new Date().toISOString(),
       } as GameResult.GameResultType,
-      Service.ORCHESTRATION as unknown as EventConfig
+      Service.ORCHESTRATION as EventConfig
     );
     logger.info("Event published with data: ", {
       userId,
@@ -164,7 +136,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       body: JSON.stringify(responseMessage),
     };
   } catch (error) {
-    logger.error("Error in orchestration handler:", error);
+    logger.error(`Error in orchestration handler: ${error}`);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Internal Server Error" }),

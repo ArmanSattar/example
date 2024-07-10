@@ -89,8 +89,8 @@ export const NavBar = () => {
           </ul>
         </div>
         <div className="flex space-x-4 item-center h-12">
-          {connected && <Balance />}
-          {connected && (
+          {user && <Balance />}
+          {user && (
             <button
               className="hidden xl:block bg-custom_gray text-white py-2 px-5 rounded"
               onClick={handleWithdrawClick}
