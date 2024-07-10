@@ -26,6 +26,7 @@ export function ApiStack({ stack }: StackContext) {
   );
 
   const betTransactionHandler = new Function(stack, "BetTransactionHandler", {
+    functionName: `${stack.stackName}-update-balance`,
     handler: "../wallet/src/service/event/handler/update-balance.handler",
     environment: {
       WALLETS_TABLE_ARN: walletsTableName,

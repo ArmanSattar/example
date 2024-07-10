@@ -1,18 +1,13 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
-import { CaseType } from "../foundation/caseType";
 import { randomUUID } from "crypto";
-import { CaseDoesNotExistError, EnvironmentVariableError } from "@solspin/errors"; // Update with actual path
+import { CaseDoesNotExistError } from "@solspin/errors"; // Update with actual path
 import { mockCase } from "../__mock__/case_pot_of_gold.mock";
-import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
+import { BaseCase, BaseCaseItem, CaseType } from "@solspin/game-engine-types";
+import { CASES_TABLE_NAME } from "../foundation/runtime";
 
 const client = new DynamoDBClient({ region: "eu-west-2" });
 const ddbDocClient = DynamoDBDocumentClient.from(client);
-const tableName = process.env.TABLE_NAME || process.env.CASES_TABLE_NAME || "cases";
-
-if (!tableName) {
-  throw new EnvironmentVariableError("TABLE_NAME");
-}
 
 // Helper method to calculate item prefix sums based on probabilities
 const calculateItemPrefixSums = (items: BaseCaseItem[]): number[] => {
@@ -54,7 +49,7 @@ export const addCase = async (
   };
 
   const params = {
-    TableName: tableName,
+    TableName: CASES_TABLE_NAME,
     Item: newCase,
   };
 
@@ -64,15 +59,13 @@ export const addCase = async (
 // Method to retrieve a case by ID
 export const getCase = async (caseId: string): Promise<BaseCase> => {
   const params = {
-    TableName: tableName,
+    TableName: CASES_TABLE_NAME,
     Key: {
       id: caseId,
     },
   };
 
   const result = await ddbDocClient.send(new GetCommand(params));
-
-  console.log(result.Item);
 
   if (!result.Item || Object.keys(result.Item).length === 0) {
     throw new CaseDoesNotExistError(caseId);
@@ -84,7 +77,7 @@ export const getCase = async (caseId: string): Promise<BaseCase> => {
 // Method to list all cases (overview)
 export const listCases = async (): Promise<BaseCase[]> => {
   const params = {
-    TableName: tableName,
+    TableName: CASES_TABLE_NAME,
   };
 
   const result = await ddbDocClient.send(new ScanCommand(params));

@@ -1,9 +1,6 @@
-import { StackContext, WebSocketApi, use, Cron, Config, Function } from "sst/constructs";
+import { Config, Cron, Function, StackContext, use, WebSocketApi } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { WebSocketHandlerAPI } from "./WebSocketHandlerStack";
-import { GameEngineHandlerAPI } from "../../game-engine/stacks/GameEngineStack";
-import { UserManagementHandlerAPI } from "../../user-management/stacks/UserManagementStack";
-import { ApiStack } from "../../wallet/stacks/Api";
 import * as cdk from "aws-cdk-lib";
 
 export function WebSocketGateway({ stack }: StackContext) {
@@ -22,6 +19,8 @@ export function WebSocketGateway({ stack }: StackContext) {
     },
   });
 
+  const TEST_SECRET = new Config.Secret(stack, "TEST_SECRET");
+
   const callAuthorizerFunction = Function.fromFunctionName(
     stack,
     "CallAuthorizerFunction",
@@ -31,19 +30,19 @@ export function WebSocketGateway({ stack }: StackContext) {
   const getCaseFunction = Function.fromFunctionName(
     stack,
     "GetCaseFunction",
-    "dev-game-engine-GameEngineHandlerAPI-getCase"
+    "dev-game-engine-GameEngineHandlerAPI-getCaseFunction"
   );
 
   const performSpinFunction = Function.fromFunctionName(
     stack,
     "PerformSpinFunction",
-    "dev-game-engine-GameEngineHandlerAPI-performSpin"
+    "dev-game-engine-GameEngineHandlerAPI-performSpinFunction"
   );
 
   const betTransactionFunction = Function.fromFunctionName(
     stack,
-    "BetTransactionFunction",
-    "dev-game-engine-GameEngineHandlerAPI-performSpin"
+    "UpdateBalanceFunction",
+    "dev-wallet-ApiStack-update-balance"
   );
 
   const eventBusPolicy = new PolicyStatement({
@@ -57,6 +56,10 @@ export function WebSocketGateway({ stack }: StackContext) {
         timeout: 20,
         environment: {
           WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketTable.tableName,
+          GET_CASE_FUNCTION_NAME: getCaseFunction.functionName,
+          PERFORM_SPIN_FUNCTION_NAME: performSpinFunction.functionName,
+          EVENT_BUS_ARN: eventBusArn,
+          BET_TRANSACTION_FUNCTION_NAME: betTransactionFunction.functionName,
         },
       },
     },
@@ -122,9 +125,13 @@ export function WebSocketGateway({ stack }: StackContext) {
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:PutItem", "dynamodb:GetItem", "lambda:InvokeFunction"],
-              resources: [websocketTable.tableArn],
+              resources: [websocketTable.tableArn, callAuthorizerFunction.functionArn],
             }),
           ],
+          environment: {
+            AUTHORIZER_FUNCTION_NAME: callAuthorizerFunction.functionName,
+          },
+          bind: [TEST_SECRET],
         },
       },
       unauthenticate: {
@@ -151,6 +158,7 @@ export function WebSocketGateway({ stack }: StackContext) {
                 performSpinFunction.functionArn,
                 eventBusArn,
                 websocketTable.tableArn,
+                betTransactionFunction.functionArn,
               ],
             }),
           ],
@@ -161,6 +169,18 @@ export function WebSocketGateway({ stack }: StackContext) {
       },
     },
   });
+
+  // TODO - Find the handler that needs permision to invoke betTransactionFunction and add it to it and remove this
+  api.attachPermissions([
+    new PolicyStatement({
+      actions: ["lambda:InvokeFunction"],
+      resources: [
+        getCaseFunction.functionArn,
+        performSpinFunction.functionArn,
+        betTransactionFunction.functionArn,
+      ],
+    }),
+  ]);
 
   const matches = api.url.match(/^wss?:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
   const domainName = `${matches && matches[1]}/${stack.stage}`;

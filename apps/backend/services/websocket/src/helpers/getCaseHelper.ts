@@ -1,10 +1,12 @@
 import * as AWS from "aws-sdk";
+import { GET_CASE_FUNCTION_NAME } from "../foundation/runtime";
 
 const lambda = new AWS.Lambda();
 
 export const callGetCase = async (caseId: string) => {
+  console.log(GET_CASE_FUNCTION_NAME);
   const params = {
-    FunctionName: process.env.GET_CASE_FUNCTION_NAME,
+    FunctionName: GET_CASE_FUNCTION_NAME,
     Payload: JSON.stringify({
       queryStringParameters: {
         id: caseId,

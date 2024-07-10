@@ -1,7 +1,12 @@
 import { z } from "zod";
 
+export enum CaseType {
+  NFT = "nft",
+  CSGO = "csgo",
+}
+
 // Define the CaseType enum using Zod
-const CaseType = z.enum(["nft", "csgo"]);
+const CaseTypeSchema = z.nativeEnum(CaseType);
 
 const CaseItemRarity = z.enum([
   "Consumer Grade",
@@ -25,8 +30,7 @@ const CaseItemWear = z.enum([
 
 // Define the schema for BaseCaseItem
 const BaseCaseItemSchema = z.object({
-  id: z.number(),
-  type: z.string(),
+  id: z.string(),
   name: z.string(),
   wear: CaseItemWear,
   price: z.number(),
@@ -45,7 +49,7 @@ const BaseCaseSchema = z.object({
   tag: z.string(),
   imagePath: z.string().url(),
   items: z.array(BaseCaseItemSchema),
-  type: CaseType,
+  type: CaseTypeSchema,
   id: z.string().uuid(),
   itemPrefixSums: z.array(z.number()),
 });
@@ -55,14 +59,14 @@ const CaseOverviewSchema = BaseCaseSchema;
 export const GetCaseByIdRequestSchema = BaseCaseSchema.pick({ id: true });
 
 export const CaseQuerySchema = z.object({
-  caseType: CaseType.optional(),
+  caseType: CaseTypeSchema.optional(),
   caseName: z.string().optional(),
   casePrice: z.number().positive().optional(),
 });
 
 export const GetCaseByIdResponseSchema = BaseCaseSchema;
 
-export { CaseType, BaseCaseItemSchema, BaseCaseSchema, CaseOverviewSchema };
+export { BaseCaseItemSchema, BaseCaseSchema, CaseOverviewSchema };
 
 export type BaseCaseItem = z.infer<typeof BaseCaseItemSchema>;
 export type BaseCase = z.infer<typeof BaseCaseSchema>;

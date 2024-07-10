@@ -1,10 +1,11 @@
 import * as AWS from "aws-sdk";
+import { BET_TRANSACTION_FUNCTION_NAME } from "../foundation/runtime";
 
 const lambda = new AWS.Lambda();
 
 export const debitUser = async (userId: string, amount: number) => {
   const params = {
-    FunctionName: process.env.BET_TRANSACTION_FUNCTION_NAME,
+    FunctionName: BET_TRANSACTION_FUNCTION_NAME,
     Payload: JSON.stringify({
       body: JSON.stringify({
         userId,
@@ -13,6 +14,5 @@ export const debitUser = async (userId: string, amount: number) => {
     }),
   };
   const response = await lambda.invoke(params).promise();
-  const payload = JSON.parse(response.Payload as string);
-  return payload;
+  return JSON.parse(response.Payload as string);
 };

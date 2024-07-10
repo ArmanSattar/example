@@ -18,10 +18,7 @@ export const updateWalletBalance = async (
       new UpdateCommand({
         TableName: WALLETS_TABLE_ARN,
         Key: { userId: userId },
-        UpdateExpression: `
-    SET balance = balance + :amount,
-        updatedAt = :now
-  `,
+        UpdateExpression: `SET balance = balance + :amount, updatedAt = :now`,
         ConditionExpression: `lockedAt <= :lockExpired AND attribute_exists(userId) AND balance >= :negativeAmount`,
         ExpressionAttributeValues: {
           ":amount": amount,

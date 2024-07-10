@@ -103,6 +103,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     const caseModel: BaseCase = BaseCaseSchema.parse(JSON.parse(caseData.body));
     const amount = -1 * caseModel.price;
     logger.info(`Case price is :${caseModel.price}`);
+
     const updateBalance = await debitUser(userId, amount);
 
     if (updateBalance.statusCode !== 200) {
@@ -111,6 +112,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     logger.info(
       `Invoking performSpin lambda with clientSeed: ${clientSeed} and serverSeed: ${serverSeed}`
     );
+
     const caseRollResult = await performSpin(caseModel, clientSeed, serverSeed);
 
     const caseRolledItem: BaseCaseItem = BaseCaseItemSchema.parse(JSON.parse(caseRollResult.body));

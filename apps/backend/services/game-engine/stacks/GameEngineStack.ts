@@ -25,26 +25,30 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
       },
     },
   });
+
   const getCaseFunction = new Function(stack, "getCaseFunction", {
+    functionName: `${stack.stackName}-getCaseFunction`,
     handler: "../game-engine/src/handlers/getCase.handler",
     environment: {
-      TABLE_NAME: casesTable.tableName,
+      CASES_TABLE_NAME: casesTable.tableName,
     },
   });
   getCaseFunction.attachPermissions("*");
 
   const performSpinFunction = new Function(stack, "performSpinFunction", {
+    functionName: `${stack.stackName}-performSpinFunction`,
     handler: "../game-engine/src/handlers/spin.handler",
     environment: {
-      TABLE_NAME: casesTable.tableName,
+      CASES_TABLE_NAME: casesTable.tableName,
     },
   });
+
   performSpinFunction.attachPermissions("*");
   const api = new Api(stack, "GameEngineApi", {
     defaults: {
       function: {
         environment: {
-          TABLE_NAME: casesTable.tableName,
+          CASES_TABLE_NAME: casesTable.tableName,
         },
         bind: [casesTable],
         permissions: [
