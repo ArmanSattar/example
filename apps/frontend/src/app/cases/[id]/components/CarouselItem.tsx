@@ -16,9 +16,9 @@ interface CarouselItemProps {
 export const wearToColorAndAbbrev = new Map<string, [string, string]>([
   ["Factory New", ["FN", "text-yellow-500"]],
   ["Minimal Wear", ["MW", "text-green-400"]],
-  ["Field-Tested", ["FT", "text-blue-400"]],
-  ["Well-Worn", ["WW", "text-orange-400"]],
-  ["Battle-Scarred", ["BS", "text-red-400"]],
+  ["Field Tested", ["FT", "text-blue-400"]],
+  ["Well Worn", ["WW", "text-orange-400"]],
+  ["Battle Scarred", ["BS", "text-red-400"]],
 ]);
 
 const CarouselItem: React.FC<CarouselItemProps> = ({
@@ -34,6 +34,10 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   const audioChaChingRef = useRef<HTMLAudioElement | null>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const soundClicked = useSelector((state: RootState) => state.demo.soundClicked);
+
+  const nameAndType = item.name.split(" | ");
+  const type = nameAndType[0];
+  const name = nameAndType[1];
 
   const [wearAbbrev, wearColor] = wearToColorAndAbbrev.get(item.wear) || ["", "text-gray-400"];
 
@@ -105,10 +109,12 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
         >
           <div className="flex items-center justify-center w-full space-x-1 overflow-visible whitespace-nowrap">
             <span className={`font-light italic text-xs ${wearColor}`}>{item.wear}</span>
-            {/*<span className={"font-light italic text-xs text-gray-300"}>·</span>*/}
-            {/*<span className={"font-light italic text-xs text-gray-300"}>{item.type}</span>*/}
           </div>
-          <span className={"text-white font-semibold"}>{item.name}</span>
+          <div className="flex items-center justify-center w-full space-x-1 overflow-visible whitespace-nowrap">
+            <span className={"text-white text-sm font-semibold"}>{type}</span>
+            <span className={"text-gray-500 text-sm font-light"}>|</span>
+            <span className={"text-white text-sm font-semibold"}>{name}</span>
+          </div>
           <Money amount={item.price} />
         </div>
       </div>
