@@ -16,6 +16,7 @@ import { PreviousDrops } from "./components/PreviousDrops";
 import { CaseItemRarity } from "../../types";
 import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
 import { CaseType } from "@solspin/types";
+import { addToBalance } from "../../../store/slices/userSlice";
 
 const generateClientSeed = async (): Promise<string> => {
   const array = new Uint8Array(16);
@@ -23,7 +24,7 @@ const generateClientSeed = async (): Promise<string> => {
   return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
 };
 
-let exampleCase: BaseCase = {
+const exampleCase: BaseCase = {
   name: "Watson Power",
   price: 5.42,
   rarity: "Extraordinary",
@@ -204,6 +205,8 @@ export default function CasePage({ params }: { params: { id: string } }) {
           })
         );
       }
+    } else if (isDemoClicked && animationComplete == 0) {
+      setCases(generateCases(numCases, null));
     }
   }, [
     isPaidSpinClicked,
@@ -213,19 +216,16 @@ export default function CasePage({ params }: { params: { id: string } }) {
     sendMessage,
     clientSeed,
     id,
+    isDemoClicked,
   ]);
 
   useEffect(() => {
-    console.log(
-      "Animation complete:",
-      animationComplete,
-      numCases,
-      isDemoClicked,
-      isPaidSpinClicked
-    );
     if (animationComplete === numCases && (isDemoClicked || isPaidSpinClicked)) {
       if (isDemoClicked) dispatch(toggleDemoClicked());
-      if (isPaidSpinClicked) dispatch(togglePaidSpinClicked());
+      if (isPaidSpinClicked) {
+        dispatch(togglePaidSpinClicked());
+        dispatch(addToBalance(itemWon?.price || 0));
+      }
       setAnimationComplete(0);
       setItemWon(null);
     }
@@ -260,7 +260,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
         if ("case-result" in data) {
           const { caseItem, rollValue, serverSeed } = data["case-result"];
           setItemWon(caseItem as BaseCaseItem);
-          generateCases(numCases, caseItem as BaseCaseItem);
+          setCases(generateCases(numCases, caseItem as BaseCaseItem));
           setRollValue(rollValue as number);
           setServerSeed(serverSeed as string);
         }

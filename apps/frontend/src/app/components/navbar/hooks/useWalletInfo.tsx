@@ -9,8 +9,8 @@ if (!BALANCE_ENDPOINT) {
 }
 
 export const useWalletInfo = () => {
-  const {user} = useAuth()
-  const userId = user?.userId
+  const { user } = useAuth();
+  const userId = user?.userId;
 
   return useQuery<Wallet, Error>({
     queryKey: ["walletBalance"],

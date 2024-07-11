@@ -10,6 +10,8 @@ import {
 } from "../../../../store/slices/demoSlice";
 import { RootState } from "../../../../store";
 import { SoundToggle } from "./SoundToggle";
+import { addToBalance } from "../../../../store/slices/userSlice";
+import { useAuth } from "../../../context/AuthContext";
 
 interface CaseMetaDataProps {
   name: string;
@@ -34,7 +36,8 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
   const fastClicked = useSelector((state: RootState) => state.demo.fastClicked);
   const numCases = useSelector((state: RootState) => state.demo.numCases);
   const spinClicked = paidSpinClicked || demoClicked;
-
+  const balance = useSelector((state: RootState) => state.user.balance);
+  const { user } = useAuth();
   return (
     <div className="flex flex-col justify-between items-start w-full space-y-4">
       <div className="flex space-x-3 justify-between items-center">
@@ -81,10 +84,11 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
         <button
           className={`flex bg-green-500 rounded-md h-12 p-4 space-x-1 justify-center items-center ${
             spinClicked ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          } ${user ? "" : "hidden"}`}
           onClick={() => {
-            if (!spinClicked) {
+            if (!spinClicked && balance >= price * numCases) {
               dispatch(togglePaidSpinClicked());
+              dispatch(addToBalance(-price * numCases));
             }
           }}
           disabled={spinClicked}

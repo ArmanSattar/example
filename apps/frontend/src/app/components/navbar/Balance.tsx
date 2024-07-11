@@ -1,12 +1,14 @@
 "use client";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toggleDepositClicked } from "../../../store/slices/navbarSlice";
 import { Money } from "../Money";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { fromMinorAmount } from "./utils/money";
 import { useWalletInfo } from "./hooks/useWalletInfo";
+import { setBalance } from "../../../store/slices/userSlice";
+import { RootState } from "../../../store";
 
 export const Balance = () => {
   const dispatch = useDispatch();
@@ -15,14 +17,19 @@ export const Balance = () => {
     dispatch(toggleDepositClicked());
   };
   const { data: wallet, isLoading, isError } = useWalletInfo();
+  const balance = useSelector((state: RootState) => state.user.balance);
+
+  useEffect(() => {
+    if (wallet?.balance) {
+      dispatch(setBalance(wallet.balance));
+    }
+  }, [wallet?.balance]);
 
   useEffect(() => {
     if (isError) {
       toast.error("Failed to fetch balance");
     }
   }, [isError]);
-
-  const balance = wallet?.balance ?? 0;
 
   return (
     <div className="rounded-lg bg-gray-700 flex items-center justify-between">
