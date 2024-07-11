@@ -56,13 +56,13 @@ export const NavBar = () => {
           <ul className="hidden xl:space-x-8 lg:flex h-full">
             {navLinks.map((navLink, index) => (
               <Link
+                key={navLink.href} // Added key prop here
                 onClick={() => setNavActiveLink(navLink.href)}
                 href={navLink.href}
                 className={"h-full flex items-center"}
               >
                 <li
                   className="relative flex items-center space-x-3 group hover:cursor-pointer pr-4 first:pl-2 h-full"
-                  key={index}
                 >
                   <div
                     className={`absolute inset-x-0 bottom-0 h-1 rounded-t-md bg-red-500 origin-center ${
@@ -98,7 +98,7 @@ export const NavBar = () => {
               Withdraw
             </button>
           )}
-          {user ? (
+          {user &&  <UserProfile /> ? (
             <UserProfile />
           ) : (
             <div className="hidden xl:block">

@@ -45,7 +45,6 @@ const CustomWalletMultiButton = () => {
   const getButtonText = () => {
     if (isAuthenticating) return 'Authenticating...';
     if (connecting) return 'Connecting...';
-    if (connected) return 'Login';
     return 'Connect Wallet';
   };
 

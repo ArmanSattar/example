@@ -136,7 +136,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [publicKey, signMessage, connectionStatus, sendMessage]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
 
@@ -155,7 +155,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       toast.error('Error occurred during logout!');
     }
-  };
+  }, [disconnect, connectionStatus, sendMessage]);
+
 
   const contextValue: AuthContextType = {
     user,

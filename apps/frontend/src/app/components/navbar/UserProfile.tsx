@@ -23,8 +23,9 @@ export const UserProfile: React.FC = () => {
     };
   }, []);
 
-  if (!connected || !user) { 
-    return null;
+
+  if (!user) {
+    return null
   }
 
   // Truncate the username if it's too long
