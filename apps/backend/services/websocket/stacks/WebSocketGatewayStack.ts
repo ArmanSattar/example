@@ -107,7 +107,7 @@ export function WebSocketGateway({ stack }: StackContext) {
           timeout: 10,
           permissions: [
             new PolicyStatement({
-              actions: ["dynamodb:PutItem", "dynamodb:GetItem"],
+              actions: ["dynamodb:PutItem", "dynamodb:GetItem", "dynamodb:UpdateItem"],
               resources: [websocketConnectionsTable.tableArn],
             }),
           ],
@@ -119,7 +119,7 @@ export function WebSocketGateway({ stack }: StackContext) {
           timeout: 10,
           permissions: [
             new PolicyStatement({
-              actions: ["dynamodb:PutItem", "dynamodb:GetItem"],
+              actions: ["dynamodb:PutItem", "dynamodb:GetItem", "dynamodb:UpdateItem"],
               resources: [websocketConnectionsTable.tableArn],
             }),
           ],
@@ -131,7 +131,12 @@ export function WebSocketGateway({ stack }: StackContext) {
           timeout: 10,
           permissions: [
             new PolicyStatement({
-              actions: ["dynamodb:PutItem", "dynamodb:GetItem", "lambda:InvokeFunction"],
+              actions: [
+                "dynamodb:PutItem",
+                "dynamodb:GetItem",
+                "lambda:InvokeFunction",
+                "dynamodb:UpdateItem",
+              ],
               resources: [websocketConnectionsTable.tableArn, callAuthorizerFunction.functionArn],
             }),
           ],
@@ -147,7 +152,12 @@ export function WebSocketGateway({ stack }: StackContext) {
           timeout: 10,
           permissions: [
             new PolicyStatement({
-              actions: ["dynamodb:PutItem", "dynamodb:GetItem", "lambda:InvokeFunction"],
+              actions: [
+                "dynamodb:PutItem",
+                "dynamodb:GetItem",
+                "lambda:InvokeFunction",
+                "dynamodb:UpdateItem",
+              ],
               resources: [websocketConnectionsTable.tableArn],
             }),
           ],
@@ -193,6 +203,7 @@ export function WebSocketGateway({ stack }: StackContext) {
                 "dynamodb:GetItem",
                 "events:PutEvents",
                 "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
               ],
               resources: [
                 getCaseFunction.functionArn,
