@@ -242,28 +242,32 @@ export default function CasePage({ params }: { params: { id: string } }) {
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        console.log("Received WebSocket message:", data);
 
-        if ("server-seed-hash" in data) {
-          console.log("serverseedhash", isFirstServerSeedHash);
-          if (isFirstServerSeedHash) {
-            setServerSeedHash(data["server-seed-hash"]);
-            setIsFirstServerSeedHash(false);
-          } else {
-            console.log("here");
-            setPreviousServerSeedHash(serverSeedHash);
-            setServerSeedHash(data["server-seed-hash"]);
+        if ("type" in data && data["type"] == "case") {
+          const message = data["message"]
+          if ("server-seed-hash" in message) {
+            console.log("serverseedhash", isFirstServerSeedHash);
+            if (isFirstServerSeedHash) {
+              setServerSeedHash(message["server-seed-hash"]);
+              setIsFirstServerSeedHash(false);
+            } else {
+              console.log("here");
+              setPreviousServerSeedHash(serverSeedHash);
+              setServerSeedHash(message["server-seed-hash"]);
+            }
+            console.log("Server Seed Hash set:",  message["server-seed-hash"]);
           }
-          console.log("Server Seed Hash set:", data["server-seed-hash"]);
+  
+          if ("case-result" in message) {
+            const { caseItem, rollValue, serverSeed } = message["case-result"];
+            setItemWon(caseItem as BaseCaseItem);
+            setCases(generateCases(numCases, caseItem as BaseCaseItem));
+            setRollValue(rollValue as number);
+            setServerSeed(serverSeed as string);
+          }
         }
 
-        if ("case-result" in data) {
-          const { caseItem, rollValue, serverSeed } = data["case-result"];
-          setItemWon(caseItem as BaseCaseItem);
-          setCases(generateCases(numCases, caseItem as BaseCaseItem));
-          setRollValue(rollValue as number);
-          setServerSeed(serverSeed as string);
-        }
+       
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
       }
