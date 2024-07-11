@@ -33,6 +33,9 @@ module.exports = {
         ".grid-cols-dynamic": {
           "grid-template-columns": "repeat(auto-fit, minmax(272px, 272px))",
         },
+        ".grid-cols-dynamic-2": {
+          "grid-template-columns": "repeat(auto-fit, minmax(260px, 300px))",
+        },
       });
     }),
   ],
