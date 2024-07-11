@@ -132,9 +132,11 @@ const exampleCase: BaseCase = {
 exampleCase.items = exampleCase.items.sort((a, b) => a.chance - b.chance);
 
 const generateCases = (numCases: number, itemWon: BaseCaseItem | null): BaseCaseItem[][] => {
+  console.log(itemWon, "Hel");
   return Array.from({ length: numCases }, () =>
-    Array.from({ length: 51 }, (index) => {
+    Array.from({ length: 51 }, (_, index) => {
       if (index === 25 + 20 && itemWon) {
+        console.log("Hello");
         return itemWon;
       }
 
@@ -164,7 +166,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [generateSeed, setGenerateSeed] = useState(true);
   const [animationComplete, setAnimationComplete] = useState(0);
   const dispatch = useDispatch();
-  const [cases, setCases] = useState<BaseCaseItem[][]>(generateCases(numCases, null));
+  const [cases, setCases] = useState<BaseCaseItem[][]>([]);
   const windowSize = useWindowSize();
   const [itemWon, setItemWon] = useState<BaseCaseItem | null>(null);
   const [rollValue, setRollValue] = useState<number | null>(null);
@@ -177,8 +179,9 @@ export default function CasePage({ params }: { params: { id: string } }) {
   };
 
   useEffect(() => {
-    setCases(generateCases(numCases, itemWon));
-  }, [numCases, generateCases]);
+    console.log("Generating cases");
+    setCases(generateCases(numCases, null));
+  }, [numCases]);
 
   const handleAnimationComplete = useCallback(() => {
     setAnimationComplete((prev) => prev + 1);
@@ -250,7 +253,6 @@ export default function CasePage({ params }: { params: { id: string } }) {
             setServerSeedHash(data["server-seed-hash"]);
             setIsFirstServerSeedHash(false);
           } else {
-            console.log("here");
             setPreviousServerSeedHash(serverSeedHash);
             setServerSeedHash(data["server-seed-hash"]);
           }
