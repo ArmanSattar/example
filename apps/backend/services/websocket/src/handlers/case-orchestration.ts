@@ -135,7 +135,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       "server-seed-hash": hashedServerSeed,
     };
 
-    sendWebSocketMessage(messageEndpoint, connectionId, serverSeedMessage, "server-seed");
+    sendWebSocketMessage(messageEndpoint, connectionId, serverSeedMessage, "case");
 
     // Publish outcome to event bridge
     const outcome =

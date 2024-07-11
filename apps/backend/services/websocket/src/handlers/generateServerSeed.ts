@@ -26,7 +26,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     const webSocketMessage = {
       "server-seed-hash": hashedServerSeed,
     };
-    await sendWebSocketMessage(messageEndpoint, connectionId, webSocketMessage);
+    await sendWebSocketMessage(messageEndpoint, connectionId, webSocketMessage, "case");
     return {
       statusCode: 200,
       body: JSON.stringify({ serverSeed }),
