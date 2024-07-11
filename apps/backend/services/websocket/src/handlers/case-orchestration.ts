@@ -57,25 +57,25 @@ export const handler = WebSocketApiHandler(async (event) => {
     }
     const user = connectionInfo;
 
-    // if (!user || !user.isAuthenticated) {
-    //   logger.error(`User with connectionId: ${connectionId} is unauthenticated`);
-    //   return {
-    //     statusCode: 403,
-    //     body: JSON.stringify({ isAuthorized: false, message: "Unauthenticated" }),
-    //   };
-    // }
-    //
-    // if (!user.serverSeed) {
-    //   logger.error(`User with connectionId: ${connectionId} has not requested a server seed`);
-    //   return {
-    //     statusCode: 400,
-    //     body: JSON.stringify({
-    //       message: "Server seed is missing. Please request a server seed before opening a case.",
-    //     }),
-    //   };
-    // }
+    if (!user || !user.isAuthenticated) {
+      logger.error(`User with connectionId: ${connectionId} is unauthenticated`);
+      return {
+        statusCode: 403,
+        body: JSON.stringify({ isAuthorized: false, message: "Unauthenticated" }),
+      };
+    }
 
-    const serverSeed = user.serverSeed || "asdadsd";
+    if (!user.serverSeed) {
+      logger.error(`User with connectionId: ${connectionId} has not requested a server seed`);
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: "Server seed is missing. Please request a server seed before opening a case.",
+        }),
+      };
+    }
+
+    const serverSeed = user.serverSeed;
     const userId = user.userId as string;
     logger.info(`Invoking getCase lambda with caseId: ${caseId}`);
     const caseData = await callGetCase(caseId);
