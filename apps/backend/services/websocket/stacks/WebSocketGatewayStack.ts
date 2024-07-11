@@ -4,7 +4,7 @@ import { WebSocketHandlerAPI } from "./WebSocketHandlerStack";
 import * as cdk from "aws-cdk-lib";
 
 export function WebSocketGateway({ stack }: StackContext) {
-  const { websocketTable } = use(WebSocketHandlerAPI);
+  const { websocketConnectionsTable, websocketChatMessagesTable } = use(WebSocketHandlerAPI);
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
   const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
     stack,
@@ -45,6 +45,12 @@ export function WebSocketGateway({ stack }: StackContext) {
     "dev-wallet-ApiStack-update-balance"
   );
 
+  const getUserFunction = Function.fromFunctionName(
+    stack,
+    "GetUserFunction",
+    "dev-user-management-UserManagementHandlerAPI-getUser"
+  );
+
   const eventBusPolicy = new PolicyStatement({
     actions: ["events:PutEvents"],
     resources: [eventBusArn],
@@ -55,11 +61,12 @@ export function WebSocketGateway({ stack }: StackContext) {
       function: {
         timeout: 20,
         environment: {
-          WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketTable.tableName,
+          WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketConnectionsTable.tableName,
           GET_CASE_FUNCTION_NAME: getCaseFunction.functionName,
           PERFORM_SPIN_FUNCTION_NAME: performSpinFunction.functionName,
           EVENT_BUS_ARN: eventBusArn,
           BET_TRANSACTION_FUNCTION_NAME: betTransactionFunction.functionName,
+          GET_USER_FUNCTION_NAME: getUserFunction.functionName,
         },
       },
     },
@@ -71,7 +78,7 @@ export function WebSocketGateway({ stack }: StackContext) {
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:PutItem", "dynamodb:DeleteItem"],
-              resources: [websocketTable.tableArn],
+              resources: [websocketConnectionsTable.tableArn],
             }),
           ],
         },
@@ -89,7 +96,7 @@ export function WebSocketGateway({ stack }: StackContext) {
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:DeleteItem"],
-              resources: [websocketTable.tableArn],
+              resources: [websocketConnectionsTable.tableArn],
             }),
           ],
         },
@@ -101,7 +108,7 @@ export function WebSocketGateway({ stack }: StackContext) {
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:PutItem", "dynamodb:GetItem"],
-              resources: [websocketTable.tableArn],
+              resources: [websocketConnectionsTable.tableArn],
             }),
           ],
         },
@@ -113,7 +120,7 @@ export function WebSocketGateway({ stack }: StackContext) {
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:PutItem", "dynamodb:GetItem"],
-              resources: [websocketTable.tableArn],
+              resources: [websocketConnectionsTable.tableArn],
             }),
           ],
         },
@@ -125,7 +132,7 @@ export function WebSocketGateway({ stack }: StackContext) {
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:PutItem", "dynamodb:GetItem", "lambda:InvokeFunction"],
-              resources: [websocketTable.tableArn, callAuthorizerFunction.functionArn],
+              resources: [websocketConnectionsTable.tableArn, callAuthorizerFunction.functionArn],
             }),
           ],
           environment: {
@@ -141,9 +148,38 @@ export function WebSocketGateway({ stack }: StackContext) {
           permissions: [
             new PolicyStatement({
               actions: ["dynamodb:PutItem", "dynamodb:GetItem", "lambda:InvokeFunction"],
-              resources: [websocketTable.tableArn],
+              resources: [websocketConnectionsTable.tableArn],
             }),
           ],
+        },
+      },
+      chat: {
+        function: {
+          handler: "src/handlers/chat.handler",
+          timeout: 10,
+          permissions: [
+            new PolicyStatement({
+              actions: [
+                "dynamodb:PutItem",
+                "lambda:InvokeFunction",
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+              ],
+              resources: [websocketConnectionsTable.tableArn, getUserFunction.functionArn],
+            }),
+            new PolicyStatement({
+              actions: ["dynamodb:Query"],
+              resources: [`${websocketChatMessagesTable.tableArn}/*`],
+            }),
+            new PolicyStatement({
+              actions: ["dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:GetItem"],
+              resources: [websocketChatMessagesTable.tableArn],
+            }),
+          ],
+          environment: {
+            CHAT_MESSAGES_TABLE_NAME: websocketChatMessagesTable.tableName,
+          },
         },
       },
       "case-spin": {
@@ -162,7 +198,7 @@ export function WebSocketGateway({ stack }: StackContext) {
                 getCaseFunction.functionArn,
                 performSpinFunction.functionArn,
                 eventBusArn,
-                websocketTable.tableArn,
+                websocketConnectionsTable.tableArn,
                 betTransactionFunction.functionArn,
               ],
             }),
@@ -197,7 +233,7 @@ export function WebSocketGateway({ stack }: StackContext) {
         handler: "src/handlers/pruneConnections.handler",
         permissions: ["dynamodb:Scan", "dynamodb:DeleteItem", "execute-api:ManageConnections"],
         environment: {
-          WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketTable.tableName,
+          WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketConnectionsTable.tableName,
           DOMAIN: domainName,
         },
       },
@@ -210,7 +246,7 @@ export function WebSocketGateway({ stack }: StackContext) {
     "execute-api:ManageConnections",
   ]);
 
-  pruneConnectionCRON.bind([websocketTable]);
+  pruneConnectionCRON.bind([websocketConnectionsTable]);
 
   stack.addOutputs({
     ApiEndpoint: api.url,

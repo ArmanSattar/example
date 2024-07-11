@@ -24,7 +24,11 @@ import { hashString } from "@solspin/hash";
 const logger = getLogger("case-orchestration-handler");
 
 export const handler = WebSocketApiHandler(async (event) => {
+  const { stage, domainName } = event.requestContext;
+  const messageEndpoint = `${domainName}/${stage}`;
+  const connectionId = event.requestContext.connectionId;
   try {
+    const TYPE = "case";
     if (!event.body) {
       return {
         statusCode: 400,
@@ -37,8 +41,7 @@ export const handler = WebSocketApiHandler(async (event) => {
 
     let payload = WebSocketOrchestrationPayloadSchema.parse(parsedBody);
     const { caseId, clientSeed } = payload;
-    const connectionId = event.requestContext.connectionId;
-    const { stage, domainName } = event.requestContext;
+
     if (!clientSeed || !connectionId || !caseId) {
       logger.error(`clientSeed or connectionId is missing`);
       return {
@@ -114,7 +117,6 @@ export const handler = WebSocketApiHandler(async (event) => {
 
     await removeServerSeed(connectionId);
 
-    const messageEndpoint = `${domainName}/${stage}`;
     // Send result to client
     const responseMessage = {
       "case-result": {
@@ -124,7 +126,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       },
     };
 
-    sendWebSocketMessage(messageEndpoint, connectionId, responseMessage);
+    sendWebSocketMessage(messageEndpoint, connectionId, responseMessage, "case");
 
     // Send new server seed hash to user
     const newServerSeed = await generateServerSeed(connectionId);
@@ -133,7 +135,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       "server-seed-hash": hashedServerSeed,
     };
 
-    sendWebSocketMessage(messageEndpoint, connectionId, serverSeedMessage);
+    sendWebSocketMessage(messageEndpoint, connectionId, serverSeedMessage, "server-seed");
 
     // Publish outcome to event bridge
     const outcome =
@@ -172,6 +174,13 @@ export const handler = WebSocketApiHandler(async (event) => {
     };
   } catch (error) {
     logger.error(`Error in orchestration handler: ${error}`);
+    const errorMessage: string = (error as Error).message;
+    sendWebSocketMessage(
+      messageEndpoint,
+      connectionId,
+      { error: { message: errorMessage } },
+      "error"
+    );
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Internal Server Error" }),

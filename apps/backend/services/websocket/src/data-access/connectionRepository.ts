@@ -1,4 +1,4 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
   PutCommand,
@@ -101,4 +101,22 @@ export const updateConnectionInfo = async (
   };
 
   await ddbDocClient.send(new UpdateCommand(params));
+};
+
+export const getAllConnectionIds = async (): Promise<string[]> => {
+  const params = {
+    TableName: tableName,
+    ProjectionExpression: "connectionId",
+  };
+
+  try {
+    const data = await ddbDocClient.send(new ScanCommand(params));
+    return (
+      data.Items?.map((item) => item.connectionId.S).filter(
+        (id): id is string => id !== undefined
+      ) || []
+    );
+  } catch (error) {
+    throw new Error(error as string);
+  }
 };

@@ -44,12 +44,27 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
   });
 
   const TEST_SECRET = new Config.Secret(stack, "TEST_SECRET");
+  const getUserFunction = new Function(stack, "getUserFunction", {
+    functionName: `${stack.stackName}-getUser`,
+    handler: "../user-management/src/handlers/getUser.handler",
+    environment: { USERS_TABLE_NAME: userTable.tableName },
+    permissions: [
+      new PolicyStatement({
+        actions: ["dynamodb:GetItem"],
+        resources: [userTable.tableArn],
+      }),
+    ],
+  });
+
+  getUserFunction.attachPermissions(["lambda:InvokeFunction"]);
+
   const callAuthorizerFunction = new Function(stack, "authorizerFunction", {
     functionName: `${stack.stackName}-authorizer`,
     handler: "../user-management/src/handlers/authorize.handler",
     bind: [TEST_SECRET],
-    environment: { TABLE_NAME: userTable.tableName },
+    environment: { USERS_TABLE_NAME: userTable.tableName },
   });
+
   callAuthorizerFunction.attachPermissions(["lambda:InvokeFunction"]);
 
   const createWalletFunction = Function.fromFunctionName(
@@ -75,7 +90,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
         function: {
           handler: "src/handlers/authorize.handler",
           bind: [TEST_SECRET],
-          environment: { TABLE_NAME: userTable.tableName },
+          environment: { USERS_TABLE_NAME: userTable.tableName },
         },
       },
       "POST /user": {
@@ -88,7 +103,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
             }),
           ],
           bind: [userTable, TEST_SECRET],
-          environment: { TABLE_NAME: userTable.tableName },
+          environment: { USERS_TABLE_NAME: userTable.tableName },
         },
       },
       "GET /user": {
@@ -101,7 +116,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
             }),
           ],
           bind: [userTable],
-          environment: { TABLE_NAME: userTable.tableName },
+          environment: { USERS_TABLE_NAME: userTable.tableName },
         },
         authorizer: "CustomAuthorizer",
       },
@@ -115,7 +130,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
             }),
           ],
           bind: [userTable],
-          environment: { TABLE_NAME: userTable.tableName },
+          environment: { USERS_TABLE_NAME: userTable.tableName },
         },
         authorizer: "CustomAuthorizer",
       },
@@ -129,7 +144,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
             }),
           ],
           bind: [userTable],
-          environment: { TABLE_NAME: userTable.tableName },
+          environment: { USERS_TABLE_NAME: userTable.tableName },
         },
         authorizer: "CustomAuthorizer",
       },
@@ -148,7 +163,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
           ],
           bind: [userTable, nonceTable, TEST_SECRET],
           environment: {
-            TABLE_NAME: userTable.tableName,
+            USERS_TABLE_NAME: userTable.tableName,
             NONCE_TABLE_NAME: nonceTable.tableName,
             CREATE_WALLET_FUNCTION_NAME: createWalletFunction.functionName,
           },
@@ -164,7 +179,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
             }),
           ],
           bind: [userTable, TEST_SECRET],
-          environment: { TABLE_NAME: userTable.tableName },
+          environment: { USERS_TABLE_NAME: userTable.tableName },
         },
       },
       "POST /auth/nonce": {
