@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { WindowSize } from "../hooks/useWindowResize";
-import { ICaseItem } from "../../../types";
+import { BaseCaseItem } from "@solspin/game-engine-types";
 
 const CarouselItem = dynamic(() => import("./CarouselItem"), { ssr: false });
 
@@ -13,9 +13,10 @@ type AnimationCalculation = {
 };
 
 interface CaseCarouselProps {
-  items: ICaseItem[];
-  spinClicked: boolean;
-  itemWon: ICaseItem | null;
+  items: BaseCaseItem[];
+  isPaidSpinClicked: boolean;
+  isDemoClicked: boolean;
+  itemWon: BaseCaseItem | null;
   isFastAnimationClicked: boolean;
   numCases: number;
   onAnimationComplete: () => void;
@@ -82,12 +83,13 @@ function carouselReducer(state: State, action: Action): State {
 const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
   ({
     items,
-    spinClicked,
     itemWon,
     isFastAnimationClicked,
     numCases,
     onAnimationComplete,
     windowSize,
+    isPaidSpinClicked,
+    isDemoClicked,
   }) => {
     const [state, dispatch] = useReducer(carouselReducer, {
       animationStage: 0,
@@ -128,17 +130,21 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     }, []);
 
     useEffect(() => {
-      if ((state.animationStage === 3 || state.animationStage === 0) && spinClicked) {
+      if (
+        (state.animationStage === 3 || state.animationStage === 0) &&
+        ((isPaidSpinClicked && itemWon) || isDemoClicked)
+      ) {
         dispatch(Action.RESET);
         currentPositionRef.current = 0;
       }
-    }, [items, spinClicked]);
+    }, [items, isDemoClicked, isPaidSpinClicked, itemWon]);
 
     useEffect(() => {
-      if (spinClicked && state.animationStage === 0) {
+      if (((isPaidSpinClicked && itemWon) || isDemoClicked) && state.animationStage === 0) {
+        animationCompletedRef.current = false;
         dispatch(Action.START_ANIMATION);
       }
-    }, [spinClicked, state.animationStage]);
+    }, [isDemoClicked, isPaidSpinClicked, state.animationStage, itemWon]);
 
     useEffect(() => {
       const handleTransitionEnd = () => {
@@ -157,15 +163,6 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         return () => carousel.removeEventListener("transitionend", handleTransitionEnd);
       }
     }, [state.animationStage, onAnimationComplete]);
-
-    // Reset the ref when starting a new animation
-    useEffect(() => {
-      console.log(spinClicked, state.animationStage);
-      if (spinClicked && state.animationStage === 0) {
-        animationCompletedRef.current = false;
-        dispatch(Action.START_ANIMATION);
-      }
-    }, [spinClicked, state.animationStage]);
 
     useEffect(() => {
       let animationFrameId: number;
@@ -246,7 +243,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
               {items.map((item, index) => (
                 <CarouselItem
                   key={index}
-                  {...item}
+                  item={item}
                   isMiddle={index === Math.round(items.length / 2) - 1 + middleItem}
                   isFinal={index === Math.round(items.length / 2) - 1 + distanceInItems}
                   animationEnd={state.animationStage === 2 || state.animationStage === 3}

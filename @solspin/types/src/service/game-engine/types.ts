@@ -37,7 +37,7 @@ const BaseCaseItemSchema = z.object({
   rarity: CaseItemRarity,
   chance: z.number(),
   rollNumbers: z.array(z.number()),
-  imagePath: z.string().url(),
+  imagePath: z.string(),
 });
 
 const BaseCaseSchema = z.object({
@@ -47,7 +47,7 @@ const BaseCaseSchema = z.object({
   highestPrice: z.number(),
   lowestPrice: z.number(),
   tag: z.string(),
-  imagePath: z.string().url(),
+  imagePath: z.string(),
   items: z.array(BaseCaseItemSchema),
   type: CaseTypeSchema,
   id: z.string().uuid(),

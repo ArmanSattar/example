@@ -1,9 +1,9 @@
 import { CaseItem } from "./CaseItem";
-import { ICase, ICaseItem } from "../../../types";
+import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
 
 interface CaseItemsProps {
-  items: ICaseItem[];
-  activeCase: ICase;
+  items: BaseCaseItem[];
+  activeCase: BaseCase;
 }
 
 export const CaseItems: React.FC<CaseItemsProps> = ({ items, activeCase }) => {

@@ -7,15 +7,21 @@ interface CaseDetailsProps {
   price: number;
   rarity: string;
   tag: string;
-  image: string;
+  imagePath: string;
 }
 
-export const CaseDetails: React.FC<CaseDetailsProps> = ({ name, price, rarity, tag, image }) => {
+export const CaseDetails: React.FC<CaseDetailsProps> = ({
+  name,
+  price,
+  rarity,
+  tag,
+  imagePath,
+}) => {
   return (
     <div className="flex flex-col sm:flex-row justify-start sm:items-center items-start w-full space-y-4">
       <div className="relative">
         <Image
-          src={image}
+          src={imagePath}
           alt={name}
           height={100}
           width={225}

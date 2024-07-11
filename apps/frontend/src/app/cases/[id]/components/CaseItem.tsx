@@ -1,12 +1,12 @@
 import Image from "next/image";
-import { ICase, ICaseItem } from "../../../types";
 import React from "react";
 import { Money } from "../../../components/Money";
 import { wearToColorAndAbbrev } from "./CarouselItem";
+import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
 
 interface CaseItemProps {
-  item: ICaseItem;
-  activeCase: ICase;
+  item: BaseCaseItem;
+  activeCase: BaseCase;
 }
 
 export const CaseItem: React.FC<CaseItemProps> = ({ item, activeCase }) => {
@@ -34,7 +34,7 @@ export const CaseItem: React.FC<CaseItemProps> = ({ item, activeCase }) => {
       </div>
       <div className="flex flex-col justify-center items-start space-y-1">
         <span className={`${wearColor} text-2xs whitespace-nowrap`}>{item.wear}</span>
-        <span className="text-gray-400 text-2xs whitespace-nowrap">{item.type}</span>
+        {/*<span className="text-gray-400 text-2xs whitespace-nowrap">{item.type}</span>*/}
         <span className="text-white text-sm whitespace-nowrap">{item.name}</span>
         <Money amount={item.price} textSize={"sm"} />
         <div className="rounded-md bg-dark py-0.5 px-2 border-[1px] border-black h-8 flex justify-center items-center whitespace-nowrap">

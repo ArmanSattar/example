@@ -1,15 +1,16 @@
 import Image from "next/image";
 import React, { memo, useEffect, useRef, useState } from "react";
-import { ICaseItem } from "../../../types";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../store";
 import { Money } from "../../../components/Money";
+import { BaseCaseItem } from "@solspin/game-engine-types";
 
-interface CarouselItemProps extends ICaseItem {
+interface CarouselItemProps {
   isMiddle: boolean;
   isFinal: boolean;
   animationEnd: boolean;
   animationStart: boolean;
+  item: BaseCaseItem;
 }
 
 export const wearToColorAndAbbrev = new Map<string, [string, string]>([
@@ -21,18 +22,11 @@ export const wearToColorAndAbbrev = new Map<string, [string, string]>([
 ]);
 
 const CarouselItem: React.FC<CarouselItemProps> = ({
-  imagePath,
-  name,
-  price,
-  rarity,
   isMiddle,
   isFinal,
   animationEnd,
-  rollNumbers,
-  type,
-  wear,
-  chance,
   animationStart,
+  item,
 }) => {
   const [shouldScaleDown, setShouldScaleDown] = useState(false);
   const [isInfiniteAnimating, setIsInfiniteAnimating] = useState(false);
@@ -41,7 +35,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const soundClicked = useSelector((state: RootState) => state.demo.soundClicked);
 
-  const [wearAbbrev, wearColor] = wearToColorAndAbbrev.get(wear) || ["", "text-gray-400"];
+  const [wearAbbrev, wearColor] = wearToColorAndAbbrev.get(item.wear) || ["", "text-gray-400"];
 
   useEffect(() => {
     if (isMiddle && soundClicked) {
@@ -97,12 +91,12 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
             isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000" : ""
           } ${isInfiniteAnimating ? "animate-final-item" : ""}`}
         >
-          <Image src={imagePath} alt={"Case item"} width={200} height={200} />
+          <Image src={item.imagePath} alt={"Case item"} width={200} height={200} />
         </div>
         <div
           className={`absolute top-0 right-0 w-full h-full opacity-30 z-[-1] ${
             isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000" : ""
-          } case-${rarity.toLowerCase().replace(" ", "-")} scale-125`}
+          } case-${item.rarity.toLowerCase().replace(" ", "-")} scale-125`}
         ></div>
         <div
           className={`flex flex-col items-center space-y-1 w-3/4 opacity-0 ${
@@ -110,12 +104,12 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
           }`}
         >
           <div className="flex items-center justify-center w-full space-x-1 overflow-visible whitespace-nowrap">
-            <span className={`font-light italic text-xs ${wearColor}`}>{wear}</span>
-            <span className={"font-light italic text-xs text-gray-300"}>·</span>
-            <span className={"font-light italic text-xs text-gray-300"}>{type}</span>
+            <span className={`font-light italic text-xs ${wearColor}`}>{item.wear}</span>
+            {/*<span className={"font-light italic text-xs text-gray-300"}>·</span>*/}
+            {/*<span className={"font-light italic text-xs text-gray-300"}>{item.type}</span>*/}
           </div>
-          <span className={"text-white font-semibold"}>{name}</span>
-          <Money amount={price} />
+          <span className={"text-white font-semibold"}>{item.name}</span>
+          <Money amount={item.price} />
         </div>
       </div>
     </>
