@@ -179,11 +179,17 @@ export function WebSocketGateway({ stack }: StackContext) {
               resources: [websocketConnectionsTable.tableArn, getUserFunction.functionArn],
             }),
             new PolicyStatement({
-              actions: ["dynamodb:Query"],
+              actions: ["dynamodb:Scan", "dynamodb:Query"],
               resources: [`${websocketChatMessagesTable.tableArn}/*`],
             }),
             new PolicyStatement({
-              actions: ["dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:GetItem"],
+              actions: [
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+              ],
               resources: [websocketChatMessagesTable.tableArn],
             }),
           ],

@@ -42,8 +42,8 @@ export const generateServerSeed = async (connectionId: string): Promise<string> 
 export const handleLogout = async (connectionId: string): Promise<void> => {
   await updateConnectionInfo(connectionId, {
     isAuthenticated: false,
-    userId: undefined,
-    serverSeed: undefined,
+    userId: "",
+    serverSeed: "",
   });
 };
 

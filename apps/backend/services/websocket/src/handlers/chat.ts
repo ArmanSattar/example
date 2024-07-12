@@ -19,13 +19,12 @@ import { callGetUser } from "../helpers/getUserHelper";
 import { getAllConnectionIds } from "../data-access/connectionRepository";
 
 const logger = getLogger("chat-handler");
-const MESSAGE_LIMIT = 3;
+const MESSAGE_HISTORY_MAX_NUMBER: number = Number(process.env.MESSAGE_HISTORY_MAX_NUMBER) || 25;
 const tableName = process.env.CHAT_MESSAGES_TABLE_NAME;
 if (!tableName) {
   throw new Error("CHAT_MESSAGES_TABLE_NAME environment variable is not set");
 }
 export const handler = WebSocketApiHandler(async (event) => {
-  console.log("one");
   const { stage, domainName } = event.requestContext;
   const messageEndpoint = `${domainName}/${stage}`;
   const connectionId = event.requestContext?.connectionId;
@@ -61,13 +60,13 @@ export const handler = WebSocketApiHandler(async (event) => {
       username: userInfo.username,
       profilePicture: userInfo.profilePicture,
     };
-
     // Save the new message
     await saveMessage(chatMessage);
 
-    const messageHistory = await getMessageHistory(userId);
-    if (messageHistory.length > MESSAGE_LIMIT) {
-      const oldestMessage = await getOldestMessage(userId);
+    const messageHistory = await getMessageHistory();
+    if (messageHistory.length > MESSAGE_HISTORY_MAX_NUMBER) {
+      const oldestMessage = await getOldestMessage();
+      console.log(oldestMessage);
       if (oldestMessage) {
         await deleteMessage(oldestMessage.messageId);
       }

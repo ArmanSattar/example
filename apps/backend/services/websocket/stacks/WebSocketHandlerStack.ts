@@ -29,11 +29,10 @@ export function WebSocketHandlerAPI({ stack }: StackContext) {
       username: "string",
       profilePicture: "string",
     },
-    primaryIndex: { partitionKey: "messageId" },
+    primaryIndex: { partitionKey: "messageId", sortKey: "timestamp" },
     globalIndexes: {
-      UserIdTimestampIndex: {
-        partitionKey: "userId",
-        sortKey: "timestamp",
+      TimestampIndex: {
+        partitionKey: "timestamp",
       },
     },
     cdk: {
