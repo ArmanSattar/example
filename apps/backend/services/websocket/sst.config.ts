@@ -1,7 +1,7 @@
 import type { SSTConfig } from "sst";
 import { WebSocketGateway } from "./stacks/WebSocketGatewayStack";
 import { WebSocketHandlerAPI } from "./stacks/WebSocketHandlerStack";
-
+import { ChatApiStack } from "./stacks/WebSocketApiStack";
 export default {
   config() {
     return {
@@ -23,5 +23,6 @@ export default {
 
     app.stack(WebSocketHandlerAPI);
     app.stack(WebSocketGateway);
+    app.stack(ChatApiStack);
   },
 } satisfies SSTConfig;

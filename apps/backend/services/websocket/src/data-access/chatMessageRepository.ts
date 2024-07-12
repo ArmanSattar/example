@@ -1,4 +1,4 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 import {
   DynamoDBDocumentClient,
   PutCommand,
@@ -44,24 +44,26 @@ export const deleteMessage = async (messageId: string): Promise<void> => {
   }
 };
 
-export const getMessageHistory = async (
-  userId: string,
-  limit: number = 50
-): Promise<ChatMessage[]> => {
+export const getMessageHistory = async (limit: number = 50): Promise<ChatMessage[]> => {
   const params = {
     TableName: tableName,
-    IndexName: "UserIdTimestampIndex", // You'll need to create this GSI
-    KeyConditionExpression: "userId = :userId",
-    ExpressionAttributeValues: {
-      ":userId": userId,
-    },
     Limit: limit,
-    ScanIndexForward: false, // to get the most recent messages first
   };
 
   try {
-    const data = await ddbDocClient.send(new QueryCommand(params));
-    return (data.Items || []) as ChatMessage[];
+    const data = await ddbDocClient.send(new ScanCommand(params));
+    // Ensure we return an array, even if data.Items is undefined or null
+    const items = data.Items
+      ? data.Items.map((item) => ({
+          messageId: item.messageId?.S || "",
+          message: item.message?.S || "",
+          timestamp: item.timestamp ? Number(item.timestamp.N) : 0,
+          userId: item.userId?.S || "",
+          username: item.username?.S || "",
+          profilePicture: item.profilePicture?.S || "",
+        }))
+      : [];
+    return items as ChatMessage[];
   } catch (error) {
     throw new Error(`Failed to get message history: ${error}`);
   }

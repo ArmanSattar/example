@@ -1,14 +1,17 @@
-import React, { useContext, useState } from 'react';
-import { useWebSocket } from '../../context/WebSocketContext'; // Adjust the import path as needed
+import React, { useState } from 'react';
+import { useWebSocket } from '../../context/WebSocketContext';
 
-export const ChatInput = () => {
+
+
+export const ChatInput: React.FC = () => {
   const [message, setMessage] = useState('');
   const { sendMessage } = useWebSocket();
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      const websocketMessage = JSON.stringify({ action: "chat", message })
+      const websocketMessage = JSON.stringify({ action: "chat", message });
       sendMessage(websocketMessage);
+
       setMessage('');
     }
   };

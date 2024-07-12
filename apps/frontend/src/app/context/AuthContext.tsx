@@ -150,6 +150,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
             token: token,
           })
         );
+        sendMessage(
+          JSON.stringify({
+            action: "logout",
+          })
+        );
       }
       localStorage.removeItem("token");
     } catch (error) {
