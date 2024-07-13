@@ -44,10 +44,10 @@ export const UserProfile: React.FC = () => {
   return (
     <div className="flex items-center relative" ref={dropdownRef}>
       <div 
-        className="flex items-center space-x-3 p-2 rounded-lg cursor-pointer"
+        className="flex items-center space-x-4 p-2 rounded-lg cursor-pointer"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
-        <div className="relative w-10 h-10 rounded-full overflow-hidden">
+        <div className="relative w-12 h-12 rounded-full overflow-hidden shadow-lg">
           <Image
             src={"/header-image.png"} 
             alt=""
