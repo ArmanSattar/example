@@ -52,15 +52,9 @@ const CustomWalletMultiButton = () => {
     <button
       onClick={handleClick}
       disabled={connecting || isAuthenticating}
-      style={{
-        backgroundColor: '#ef4444',
-        color: 'white',
-        padding: '10px 20px',
-        borderRadius: '5px',
-        border: 'none',
-        cursor: connecting || isAuthenticating ? 'not-allowed' : 'pointer',
-        opacity: connecting || isAuthenticating ? 0.7 : 1,
-      }}
+      className={`bg-red-500 text-white py-2 px-4 rounded-md border-none cursor-pointer transition-opacity duration-300 ${
+        connecting || isAuthenticating ? 'cursor-not-allowed opacity-70' : 'hover:bg-red-600'
+      }`}
     >
       {getButtonText()}
     </button>
