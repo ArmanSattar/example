@@ -23,6 +23,7 @@ const ChatMessageSchema = z.object({
 const WebSocketOrchestrationPayloadSchema = z.object({
   caseId: z.string().uuid(),
   clientSeed: z.string().regex(/^[a-zA-Z0-9]+$/),
+  spins: z.number().int().min(1).max(4).positive(),
 });
 
 const WebSocketChatMessagePayloadSchema = z.object({

@@ -15,6 +15,7 @@ import { Back } from "../../components/Back";
 import { PreviousDrops } from "./components/PreviousDrops";
 import { CaseItemRarity } from "../../types";
 import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
+import {SpinResponse} from "@solspin/orchestration-types"
 import { CaseType } from "@solspin/types";
 import { addToBalance } from "../../../store/slices/userSlice";
 
@@ -205,6 +206,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
             action: "case-spin",
             clientSeed,
             caseId: id,
+            spins: numCases
           })
         );
       }
@@ -254,15 +256,17 @@ export default function CasePage({ params }: { params: { id: string } }) {
               setServerSeedHash(message["server-seed-hash"]);
               setIsFirstServerSeedHash(false);
             } else {
-              console.log("here");
               setPreviousServerSeedHash(serverSeedHash);
               setServerSeedHash(message["server-seed-hash"]);
             }
             console.log("Server Seed Hash set:",  message["server-seed-hash"]);
           }
   
-          if ("case-result" in message) {
-            const { caseItem, rollValue, serverSeed } = message["case-result"];
+          if ("case-results" in message) {
+            const spinResult: SpinResponse = message["case-results"];
+            const {caseItems, serverSeed} = spinResult
+            console.log(caseItems, serverSeed)
+            // TODO: Caseitems is the array of CaseItem. Make it work with multiple spins
             setItemWon(caseItem as BaseCaseItem);
             setCases(generateCases(numCases, caseItem as BaseCaseItem));
             setRollValue(rollValue as number);

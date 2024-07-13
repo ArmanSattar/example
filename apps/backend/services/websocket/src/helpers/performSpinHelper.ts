@@ -4,7 +4,12 @@ import { PERFORM_SPIN_FUNCTION_NAME } from "../foundation/runtime";
 
 const lambda = new AWS.Lambda();
 
-export const performSpin = async (caseModel: Case, clientSeed: string, serverSeed: string) => {
+export const performSpin = async (
+  caseModel: Case,
+  clientSeed: string,
+  serverSeed: string,
+  spins: number
+) => {
   const params = {
     FunctionName: PERFORM_SPIN_FUNCTION_NAME,
     Payload: JSON.stringify({
@@ -12,6 +17,7 @@ export const performSpin = async (caseModel: Case, clientSeed: string, serverSee
         caseModel,
         clientSeed,
         serverSeed,
+        spins,
       }),
     }),
   };

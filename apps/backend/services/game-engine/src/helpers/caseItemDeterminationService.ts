@@ -53,15 +53,23 @@ function getProvablyFairResult(
   };
 }
 
-export const generateRollValue = (serverSeed: string, clientSeed: string): number => {
+export const generateRollValue = (
+  serverSeed: string,
+  clientSeed: string,
+  nonce: number
+): number => {
   if (!serverSeed || !clientSeed) {
     throw new Error("Invalid inputs");
   }
-  const timestamp = Date.now();
 
+  if (nonce < 1 || nonce > 4) {
+    throw new Error("Nonce must be a number between 1 and 4");
+  }
+
+  const timestamp = Date.now();
   const sanitizedServerSeed = serverSeed.replace(/\r|\n/g, "");
   const sanitizedClientSeed = clientSeed.replace(/\r|\n/g, "");
-  const stringToHash = `${sanitizedClientSeed}-${timestamp}}`;
+  const stringToHash = `${sanitizedClientSeed}-${timestamp}-${nonce}`;
 
   const { result } = getProvablyFairResult(stringToHash, sanitizedServerSeed, TICKET_QUANTITY);
   return result;

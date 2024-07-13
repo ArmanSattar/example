@@ -3,12 +3,12 @@ import { handleSpin } from "../helpers/caseOpeningService";
 import { CreateSpinPayloadRequestSchema } from "@solspin/orchestration-types";
 import { ZodError } from "zod";
 import { getLogger } from "@solspin/logger";
+import { SpinResult } from "@solspin/game-engine-types";
 
 const logger = getLogger("perform-spin-handler");
 
 export const handler = ApiHandler(async (event) => {
   try {
-    logger.info(`Perform spin lambda invoked with event body: ${event.body}`);
     const parsedBody = JSON.parse(event.body || "{}");
 
     let spinPayload;
@@ -28,13 +28,18 @@ export const handler = ApiHandler(async (event) => {
       throw error;
     }
 
-    const { caseModel, serverSeed, clientSeed } = spinPayload;
+    const { caseModel, serverSeed, clientSeed, spins } = spinPayload;
 
-    const spinResult = await handleSpin(caseModel, serverSeed, clientSeed);
+    const spinResults: SpinResult[] | null = await handleSpin(
+      caseModel,
+      serverSeed,
+      clientSeed,
+      spins
+    );
 
     return {
       statusCode: 200,
-      body: JSON.stringify(spinResult),
+      body: JSON.stringify(spinResults),
     };
   } catch (error: any) {
     logger.error("Error in handleSpin:", error);

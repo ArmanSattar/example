@@ -28,7 +28,6 @@ export const handler = WebSocketApiHandler(async (event) => {
   const messageEndpoint = `${domainName}/${stage}`;
   const connectionId = event.requestContext.connectionId;
   try {
-    const TYPE = "case";
     if (!event.body) {
       return {
         statusCode: 400,
@@ -40,19 +39,9 @@ export const handler = WebSocketApiHandler(async (event) => {
     const parsedBody = JSON.parse(event.body || "{}");
 
     let payload = WebSocketOrchestrationPayloadSchema.parse(parsedBody);
-    const { caseId, clientSeed } = payload;
+    const { caseId, clientSeed, spins } = payload;
 
-    if (!clientSeed || !connectionId || !caseId) {
-      logger.error(`clientSeed or connectionId is missing`);
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message: "caseId, clientSeed, or connectionId is missing",
-        }),
-      };
-    }
-
-    logger.info(`Invoking getUserFromWebSocket lambda with connectionId: ${connectionId}`);
+    logger.info(`Getting websocket connection info for connection id: ${connectionId}`);
     const connectionInfo: ConnectionInfo | null = await getConnectionInfo(connectionId);
 
     if (!connectionInfo) {
@@ -88,10 +77,12 @@ export const handler = WebSocketApiHandler(async (event) => {
     }
 
     const caseModel: BaseCase = BaseCaseSchema.parse(JSON.parse(caseData.body));
-    const amount = -1 * caseModel.price;
     logger.info(`Case price is :${caseModel.price}`);
 
-    const updateBalance = await debitUser(userId, amount);
+    const amountToDebit = spins * (-1 * caseModel.price);
+    logger.info(`Amount to debit user is :${amountToDebit}`);
+
+    const updateBalance = await debitUser(userId, amountToDebit);
 
     if (updateBalance.statusCode !== 200) {
       throw new Error("Failed to update balance");
@@ -100,28 +91,23 @@ export const handler = WebSocketApiHandler(async (event) => {
       `Invoking performSpin lambda with clientSeed: ${clientSeed} and serverSeed: ${serverSeed}`
     );
 
-    const spinResultPayload = await performSpin(caseModel, clientSeed, serverSeed);
+    const spinResultPayload = await performSpin(caseModel, clientSeed, serverSeed, spins);
     if (spinResultPayload.statusCode !== 200) {
-      throw new Error("Error occured in case spin handler");
+      throw new Error("Error occurred in case spin handler");
     }
 
-    const spinResult: SpinResult = JSON.parse(spinResultPayload.body);
-
-    const caseRolledItem: BaseCaseItem = BaseCaseItemSchema.parse(spinResult.rewardItem);
-
-    const rollValue: number = spinResult.rollValue;
-
-    logger.info(`Case roll result is: ${{ caseRolledItem, rollValue }}`);
-
+    const spinResults: SpinResult[] = JSON.parse(spinResultPayload.body);
+    console.log(spinResults);
     // Invalidate server seed now to prevent malicious attacks on unhashed server seed
-
     await removeServerSeed(connectionId);
 
-    // Send result to client
+    // Prepare response with all spin results
     const responseMessage = {
-      "case-result": {
-        caseItem: caseRolledItem,
-        rollValue: rollValue,
+      "case-results": {
+        caseItems: spinResults.map((spinResult) => ({
+          rewardItem: BaseCaseItemSchema.parse(spinResult.rewardItem),
+          rollValue: spinResult.rollValue,
+        })),
         serverSeed,
       },
     };
@@ -137,36 +123,39 @@ export const handler = WebSocketApiHandler(async (event) => {
 
     sendWebSocketMessage(messageEndpoint, connectionId, serverSeedMessage, "case");
 
-    // Publish outcome to event bridge
-    const outcome =
-      caseModel.price < caseRolledItem.price
-        ? GameOutcome.WIN
-        : caseModel.price > caseRolledItem.price
-        ? GameOutcome.LOSE
-        : GameOutcome.NEUTRAL;
+    // Publish outcomes to event bridge
+    for (const spinResult of spinResults) {
+      const caseRolledItem: BaseCaseItem = BaseCaseItemSchema.parse(spinResult.rewardItem);
+      const outcome =
+        caseModel.price < caseRolledItem.price
+          ? GameOutcome.WIN
+          : caseModel.price > caseRolledItem.price
+          ? GameOutcome.LOSE
+          : GameOutcome.NEUTRAL;
 
-    const outcomeAmount = caseRolledItem.price;
+      const outcomeAmount = caseRolledItem.price;
 
-    publishEvent(
-      GameResult.gameResultEvent,
-      {
+      publishEvent(
+        GameResult.gameResultEvent,
+        {
+          userId,
+          gameType: GameResult.GameType.CASES,
+          amountBet: caseModel.price,
+          outcome,
+          outcomeAmount,
+          timestamp: new Date().toISOString(),
+        } as GameResult.GameResultType,
+        Service.ORCHESTRATION as EventConfig
+      );
+      logger.info("Event published with data: ", {
         userId,
         gameType: GameResult.GameType.CASES,
         amountBet: caseModel.price,
         outcome,
         outcomeAmount,
         timestamp: new Date().toISOString(),
-      } as GameResult.GameResultType,
-      Service.ORCHESTRATION as EventConfig
-    );
-    logger.info("Event published with data: ", {
-      userId,
-      gameType: GameResult.GameType.CASES,
-      amountBet: caseModel.price,
-      outcome,
-      outcomeAmount,
-      timestamp: new Date().toISOString(),
-    });
+      });
+    }
 
     return {
       statusCode: 200,

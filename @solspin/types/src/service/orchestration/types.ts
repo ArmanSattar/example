@@ -1,12 +1,17 @@
 import { z } from "zod";
-import { BaseCaseSchema } from "@solspin/game-engine-types";
+import { BaseCaseItemSchema, BaseCaseSchema, SpinResult } from "@solspin/game-engine-types";
 
 const SpinPayloadSchema = z.object({
   caseModel: BaseCaseSchema,
   serverSeed: z.string(),
   clientSeed: z.string(),
+  spins: z.number().int().min(1).max(4).positive(),
 });
 
+const SpinResultSchema = z.object({
+  caseItem: BaseCaseItemSchema,
+  rollValue: z.number().positive().min(1).max(99999),
+});
 // Request Schemas
 export const CreateSpinPayloadRequestSchema = SpinPayloadSchema;
 export const GetSpinPayloadByServerSeedRequestSchema = SpinPayloadSchema.pick({ serverSeed: true });
@@ -24,7 +29,12 @@ export const CreateSpinPayloadResponseSchema = SpinPayloadSchema;
 export const GetSpinPayloadByServerSeedResponseSchema = SpinPayloadSchema;
 export const GetSpinPayloadByClientSeedResponseSchema = SpinPayloadSchema;
 
+export const SpinResponseSchema = z.object({
+  caseItems: z.array(SpinResultSchema),
+  serverSeed: z.string(),
+});
 // Export the schemas and types
 export { SpinPayloadSchema };
 
 export type SpinPayload = z.infer<typeof SpinPayloadSchema>;
+export type SpinResponse = z.infer<typeof SpinResponseSchema>;
