@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 interface HamburgerButtonProps {
@@ -13,10 +13,24 @@ interface MenuOption {
 const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleOpen = () => {
     setOpen(!open);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const menuOptions: MenuOption[] = [
     { label: "Cases", onClick: () => router.push("/cases") },
@@ -26,7 +40,7 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
   ];
 
   return (
-    <div className="relative">
+    <div className="flex items-center relative" ref={dropdownRef}>
       <button
         className={`text-white w-12 h-12 relative focus:outline-none bg-custom_gray rounded-md ${className}`}
         onClick={toggleOpen}
@@ -54,7 +68,7 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
         </div>
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-36 bg-custom_gray shadow-lg lg:hidden rounded-b-md">
+        <div className="absolute right-0 top-full mt-1 w-36 bg-custom_gray shadow-lg lg:hidden rounded-md z-50">
           {menuOptions.map((option, index) => (
             <button
               key={index}
@@ -62,7 +76,7 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
                 option.onClick();
                 setOpen(false);
               }}
-              className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 last:rounded-b-md"
+              className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 first:rounded-t-md last:rounded-b-md"
             >
               {option.label}
             </button>

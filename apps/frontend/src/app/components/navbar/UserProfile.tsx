@@ -23,12 +23,10 @@ export const UserProfile: React.FC = () => {
     };
   }, []);
 
-
   if (!user) {
     return null
   }
 
-  // Truncate the username if it's too long
   const maxUsernameLength = 10;
   const truncatedUsername = user.username.length > maxUsernameLength 
     ? user.username.slice(0, maxUsernameLength) + '...' 
@@ -44,7 +42,7 @@ export const UserProfile: React.FC = () => {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="flex items-center relative" ref={dropdownRef}>
       <div 
         className="flex items-center space-x-3 p-2 rounded-lg cursor-pointer"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -61,7 +59,7 @@ export const UserProfile: React.FC = () => {
       </div>
       
       {isDropdownOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-background rounded-md shadow-lg py-1 z-50">
+        <div className="absolute right-0 top-full mt-1 w-48 bg-background rounded-md shadow-lg py-1 z-50">
           <Link href="/profile" className="block px-4 py-2 text-sm text-white-700 hover:bg-gray-800">
               Profile
           </Link>

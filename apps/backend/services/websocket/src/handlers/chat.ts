@@ -66,7 +66,6 @@ export const handler = WebSocketApiHandler(async (event) => {
     const messageHistory = await getMessageHistory();
     if (messageHistory.length > MESSAGE_HISTORY_MAX_NUMBER) {
       const oldestMessage = await getOldestMessage();
-      console.log(oldestMessage);
       if (oldestMessage) {
         await deleteMessage(oldestMessage.messageId);
       }
@@ -93,12 +92,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     const errorMessage: string = (error as Error).message;
     logger.error(`Error occurred in chat handler: ${error}`);
 
-    sendWebSocketMessage(
-      messageEndpoint,
-      connectionId,
-      { error: { message: errorMessage } },
-      "error"
-    );
+    sendWebSocketMessage(messageEndpoint, connectionId, { message: errorMessage }, "error");
     return {
       statusCode: 500,
       body: JSON.stringify({
