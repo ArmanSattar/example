@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
-
+import { toast } from "sonner";
 interface WebSocketContextType {
   socket: WebSocket | null;
   sendMessage: (message: string) => void;
@@ -41,7 +41,19 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
     };
 
     socketRef.current.onmessage = (event) => {
-      console.log('WebSocket message:', event.data);
+
+      const data = JSON.parse(event.data);
+      console.log(data)
+      if ("type" in data && data["type"] == "error") {
+        const message = data["message"]
+        
+        if ("message" in message) {
+          const errorMessage: string = message["message"]
+          toast.error(`Error occured: ${errorMessage}`)
+        }
+        
+      }
+
     };
 
     setSocket(socketRef.current);

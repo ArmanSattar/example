@@ -175,12 +175,7 @@ export const handler = WebSocketApiHandler(async (event) => {
   } catch (error) {
     logger.error(`Error in orchestration handler: ${error}`);
     const errorMessage: string = (error as Error).message;
-    sendWebSocketMessage(
-      messageEndpoint,
-      connectionId,
-      { error: { message: errorMessage } },
-      "error"
-    );
+    sendWebSocketMessage(messageEndpoint, connectionId, { message: errorMessage }, "error");
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Internal Server Error" }),

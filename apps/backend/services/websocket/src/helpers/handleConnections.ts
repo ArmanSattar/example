@@ -31,7 +31,7 @@ export const unauthenticateUser = async (connectionId: string): Promise<void> =>
 
 export const generateServerSeed = async (connectionId: string): Promise<string> => {
   const connectionInfo = await getConnectionInfoFromDB(connectionId);
-  if (!connectionInfo || !connectionInfo.isAuthenticated) {
+  if (!connectionInfo) {
     throw new Error("Unauthorized: User is not authenticated");
   }
   const serverSeed = randomBytes(32).toString("hex");

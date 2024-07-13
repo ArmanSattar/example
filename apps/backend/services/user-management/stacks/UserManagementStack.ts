@@ -3,7 +3,7 @@ import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { RemovalPolicy } from "aws-cdk-lib/core";
 
 export function UserManagementHandlerAPI({ stack }: StackContext) {
-  const removeOnDelete = stack.stage !== "prod";
+  const removeOnDelete = true;
   const userTable = new Table(stack, "users", {
     fields: {
       userId: "string",

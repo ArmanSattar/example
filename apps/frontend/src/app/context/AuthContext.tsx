@@ -35,7 +35,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const { connected, disconnect, publicKey, signMessage } = useWallet();
   const { sendMessage, connectionStatus } = useWebSocket();
   const { connection } = useConnection();
-
+  console.log(apiUrl)
   const checkToken = useCallback(async () => {
     const token = localStorage.getItem("token");
     if (token) {
