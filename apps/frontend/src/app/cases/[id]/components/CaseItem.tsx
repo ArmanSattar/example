@@ -14,8 +14,8 @@ interface CaseItemProps {
 export const CaseItem: React.FC<CaseItemProps> = ({ item }) => {
   const [wearAbbrev, wearColor] = wearToColorAndAbbrev.get(item.wear) || ["", "text-gray-400"];
   const typeAndName = item.name.split(" | ");
-  const name = typeAndName[0];
-  const type = typeAndName[1];
+  const type = typeAndName[0];
+  const name = typeAndName[1];
   const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${item.imagePath}`);
 
   if (isLoading) {
@@ -29,10 +29,7 @@ export const CaseItem: React.FC<CaseItemProps> = ({ item }) => {
 
   return (
     <div className="flex items-center rounded-md space-x-4 p-4 main-element overflow-hidden h-40 group min-w-[260px] max-w-[300px]">
-      <div
-        className="relative flex flex-col items-center justify-center bg-gray-900 border-black border-[1px] rounded-lg"
-        style={{ width: 125, height: 125 }}
-      >
+      <div className="relative flex flex-col items-center justify-center bg-gray-900 border-black border-[1px] rounded-lg min-w-[125px] min-h-[125px]">
         <div className="relative flex justify-center items-center h-full w-full scale-125 z-10">
           <Image
             src={data || "/images/placeholder.png"}
@@ -61,7 +58,7 @@ export const CaseItem: React.FC<CaseItemProps> = ({ item }) => {
         <div className="rounded-md bg-dark py-0.5 px-2 border-[1px] border-black h-8 flex justify-center items-center whitespace-nowrap w-full">
           <div className="relative w-full h-full">
             <span className="absolute inset-0 flex items-center justify-center text-white text-xs duration-300 group-hover:opacity-0">
-              {Math.round(item.chance * 10000) / 100}%
+              {item.chance}%
             </span>
             <span className="absolute inset-0 flex items-center justify-center text-white text-2xs opacity-0 duration-300 group-hover:opacity-100">
               {item.rollNumbers[0]}-{item.rollNumbers[1]}

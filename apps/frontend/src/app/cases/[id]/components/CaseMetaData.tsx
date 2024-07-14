@@ -6,10 +6,8 @@ import {
   toggleDemoClicked,
   toggleFastClicked,
   togglePaidSpinClicked,
-  toggleRarityInfoPopup,
 } from "../../../../store/slices/demoSlice";
 import { RootState } from "../../../../store";
-import { SoundToggle } from "./SoundToggle";
 import { addToBalance } from "../../../../store/slices/userSlice";
 import { useAuth } from "../../../context/AuthContext";
 
@@ -37,31 +35,47 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
   const numCases = useSelector((state: RootState) => state.demo.numCases);
   const spinClicked = paidSpinClicked || demoClicked;
   const balance = useSelector((state: RootState) => state.user.balance);
+  const chatOpen = useSelector((state: RootState) => state.chatBar.chatBarOpen);
   const { user } = useAuth();
+
+  console.log(chatOpen);
+
   return (
     <div className="flex flex-col justify-between items-start w-full space-y-4">
       <div className="flex space-x-3 justify-between items-center">
         <span className="text-white font-bold text-lg">{name}</span>
         <Tag name={label} customStyle={""} />
       </div>
-      <div className="flex space-x-1 justify-between items-center">
-        <span className="text-white text-sm">Highest Item</span>
-        <span className="text-white text-sm">${highestPrice}</span>
-        <span className="text-white text-sm">·</span>
-        <span className="text-white text-sm">Lowest Item</span>
-        <span className="text-white text-sm">${lowestPrice}</span>
-        <span className="hidden sm:block text-white text-sm">·</span>
-        <span className="hidden sm:block text-white text-sm">Total Items</span>
-        <span className="hidden sm:block text-white text-sm">{totalItems}</span>
+      <div
+        className={`flex flex-col space-y-1 lg:flex-row lg:space-x-1 justify-between items-center`}
+      >
+        <div className={`flex space-x-1`}>
+          <span className="text-white text-sm">Highest Item</span>
+          <span className="text-white text-sm">${highestPrice}</span>
+          <span className="text-white text-sm">·</span>
+          <span className="text-white text-sm">Lowest Item</span>
+          <span className="text-white text-sm">${lowestPrice}</span>
+        </div>
+        <div className={`flex space-x-1`}>
+          <span className="hidden lg:block text-white text-sm">·</span>
+          <span className="hidden sm:block text-white text-sm">Total Items</span>
+          <span className="hidden sm:block text-white text-sm">{totalItems}</span>
+        </div>
       </div>
-      <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 justify-between items-center sm:items-start">
-        <div className="flex space-x-2 justify-between items-center">
+      <div
+        className={`flex flex-col ${
+          chatOpen ? "md:flex-col" : "md:flex-row"
+        } lg:flex-row space-y-4 md:space-y-0 md:gap-4 justify-start items-center sm:items-start w-full`}
+      >
+        <div className={`flex space-x-2 justify-start items-center w-full sm:w-max`}>
           {Array.from({ length: 4 }, (_, index) => (
             <button
               key={index}
               className={`bg-custom_gray group hover:${
                 spinClicked ? "" : "bg-gray-700"
-              } rounded-md w-12 h-12 p-2 ${index + 1 === numCases ? "bg-gray-700" : ""} ${
+              } rounded-md min-w-[48px] sm:flex-grow-0 flex-grow  h-12 p-2 ${
+                index + 1 === numCases ? "bg-gray-700" : ""
+              } ${
                 spinClicked
                   ? `opacity-50 cursor-not-allowed ${
                       index + 1 === numCases ? "" : "hover:bg-custom_gray"
@@ -81,29 +95,29 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             </button>
           ))}
         </div>
-        <button
-          className={`flex bg-green-500 rounded-md h-12 p-4 space-x-1 justify-center items-center ${
-            spinClicked ? "opacity-50 cursor-not-allowed" : ""
-          } ${user ? "" : "hidden"}`}
-          onClick={() => {
-            if (!spinClicked && balance >= price * numCases) {
-              dispatch(togglePaidSpinClicked());
-              dispatch(addToBalance(-price * numCases));
-            }
-          }}
-          disabled={spinClicked}
-        >
-          <span className="text-white font-semibold">
-            Open {numCases} Case{numCases > 1 ? "s" : ""}
-          </span>
-          <span className="hidden sm:block text-white font-semibold text-sm">·</span>
-          <span className="text-white font-semibold">
-            ${Math.round(price * numCases * 100) / 100}
-          </span>
-        </button>
-        <div className="flex justify-between items-center space-x-2">
+        <div className={`flex justify-center items-center gap-2 w-full sm:w-max`}>
           <button
-            className={`flex justify-center items-center bg-custom_gray rounded-md h-12 p-3 ${
+            className={`flex flex-[2] sm:flex-grow-0 bg-green-500 rounded-md h-12 p-4 space-x-1 justify-center items-center ${
+              spinClicked ? "opacity-50 cursor-not-allowed" : ""
+            } ${user ? "" : "hidden"}`}
+            onClick={() => {
+              if (!spinClicked && balance >= price * numCases) {
+                dispatch(togglePaidSpinClicked());
+                dispatch(addToBalance(-price * numCases));
+              }
+            }}
+            disabled={spinClicked}
+          >
+            <span className="text-white font-semibold">
+              Open {numCases} Case{numCases > 1 ? "s" : ""}
+            </span>
+            <span className="hidden sm:block text-white font-semibold text-sm">·</span>
+            <span className="text-white font-semibold">
+              ${Math.round(price * numCases * 100) / 100}
+            </span>
+          </button>
+          <button
+            className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 ${
               spinClicked ? "opacity-50 cursor-not-allowed" : ""
             }`}
             onClick={() => {
@@ -116,7 +130,7 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             <span className="text-white">Demo</span>
           </button>
           <button
-            className={`flex justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-2 ${
+            className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-2 ${
               spinClicked ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={spinClicked}
@@ -134,13 +148,6 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             >
               Quick
             </span>
-          </button>
-          <SoundToggle />
-          <button
-            onClick={() => dispatch(toggleRarityInfoPopup())}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Rarity Info
           </button>
         </div>
       </div>

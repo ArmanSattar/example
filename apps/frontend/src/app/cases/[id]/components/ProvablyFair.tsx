@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { server } from "typescript";
+import React, { useCallback, useEffect, useState } from "react";
 
 interface ProvablyFairProps {
   serverSeedHash: string;
   clientSeed: string;
-  rollValue: number | null;
+  rollValue: string | null;
   serverSeed: string | null;
   previousServerSeedHash: string | null;
   onClientSeedChange: (newClientSeed: string) => void;
@@ -58,7 +57,7 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
   };
 
   return (
-    <div className="w-full h-auto">
+    <>
       <p
         className="inline-block text-white cursor-pointer px-2 py-1"
         onClick={handleProvablyFairClick}
@@ -107,9 +106,7 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
               />
             </div>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Client Seed
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Client Seed</label>
               <input
                 type="text"
                 value={localClientSeed}
@@ -118,16 +115,10 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
               />
             </div>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Roll Value
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Roll Value</label>
               <input
                 type="text"
-                value={
-                  rollValue !== null && typeof rollValue === "number"
-                    ? rollValue
-                    : rollValue || "N/A"
-                }
+                value={rollValue ? rollValue : rollValue || "N/A"}
                 readOnly
                 className="mt-1 block w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed"
               />
@@ -158,6 +149,6 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };

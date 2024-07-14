@@ -8,17 +8,21 @@ import { toast } from "sonner";
 interface CaseDetailsProps {
   name: string;
   price: number;
-  rarity: string;
   tag: string;
   imagePath: string;
+  highestPrice: number;
+  lowestPrice: number;
+  numberOfItems: number;
 }
 
 export const CaseDetails: React.FC<CaseDetailsProps> = ({
   name,
   price,
-  rarity,
   tag,
   imagePath,
+  highestPrice,
+  lowestPrice,
+  numberOfItems,
 }) => {
   const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${imagePath}`);
 
@@ -38,7 +42,7 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
 
   return (
     <div className="flex flex-col sm:flex-row justify-start sm:items-center items-start w-full space-y-4">
-      <div className="relative">
+      <div className="relative min-w-[225px] min-h-[100px]">
         <Image
           src={data || "/images/placeholder.png"}
           alt={name}
@@ -50,9 +54,9 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
       </div>
       <CaseMetaData
         name={name}
-        highestPrice={200}
-        lowestPrice={1}
-        totalItems={12}
+        highestPrice={highestPrice}
+        lowestPrice={lowestPrice}
+        totalItems={numberOfItems}
         price={price}
         label={tag}
       />

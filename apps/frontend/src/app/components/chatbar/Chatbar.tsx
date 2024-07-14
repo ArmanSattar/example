@@ -6,6 +6,9 @@ import { ChatInput } from "./ChatInput";
 import { ExpandButton } from "./ExpandButton";
 import { DismissButton } from "./DismissButton";
 import { useWebSocket } from "../../context/WebSocketContext";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../store";
+import { toggleChatBarClicked } from "../../../store/slices/chatBarSlice";
 
 interface ChatbarProps {
   chatOpenCallback: () => void;
@@ -19,12 +22,13 @@ interface Message {
 }
 
 export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
-  const [isChatOpen, setChatOpen] = useState(true);
+  const dispatch = useDispatch();
+  const isChatOpen = useSelector((state: RootState) => state.chatBar.chatBarOpen);
   const [messages, setMessages] = useState<Message[]>([]);
   const { socket, sendMessage, connectionStatus } = useWebSocket();
 
   const toggleChatOpen = () => {
-    setChatOpen(!isChatOpen);
+    dispatch(toggleChatBarClicked());
     chatOpenCallback();
   };
 
@@ -33,12 +37,12 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_CHAT_MESSAGE_API_URL}/chats`);
         if (!response.ok) {
-          throw new Error('Failed to fetch messages');
+          throw new Error("Failed to fetch messages");
         }
         const data: Message[] = await response.json();
         setMessages(data);
       } catch (error) {
-        console.error('Error fetching messages:', error);
+        console.error("Error fetching messages:", error);
       }
     };
 

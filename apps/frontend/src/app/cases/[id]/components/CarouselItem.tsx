@@ -7,6 +7,7 @@ import { BaseCaseItem } from "@solspin/game-engine-types";
 import { GET_CASES_URL } from "../../../types";
 import { useFetchImage } from "../hooks/useFetchImage";
 import { toast } from "sonner";
+import { CarouselItemSkeleton } from "./CarouselItemSkeleton";
 
 interface CarouselItemProps {
   isMiddle: boolean;
@@ -83,9 +84,8 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
       imageContainer.removeEventListener("transitionend", handleTransitionEnd);
     };
   }, [isFinal, isMiddle, animationEnd]);
-
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <CarouselItemSkeleton />;
   }
 
   if (isError) {

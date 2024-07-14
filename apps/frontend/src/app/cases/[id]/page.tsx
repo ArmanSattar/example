@@ -7,7 +7,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { CaseCarousel } from "./components/CaseCarousel";
 import { useWebSocket } from "../../context/WebSocketContext";
-import { toggleDemoClicked, togglePaidSpinClicked } from "../../../store/slices/demoSlice";
+import {
+  toggleDemoClicked,
+  togglePaidSpinClicked,
+  toggleRarityInfoPopup,
+} from "../../../store/slices/demoSlice";
 import { ProvablyFair } from "./components/ProvablyFair";
 import { v4 as uuidv4 } from "uuid";
 import useWindowSize from "./hooks/useWindowResize";
@@ -18,6 +22,7 @@ import { SpinResponse } from "@solspin/orchestration-types";
 import { addToBalance } from "../../../store/slices/userSlice";
 import { useFetchCase } from "./hooks/useFetchCase";
 import { toast } from "sonner";
+import { SoundToggle } from "./components/SoundToggle";
 
 const generateClientSeed = async (): Promise<string> => {
   const array = new Uint8Array(16);
@@ -30,14 +35,12 @@ const generateCases = (
   itemWon: BaseCaseItem | null,
   baseCase: BaseCase | undefined
 ): BaseCaseItem[][] => {
-  console.log(itemWon, "Hel");
   if (!baseCase) {
     return [];
   }
   return Array.from({ length: numCases }, () =>
     Array.from({ length: 51 }, (_, index) => {
       if (index === 25 + 20 && itemWon) {
-        console.log("Hello");
         return itemWon;
       }
 
@@ -70,7 +73,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [cases, setCases] = useState<BaseCaseItem[][]>([]);
   const windowSize = useWindowSize();
   const [itemWon, setItemWon] = useState<BaseCaseItem | null>(null);
-  const [rollValue, setRollValue] = useState<number | null>(null);
+  const [rollValue, setRollValue] = useState<string | null>(null);
   const [serverSeed, setServerSeed] = useState<string | null>(null);
   const [previousServerSeedHash, setPreviousServerSeedHash] = useState<string | null>(null);
   const [isFirstServerSeedHash, setIsFirstServerSeedHash] = useState(true);
@@ -170,10 +173,12 @@ export default function CasePage({ params }: { params: { id: string } }) {
             const spinResult: SpinResponse = message["case-results"];
             const { caseItems, serverSeed } = spinResult;
             console.log(caseItems, serverSeed);
+
             // TODO: Caseitems is the array of CaseItem. Make it work with multiple spins
-            setItemWon(caseItem as BaseCaseItem);
-            setCases(generateCases(numCases, caseItem as BaseCaseItem, caseData));
-            setRollValue(rollValue as number);
+            const caseItemWon = caseItems[0].caseItem as BaseCaseItem;
+            setItemWon(caseItemWon);
+            setCases(generateCases(numCases, caseItemWon, caseData));
+            setRollValue(rollValue);
             setServerSeed(serverSeed as string);
           }
         }
@@ -205,15 +210,24 @@ export default function CasePage({ params }: { params: { id: string } }) {
   return (
     <div className="w-full h-full flex flex-col space-y-10 py-2">
       <Back text="Back to Cases" to={""} />
-      <CaseDetails {...caseData} />
-      <ProvablyFair
-        serverSeedHash={serverSeedHash || "Please Login"}
-        clientSeed={clientSeed || "Generating..."}
-        onClientSeedChange={handleClientSeedChange}
-        rollValue={rollValue || ""}
-        serverSeed={serverSeed || ""}
-        previousServerSeedHash={previousServerSeedHash}
-      />
+      <CaseDetails {...caseData} numberOfItems={caseData.items.length} />
+      <div className="w-full flex space-x-4 items-center justify-start">
+        <ProvablyFair
+          serverSeedHash={serverSeedHash || "Please Login"}
+          clientSeed={clientSeed || "Generating..."}
+          onClientSeedChange={handleClientSeedChange}
+          rollValue={rollValue}
+          serverSeed={serverSeed || ""}
+          previousServerSeedHash={previousServerSeedHash}
+        />
+        <SoundToggle />
+        <span
+          onClick={() => dispatch(toggleRarityInfoPopup())}
+          className="text-white hover:cursor-pointer"
+        >
+          Rarity Info
+        </span>
+      </div>
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-2">
         {cases.map((items, index) => (
           <CaseCarousel
