@@ -38,8 +38,6 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
   const chatOpen = useSelector((state: RootState) => state.chatBar.chatBarOpen);
   const { user } = useAuth();
 
-  console.log(chatOpen);
-
   return (
     <div className="flex flex-col justify-between items-start w-full space-y-4">
       <div className="flex space-x-3 justify-between items-center">
@@ -108,11 +106,11 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             }}
             disabled={spinClicked}
           >
-            <span className="text-white font-semibold">
+            <span className="text-white font-semibold whitespace-nowrap">
               Open {numCases} Case{numCases > 1 ? "s" : ""}
             </span>
             <span className="hidden sm:block text-white font-semibold text-sm">·</span>
-            <span className="text-white font-semibold">
+            <span className="text-white font-semibold whitespace-nowrap">
               ${Math.round(price * numCases * 100) / 100}
             </span>
           </button>

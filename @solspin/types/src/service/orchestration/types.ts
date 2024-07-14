@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BaseCaseItemSchema, BaseCaseSchema, SpinResult } from "@solspin/game-engine-types";
+import { BaseCaseItemSchema, BaseCaseSchema } from "../game-engine/types";
 
 const SpinPayloadSchema = z.object({
   caseModel: BaseCaseSchema,
@@ -9,7 +9,7 @@ const SpinPayloadSchema = z.object({
 });
 
 const SpinResultSchema = z.object({
-  caseItem: BaseCaseItemSchema,
+  rewardItem: BaseCaseItemSchema,
   rollValue: z.number().positive().min(1).max(99999),
 });
 // Request Schemas

@@ -172,10 +172,10 @@ export default function CasePage({ params }: { params: { id: string } }) {
           if ("case-results" in message) {
             const spinResult: SpinResponse = message["case-results"];
             const { caseItems, serverSeed } = spinResult;
-            console.log(caseItems, serverSeed);
 
             // TODO: Caseitems is the array of CaseItem. Make it work with multiple spins
-            const caseItemWon = caseItems[0].caseItem as BaseCaseItem;
+            const caseItemWon = caseItems[0].rewardItem as BaseCaseItem;
+            console.log("Case Item Won:", caseItemWon);
             setItemWon(caseItemWon);
             setCases(generateCases(numCases, caseItemWon, caseData));
             setRollValue(rollValue);

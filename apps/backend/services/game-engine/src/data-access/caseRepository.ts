@@ -1,10 +1,9 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
-import { randomUUID } from "crypto";
 import { CaseDoesNotExistError } from "@solspin/errors"; // Update with actual path
-import { mockCase } from "../__mock__/case_pot_of_gold.mock";
 import { BaseCase, BaseCaseItem, CaseType } from "@solspin/game-engine-types";
 import { CASES_TABLE_NAME } from "../foundation/runtime";
+import fs from "fs";
 
 const client = new DynamoDBClient({ region: "eu-west-2" });
 const ddbDocClient = DynamoDBDocumentClient.from(client);
@@ -30,10 +29,10 @@ export const addCase = async (
   caseType: CaseType,
   imageUrl: string,
   items: BaseCaseItem[],
-  itemPrefixSums: Array<number>
+  itemPrefixSums: Array<number>,
+  caseId: string,
+  tag: string
 ): Promise<void> => {
-  const caseId = randomUUID();
-
   const newCase: BaseCase = {
     type: caseType,
     name: caseName,
@@ -45,7 +44,7 @@ export const addCase = async (
     highestPrice: Math.max(...items.map((item) => item.price)),
     lowestPrice: Math.min(...items.map((item) => item.price)),
     rarity: items[0].rarity,
-    tag: "Hot",
+    tag: tag,
   };
 
   const params = {
@@ -86,12 +85,31 @@ export const listCases = async (): Promise<BaseCase[]> => {
 
 // Method to initialize database with mock data
 export const initializeDatabase = async (): Promise<void> => {
-  await addCase(
-    mockCase.name,
-    mockCase.price,
-    CaseType.CSGO,
-    mockCase.imagePath,
-    mockCase.items,
-    mockCase.itemPrefixSums
-  );
+  try {
+    // Read the JSON file
+    const casesContent = fs.readFileSync("src/data/cases.json", "utf-8");
+    const casesData = JSON.parse(casesContent) as BaseCase[];
+    console.log(casesData);
+    // Loop through each case in the JSON data
+    for (const caseData of casesData) {
+      // Calculate item prefix sums
+      const itemPrefixSums = calculateItemPrefixSums(caseData.items);
+
+      // Add the case to the database
+      await addCase(
+        caseData.name,
+        caseData.price,
+        caseData.type as CaseType,
+        caseData.imagePath,
+        caseData.items,
+        itemPrefixSums,
+        caseData.id,
+        caseData.tag
+      );
+    }
+
+    console.log("Database initialized successfully");
+  } catch (error) {
+    console.error("Error initializing database:", error);
+  }
 };

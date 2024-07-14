@@ -17,8 +17,8 @@
         "name": "AK-47 | Gold Arabesque",
         "imagePath": "/case-images/ak47-pink.svg",
         "rollNumbers": [0, 11],
-        "rarity": "COVERT",
-        "wear": "MINIMAL_WEAR"
+        "rarity": "Covert",
+        "wear": "Minimal Wear"
       },
       {
         "price": 2875.02,
@@ -27,8 +27,8 @@
         "name": "M9 Bayonet | Lore",
         "imagePath": "/case-images/ak47-orange.svg",
         "rollNumbers": [12, 36],
-        "rarity": "EXTROARDINARY",
-        "wear": "MINIMAL_WEAR"
+        "rarity": "Extraordinary",
+        "wear": "Minimal Wear"
       },
       {
         "price": 2164.85,
@@ -37,8 +37,8 @@
         "name": "Butterfly Knife | Tiger Tooth",
         "imagePath": "/case-images/aug.svg",
         "rollNumbers": [37, 64],
-        "rarity": "EXTROARDINARY",
-        "wear": "MINIMAL_WEAR"
+        "rarity": "Extraordinary",
+        "wear": "Minimal Wear"
       },
       {
         "price": 2051.09,
@@ -47,8 +47,8 @@
         "name": "Sport Gloves | Superconductor",
         "imagePath": "/case-images/gloves.svg",
         "rollNumbers": [65, 94],
-        "rarity": "EXTROARDINARY",
-        "wear": "FIELD_TESTED"
+        "rarity": "Extraordinary",
+        "wear": "Field Tested"
       },
       {
         "price": 1830.57,
@@ -57,8 +57,8 @@
         "name": "Butterfly Knife | Case Hardened",
         "imagePath": "/case-images/nova.svg",
         "rollNumbers": [95, 139],
-        "rarity": "EXTROARDINARY",
-        "wear": "FACTORY_NEW"
+        "rarity": "Extraordinary",
+        "wear": "Factory New"
       },
       {
         "price": 1402.36,
@@ -67,8 +67,8 @@
         "name": "Karambit | Blue Steel",
         "imagePath": "/case-images/tec-9.svg",
         "rollNumbers": [140, 219],
-        "rarity": "CLASSIFIED",
-        "wear": "FACTORY_NEW"
+        "rarity": "Classified",
+        "wear": "Factory New"
       },
       {
         "price": 828.57,
@@ -77,8 +77,8 @@
         "name": "Driver Gloves | Black Tie",
         "imagePath": "/case-images/usp.svg",
         "rollNumbers": [220, 399],
-        "rarity": "EXTROARDINARY",
-        "wear": "MINIMAL_WEAR"
+        "rarity": "Extraordinary",
+        "wear": "Minimal Wear"
       },
       {
         "price": 552.38,
@@ -87,8 +87,8 @@
         "name": "Talon Knife | Case Hardened",
         "imagePath": "/case-images/five-seven.svg",
         "rollNumbers": [400, 854],
-        "rarity": "CLASSIFIED",
-        "wear": "BATTLE_SCARRED"
+        "rarity": "Classified",
+        "wear": "Battle Scarred"
       },
       {
         "price": 417.49,
@@ -97,8 +97,8 @@
         "name": "Stiletto Knife | Blue Steel",
         "imagePath": "/case-images/gloves.svg",
         "rollNumbers": [855, 2199],
-        "rarity": "CLASSIFIED",
-        "wear": "MINIMAL_WEAR"
+        "rarity": "Classified",
+        "wear": "Minimal Wear"
       },
       {
         "price": 331.86,
@@ -107,8 +107,8 @@
         "name": "Survival Knife | Case Hardened",
         "imagePath": "/case-images/usp.svg",
         "rollNumbers": [2200, 6089],
-        "rarity": "RESTRICTED",
-        "wear": "MINIMAL_WEAR"
+        "rarity": "Restricted",
+        "wear": "Minimal Wear"
       },
       {
         "price": 322.43,
@@ -117,8 +117,8 @@
         "name": "Falchion Knife | Case Hardened",
         "imagePath": "/case-images/ak47-orange.svg",
         "rollNumbers": [6090, 11089],
-        "rarity": "RESTRICTED",
-        "wear": "FACTORY_NEW"
+        "rarity": "Restricted",
+        "wear": "Factory New"
       },
       {
         "price": 301.81,
@@ -127,8 +127,8 @@
         "name": "Ursus Knife | Case Hardened",
         "imagePath": "/case-images/ak47-pink.svg",
         "rollNumbers": [11090, 18639],
-        "rarity": "RESTRICTED",
-        "wear": "FIELD_TESTED"
+        "rarity": "Restricted",
+        "wear": "Field Tested"
       },
       {
         "price": 285.91,
@@ -137,8 +137,8 @@
         "name": "StatTrak™ Bowie Knife | Case Hardened",
         "imagePath": "/case-images/gun.svg",
         "rollNumbers": [18640, 31789],
-        "rarity": "CLASSIFIED",
-        "wear": "FIELD_TESTED"
+        "rarity": "Classified",
+        "wear": "Field Tested"
       },
       {
         "price": 256.86,
@@ -147,8 +147,8 @@
         "name": "Moto Gloves | Smoke Out",
         "imagePath": "/case-images/gloves.svg",
         "rollNumbers": [31790, 47789],
-        "rarity": "MIL_SPEC",
-        "wear": "FIELD_TESTED"
+        "rarity": "Mil Spec",
+        "wear": "Field Tested"
       },
       {
         "price": 233.37,
@@ -157,8 +157,8 @@
         "name": "AK-47 | Jet Set",
         "imagePath": "/case-images/ak47-orange.svg",
         "rollNumbers": [47790, 62789],
-        "rarity": "CLASSIFIED",
-        "wear": "FACTORY_NEW"
+        "rarity": "Classified",
+        "wear": "Factory New"
       },
       {
         "price": 136.81,
@@ -167,8 +167,8 @@
         "name": "Survival Knife | Night Stripe",
         "imagePath": "/case-images/gun.svg",
         "rollNumbers": [62790, 72399],
-        "rarity": "MIL_SPEC",
-        "wear": "BATTLE_SCARRED"
+        "rarity": "Mil Spec",
+        "wear": "Battle Scarred"
       },
       {
         "price": 63.37,
@@ -177,8 +177,8 @@
         "name": "StatTrak™ M4A1-S | Guardian",
         "imagePath": "/case-images/aug.svg",
         "rollNumbers": [72400, 79899],
-        "rarity": "RESTRICTED",
-        "wear": "BATTLE_SCARRED"
+        "rarity": "Restricted",
+        "wear": "Battle Scarred"
       },
       {
         "price": 20.96,
@@ -187,8 +187,8 @@
         "name": "Tec-9 | Hades",
         "imagePath": "/case-images/tec-9.svg",
         "rollNumbers": [79900, 99899],
-        "rarity": "INDUSTRIAL_GRADE",
-        "wear": "FACTORY_NEW"
+        "rarity": "Industrial Grade",
+        "wear": "Factory New"
       }
     ],
     "itemPrefixSums": [

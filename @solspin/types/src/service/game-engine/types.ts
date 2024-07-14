@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export enum CaseType {
-  NFT = "nft",
-  CSGO = "csgo",
+  NFT = "NFT",
+  CSGO = "CSGO",
 }
 
 // Define the CaseType enum using Zod
@@ -11,7 +11,7 @@ const CaseTypeSchema = z.nativeEnum(CaseType);
 const CaseItemRarity = z.enum([
   "Consumer Grade",
   "Industrial Grade",
-  "Mil-Spec",
+  "Mil Spec",
   "Restricted",
   "Classified",
   "Covert",
