@@ -1,5 +1,6 @@
 import type { SSTConfig } from "sst";
 import { GameEngineHandlerAPI } from "./stacks/GameEngineStack";
+import { S3Stack } from "./stacks/S3Stack";
 
 export default {
   config() {
@@ -16,5 +17,6 @@ export default {
     });
 
     app.stack(GameEngineHandlerAPI);
+    app.stack(S3Stack);
   },
 } satisfies SSTConfig;

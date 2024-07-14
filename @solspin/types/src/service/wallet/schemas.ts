@@ -11,7 +11,7 @@ export const BaseWalletsSchema = z.object({
   userId: z.string().uuid(),
   balance: z.number().nonnegative(),
   wagerRequirement: z.number().nonnegative(),
-  walletAddress: z.string().optional(),
+  walletAddress: z.string(),
   lockedAt: z.coerce.string(),
   createdAt: z.coerce.date(),
 });
@@ -19,14 +19,13 @@ export const BaseWalletsSchema = z.object({
 export const WalletTransactionSchema = z.object({
   userId: z.string().uuid(),
   amount: z.number().positive(),
-  walletAddress: z.string().optional(),
+  walletAddress: z.string(),
 });
 
 // Request Schemas
 export const CreateWalletRequestSchema = BaseWalletsSchema.omit({
   createdAt: true,
   lockedAt: true,
-  wagerRequirement: true,
   balance: true,
 });
 

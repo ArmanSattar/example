@@ -4,6 +4,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../../store";
 import { Money } from "../../../components/Money";
 import { BaseCaseItem } from "@solspin/game-engine-types";
+import { GET_CASES_URL } from "../../../types";
+import { useFetchImage } from "../hooks/useFetchImage";
+import { toast } from "sonner";
 
 interface CarouselItemProps {
   isMiddle: boolean;
@@ -34,6 +37,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   const audioChaChingRef = useRef<HTMLAudioElement | null>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const soundClicked = useSelector((state: RootState) => state.demo.soundClicked);
+  const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${item.imagePath}`);
 
   const nameAndType = item.name.split(" | ");
   const type = nameAndType[0];
@@ -80,6 +84,15 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
     };
   }, [isFinal, isMiddle, animationEnd]);
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    toast.error("Error fetching image");
+    return <div>Error fetching image</div>;
+  }
+
   return (
     <>
       <audio ref={audioTickRef} src="/sounds/tick.wav" />
@@ -95,7 +108,12 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
             isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000" : ""
           } ${isInfiniteAnimating ? "animate-final-item" : ""}`}
         >
-          <Image src={item.imagePath} alt={"Case item"} width={200} height={200} />
+          <Image
+            src={data || "/images/placeholder.png"}
+            alt={"Case item"}
+            width={200}
+            height={200}
+          />
         </div>
         <div
           className={`absolute top-0 right-0 w-full h-full opacity-30 z-[-1] ${
@@ -112,7 +130,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
           </div>
           <div className="flex items-center justify-center w-full space-x-1 overflow-visible whitespace-nowrap">
             <span className={"text-white text-sm font-semibold"}>{type}</span>
-            <span className={"text-gray-500 text-sm font-light"}>|</span>
+            <span className={"text-gray-200 text-sm font-light"}>|</span>
             <span className={"text-white text-sm font-semibold"}>{name}</span>
           </div>
           <Money amount={item.price} />

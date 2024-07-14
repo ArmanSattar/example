@@ -2,18 +2,30 @@ import Image from "next/image";
 import React from "react";
 import { Money } from "../../../components/Money";
 import { wearToColorAndAbbrev } from "./CarouselItem";
-import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
+import { BaseCaseItem } from "@solspin/game-engine-types";
+import { useFetchImage } from "../hooks/useFetchImage";
+import { GET_CASES_URL } from "../../../types";
+import { toast } from "sonner";
 
 interface CaseItemProps {
   item: BaseCaseItem;
-  activeCase: BaseCase;
 }
 
-export const CaseItem: React.FC<CaseItemProps> = ({ item, activeCase }) => {
+export const CaseItem: React.FC<CaseItemProps> = ({ item }) => {
   const [wearAbbrev, wearColor] = wearToColorAndAbbrev.get(item.wear) || ["", "text-gray-400"];
   const typeAndName = item.name.split(" | ");
   const name = typeAndName[0];
   const type = typeAndName[1];
+  const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${item.imagePath}`);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    toast.error("Error fetching image");
+    return <div>Error fetching image</div>;
+  }
 
   return (
     <div className="flex items-center rounded-md space-x-4 p-4 main-element overflow-hidden h-40 group min-w-[260px] max-w-[300px]">
@@ -23,7 +35,7 @@ export const CaseItem: React.FC<CaseItemProps> = ({ item, activeCase }) => {
       >
         <div className="relative flex justify-center items-center h-full w-full scale-125 z-10">
           <Image
-            src={item.imagePath}
+            src={data || "/images/placeholder.png"}
             alt={`${item.name} - ${item.wear}`}
             width={125}
             height={125}

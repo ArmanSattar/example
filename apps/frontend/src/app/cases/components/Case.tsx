@@ -5,28 +5,20 @@ import Image from "next/image";
 import { Tag } from "./Tag";
 import Link from "next/link";
 import Dollar from "../../../../public/icons/dollar.svg";
+import { BaseCase } from "@solspin/game-engine-types";
+import { GET_CASES_URL } from "../../types";
 
-export interface CaseProps {
-  name: string;
-  price: number;
-  rarity: string;
-  tag: string;
-  image: string;
-  highestPrice: number;
-  lowestPrice: number;
-}
-
-const Case: React.FC<CaseProps> = ({
+const Case: React.FC<BaseCase> = ({
   name,
   price,
   rarity,
   tag,
-  image,
+  imagePath,
   highestPrice,
   lowestPrice,
 }) => {
   return (
-    <Link href={`/cases/${name}`}>
+    <Link href={`/cases/${name.toLowerCase().replace(/ /g, "-")}`}>
       <div
         className={`relative rounded-md hover:cursor-pointer shadow-lg case cases-${rarity
           .toLowerCase()
@@ -35,7 +27,7 @@ const Case: React.FC<CaseProps> = ({
         <Tag name={tag} customStyle={"absolute top-4 left-4"} />
         <div className="relative -top-4">
           <Image
-            src={image}
+            src={`${GET_CASES_URL}${imagePath}`}
             alt={name}
             width={250}
             height={100}

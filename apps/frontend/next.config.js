@@ -6,11 +6,18 @@ const { composePlugins, withNx } = require("@nx/next");
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
+console.log(process.env.NEXT_PUBLIC_GET_CASES_URL, "ASDASDASDASD");
 const nextConfig = {
   nx: {
     // Enable SVGR
     svgr: false,
   },
+  images: {
+    domains: [process.env.NEXT_PUBLIC_GET_CASES_DOMAIN || ""],
+  },
+  /**
+   * @param {{ module: { rules: any[]; }; }} config
+   */
   webpack(config) {
     // Grab the existing rule that handles SVG imports
     const fileLoaderRule = config.module.rules.find(

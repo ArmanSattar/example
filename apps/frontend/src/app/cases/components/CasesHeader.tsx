@@ -2,9 +2,10 @@
 import FilterDropdownMenu from "./FilterDropdownMenu";
 import { Search } from "./Search";
 import React from "react";
+import { IFilters } from "../../types";
 
 interface CasesHeaderProps {
-  updateFilters: (filterType: string, selectedOptions: string[]) => void;
+  updateFilters: (filterType: keyof IFilters, selectedOptions: string[]) => void;
   handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
