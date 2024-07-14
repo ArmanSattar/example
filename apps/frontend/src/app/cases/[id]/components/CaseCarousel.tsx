@@ -135,7 +135,9 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         ((isPaidSpinClicked && itemWon) || isDemoClicked)
       ) {
         dispatch(Action.RESET);
+        animationCompletedRef.current = false;
         currentPositionRef.current = 0;
+        setMiddleItem(0);
       }
     }, [items, isDemoClicked, isPaidSpinClicked, itemWon]);
 
@@ -197,18 +199,22 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           ? distance - tickerOffset
           : 0;
 
+      const transform =
+        direction === Direction.VERTICAL
+          ? `translate3d(0, ${transformDistance}px, 0)`
+          : `translate3d(${transformDistance}px, 0, 0)`;
+
+      const transition =
+        state.animationStage === 1 || state.animationStage == 3
+          ? `transform ${!isFastAnimationClicked ? "5s" : "2s"} cubic-bezier(0, 0.49, 0.1, 1)`
+          : state.animationStage === 2
+          ? `transform ${!isFastAnimationClicked ? "1s" : "0.5s"}`
+          : "none";
+
       return {
         "--transform-distance": `${transformDistance}px`,
-        transform:
-          direction === Direction.VERTICAL
-            ? `translate3d(0, var(--transform-distance), 0)`
-            : `translate3d(var(--transform-distance), 0, 0)`,
-        transition:
-          state.animationStage === 1
-            ? `transform ${!isFastAnimationClicked ? "5s" : "2s"} cubic-bezier(0, 0.49, 0.1, 1)`
-            : state.animationStage === 2
-            ? `transform ${!isFastAnimationClicked ? "1s" : "0.5s"}`
-            : "none",
+        transform,
+        transition,
       } as React.CSSProperties & { "--transform-distance": string };
     }, [state.animationStage, state.offset, numCases, direction]);
 

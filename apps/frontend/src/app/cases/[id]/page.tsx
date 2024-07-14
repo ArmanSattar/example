@@ -13,7 +13,6 @@ import {
   toggleRarityInfoPopup,
 } from "../../../store/slices/demoSlice";
 import { ProvablyFair } from "./components/ProvablyFair";
-import { v4 as uuidv4 } from "uuid";
 import useWindowSize from "./hooks/useWindowResize";
 import { Back } from "../../components/Back";
 import { PreviousDrops } from "./components/PreviousDrops";
@@ -30,6 +29,16 @@ const generateClientSeed = async (): Promise<string> => {
   return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
 };
 
+const createLookupTable = (baseCase: BaseCase): BaseCaseItem[] => {
+  const lookupTable: BaseCaseItem[] = [];
+  baseCase.items.forEach((item) => {
+    for (let i = item.rollNumbers[0]; i <= item.rollNumbers[1]; i++) {
+      lookupTable[i] = item;
+    }
+  });
+  return lookupTable;
+};
+
 const generateCases = (
   numCases: number,
   itemWon: BaseCaseItem | null,
@@ -38,6 +47,10 @@ const generateCases = (
   if (!baseCase) {
     return [];
   }
+  console.log("Generating cases");
+  // Create lookup table once
+  const lookupTable = createLookupTable(baseCase);
+
   return Array.from({ length: numCases }, () =>
     Array.from({ length: 51 }, (_, index) => {
       if (index === 25 + 20 && itemWon) {
@@ -45,15 +58,13 @@ const generateCases = (
       }
 
       const roll = Math.floor(Math.random() * 100000); // Generate a random number between 0 and 99999
-      const selectedItem = baseCase.items.find(
-        (item) => roll >= item.rollNumbers[0] && roll <= item.rollNumbers[1]
-      );
+      const selectedItem = lookupTable[roll];
 
       if (!selectedItem) {
         throw new Error("No item found for roll number: " + roll);
       }
 
-      return { ...selectedItem, id: uuidv4() };
+      return { ...selectedItem };
     })
   );
 };
@@ -79,6 +90,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [isFirstServerSeedHash, setIsFirstServerSeedHash] = useState(true);
   const { data: caseInfo, isLoading, isError, error } = useFetchCase(caseId);
   const caseData = caseInfo as BaseCase;
+  const [spinCounter, setSpinCounter] = useState(0);
 
   const handleClientSeedChange = (newClientSeed: string) => {
     setClientSeed(newClientSeed);
@@ -86,7 +98,6 @@ export default function CasePage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     if (caseData) {
-      console.log("Generating cases");
       setCases(generateCases(numCases, null, caseData));
     }
   }, [numCases, caseData]);
@@ -175,10 +186,12 @@ export default function CasePage({ params }: { params: { id: string } }) {
 
             // TODO: Caseitems is the array of CaseItem. Make it work with multiple spins
             const caseItemWon = caseItems[0].rewardItem as BaseCaseItem;
+            console.log(caseItems[0], "ss");
             console.log("Case Item Won:", caseItemWon);
             setItemWon(caseItemWon);
             setCases(generateCases(numCases, caseItemWon, caseData));
-            setRollValue(rollValue);
+            setSpinCounter((prev) => prev + 1);
+            setRollValue(caseItems[0].rollValue.toString());
             setServerSeed(serverSeed as string);
           }
         }
@@ -231,7 +244,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-2">
         {cases.map((items, index) => (
           <CaseCarousel
-            key={index}
+            key={`${index}-${spinCounter}`}
             items={items}
             isPaidSpinClicked={isPaidSpinClicked}
             isDemoClicked={isDemoClicked}

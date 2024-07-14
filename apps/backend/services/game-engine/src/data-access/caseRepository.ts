@@ -8,20 +8,6 @@ import fs from "fs";
 const client = new DynamoDBClient({ region: "eu-west-2" });
 const ddbDocClient = DynamoDBDocumentClient.from(client);
 
-// Helper method to calculate item prefix sums based on probabilities
-const calculateItemPrefixSums = (items: BaseCaseItem[]): number[] => {
-  const prefixSums: number[] = [];
-  let sum = 0;
-  const maxRange = 99999;
-
-  items.forEach((item) => {
-    sum += item.chance * maxRange;
-    prefixSums.push(Math.floor(sum));
-  });
-
-  return prefixSums;
-};
-
 // Method to add a new case
 export const addCase = async (
   caseName: string,
@@ -92,9 +78,6 @@ export const initializeDatabase = async (): Promise<void> => {
     console.log(casesData);
     // Loop through each case in the JSON data
     for (const caseData of casesData) {
-      // Calculate item prefix sums
-      const itemPrefixSums = calculateItemPrefixSums(caseData.items);
-
       // Add the case to the database
       await addCase(
         caseData.name,
@@ -102,7 +85,7 @@ export const initializeDatabase = async (): Promise<void> => {
         caseData.type as CaseType,
         caseData.imagePath,
         caseData.items,
-        itemPrefixSums,
+        caseData.itemPrefixSums,
         caseData.id,
         caseData.tag
       );

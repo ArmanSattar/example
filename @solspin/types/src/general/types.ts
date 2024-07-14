@@ -1,5 +1,5 @@
 // Enum value representing each microservice
-import { BaseCaseItem } from "@solspin/game-engine-types";
+import { BaseCaseItem } from "../service/game-engine/types";
 
 export const enum Service {
   BETTING = "betting_service",

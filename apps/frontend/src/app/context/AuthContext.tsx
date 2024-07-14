@@ -1,8 +1,15 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode, useCallback } from 'react';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useWebSocket } from "./WebSocketContext";
-import { toast } from 'sonner';
-import bs58 from 'bs58';
+import { toast } from "sonner";
+import bs58 from "bs58";
 
 interface User {
   userId: string;
@@ -35,19 +42,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const { connected, disconnect, publicKey, signMessage } = useWallet();
   const { sendMessage, connectionStatus } = useWebSocket();
   const { connection } = useConnection();
-  console.log(apiUrl)
+
   const checkToken = useCallback(async () => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
         const response = await fetch(`${apiUrl}/user`, {
-          method: 'GET',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         });
-  
+
         if (response.ok) {
           const user = await response.json();
           setUser(user);
@@ -56,7 +63,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           localStorage.removeItem("token");
         }
       } catch (error) {
-        console.error('Token verification error:', error);
+        console.error("Token verification error:", error);
         localStorage.removeItem("token");
       }
     }
@@ -69,20 +76,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const login = useCallback(async () => {
     if (!publicKey || !signMessage) {
-      toast.error('Wallet not connected or does not support message signing!');
+      toast.error("Wallet not connected or does not support message signing!");
       return;
     }
 
     try {
       // Request a nonce from the server
       const nonceResponse = await fetch(`${apiUrl}/auth/nonce`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ walletAddress: publicKey.toString() }),
       });
 
       if (!nonceResponse.ok) {
-        throw new Error('Failed to get nonce from server');
+        throw new Error("Failed to get nonce from server");
       }
 
       const { nonce } = await nonceResponse.json();
@@ -98,8 +105,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       // Send the signed message to the server
       const loginResponse = await fetch(`${apiUrl}/auth/connect`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           walletAddress: publicKey.toString(),
           signature,
@@ -109,7 +116,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (loginResponse.ok) {
         const { message, data } = await loginResponse.json();
-        
+
         if (data && data.user && data.token) {
           const token = data.token;
           const user = data.user;
@@ -127,10 +134,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
           toast.success("Successfully logged in!");
         }
       } else {
-        throw new Error('Login failed');
+        throw new Error("Login failed");
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       toast.error("Failed to log in!");
       setUser(null);
     }
@@ -142,7 +149,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       await disconnect();
       setUser(null);
-      toast.success('Logged out successfully!');
+      toast.success("Logged out successfully!");
       if (connectionStatus === "connected") {
         sendMessage(
           JSON.stringify({
@@ -158,10 +165,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
       localStorage.removeItem("token");
     } catch (error) {
-      toast.error('Error occurred during logout!');
+      toast.error("Error occurred during logout!");
     }
   }, [disconnect, connectionStatus, sendMessage]);
-
 
   const contextValue: AuthContextType = {
     user,
@@ -170,17 +176,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     checkToken,
   };
 
-  return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
