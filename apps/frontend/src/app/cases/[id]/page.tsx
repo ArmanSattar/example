@@ -41,7 +41,7 @@ const createLookupTable = (baseCase: BaseCase): BaseCaseItem[] => {
 
 const generateCases = (
   numCases: number,
-  itemWon: BaseCaseItem | null,
+  itemsWon: BaseCaseItem[] | null,
   baseCase: BaseCase | undefined
 ): BaseCaseItem[][] => {
   if (!baseCase) {
@@ -51,10 +51,10 @@ const generateCases = (
   // Create lookup table once
   const lookupTable = createLookupTable(baseCase);
 
-  return Array.from({ length: numCases }, () =>
+  return Array.from({ length: numCases }, (_, rootIndex) =>
     Array.from({ length: 51 }, (_, index) => {
-      if (index === 25 + 20 && itemWon) {
-        return itemWon;
+      if (index === 25 + 20 && itemsWon) {
+        return itemsWon[rootIndex];
       }
 
       const roll = Math.floor(Math.random() * 100000); // Generate a random number between 0 and 99999
@@ -83,7 +83,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const dispatch = useDispatch();
   const [cases, setCases] = useState<BaseCaseItem[][]>([]);
   const windowSize = useWindowSize();
-  const [itemWon, setItemWon] = useState<BaseCaseItem | null>(null);
+  const [itemsWon, setItemsWon] = useState<BaseCaseItem[] | null>(null);
   const [rollValue, setRollValue] = useState<string | null>(null);
   const [serverSeed, setServerSeed] = useState<string | null>(null);
   const [previousServerSeedHash, setPreviousServerSeedHash] = useState<string | null>(null);
@@ -147,10 +147,11 @@ export default function CasePage({ params }: { params: { id: string } }) {
       if (isDemoClicked) dispatch(toggleDemoClicked());
       if (isPaidSpinClicked) {
         dispatch(togglePaidSpinClicked());
-        dispatch(addToBalance(itemWon?.price || 0));
+        const amount = itemsWon?.reduce((sum, item) => sum + item.price, 0) || 0;
+        dispatch(addToBalance(amount));
       }
       setAnimationComplete(0);
-      setItemWon(null);
+      setItemsWon(null);
     }
   }, [animationComplete, numCases, isDemoClicked, dispatch, isPaidSpinClicked]);
 
@@ -183,13 +184,28 @@ export default function CasePage({ params }: { params: { id: string } }) {
           if ("case-results" in message) {
             const spinResult: SpinResponse = message["case-results"];
             const { caseItems, serverSeed } = spinResult;
+            console.log("Case items won", caseItems);
 
-            // TODO: Caseitems is the array of CaseItem. Make it work with multiple spins
-            const caseItemWon = caseItems[0].rewardItem as BaseCaseItem;
-            console.log(caseItems[0], "ss");
-            console.log("Case Item Won:", caseItemWon);
-            setItemWon(caseItemWon);
-            setCases(generateCases(numCases, caseItemWon, caseData));
+            if (!caseItems) {
+              toast.error("Error parsing WebSocket message: No case items found");
+              console.error("Error parsing WebSocket message: No case item");
+              return; // Exit early if there's a mismatch
+            }
+
+            const caseItemsWon = caseItems.map((item) => item.rewardItem as BaseCaseItem);
+
+            if (caseItemsWon.length !== numCases) {
+              toast.error("Error parsing WebSocket message: Incorrect number of case items");
+              console.error("Error parsing WebSocket message: Incorrect number of case items");
+              return; // Exit early if there's a mismatch
+            }
+
+            setItemsWon(caseItemsWon);
+
+            const newCases = generateCases(numCases, caseItemsWon, caseData);
+            console.log(newCases);
+            setCases(newCases);
+
             setSpinCounter((prev) => prev + 1);
             setRollValue(caseItems[0].rollValue.toString());
             setServerSeed(serverSeed as string);
@@ -209,7 +225,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
         socket.removeEventListener("message", handleMessage);
       }
     };
-  }, [socket, isFirstServerSeedHash, serverSeedHash, caseData]);
+  }, [socket, isFirstServerSeedHash, serverSeedHash, caseData, numCases]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -248,7 +264,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
             items={items}
             isPaidSpinClicked={isPaidSpinClicked}
             isDemoClicked={isDemoClicked}
-            itemWon={itemWon}
+            itemWon={itemsWon ? itemsWon[index] : null}
             isFastAnimationClicked={fastClicked}
             numCases={numCases}
             onAnimationComplete={handleAnimationComplete}
