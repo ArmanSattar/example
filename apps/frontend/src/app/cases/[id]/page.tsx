@@ -22,52 +22,7 @@ import { addToBalance } from "../../../store/slices/userSlice";
 import { useFetchCase } from "./hooks/useFetchCase";
 import { toast } from "sonner";
 import { SoundToggle } from "./components/SoundToggle";
-
-const generateClientSeed = async (): Promise<string> => {
-  const array = new Uint8Array(16);
-  crypto.getRandomValues(array);
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
-};
-
-const createLookupTable = (baseCase: BaseCase): BaseCaseItem[] => {
-  const lookupTable: BaseCaseItem[] = [];
-  baseCase.items.forEach((item) => {
-    for (let i = item.rollNumbers[0]; i <= item.rollNumbers[1]; i++) {
-      lookupTable[i] = item;
-    }
-  });
-  return lookupTable;
-};
-
-const generateCases = (
-  numCases: number,
-  itemsWon: BaseCaseItem[] | null,
-  baseCase: BaseCase | undefined
-): BaseCaseItem[][] => {
-  if (!baseCase) {
-    return [];
-  }
-  console.log("Generating cases");
-  // Create lookup table once
-  const lookupTable = createLookupTable(baseCase);
-
-  return Array.from({ length: numCases }, (_, rootIndex) =>
-    Array.from({ length: 51 }, (_, index) => {
-      if (index === 25 + 20 && itemsWon) {
-        return itemsWon[rootIndex];
-      }
-
-      const roll = Math.floor(Math.random() * 100000); // Generate a random number between 0 and 99999
-      const selectedItem = lookupTable[roll];
-
-      if (!selectedItem) {
-        throw new Error("No item found for roll number: " + roll);
-      }
-
-      return { ...selectedItem };
-    })
-  );
-};
+import { generateCases, generateClientSeed } from "./utils";
 
 export default function CasePage({ params }: { params: { id: string } }) {
   const caseId = params.id;
@@ -90,7 +45,6 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [isFirstServerSeedHash, setIsFirstServerSeedHash] = useState(true);
   const { data: caseInfo, isLoading, isError, error } = useFetchCase(caseId);
   const caseData = caseInfo as BaseCase;
-  const [spinCounter, setSpinCounter] = useState(0);
 
   const handleClientSeedChange = (newClientSeed: string) => {
     setClientSeed(newClientSeed);
@@ -200,13 +154,9 @@ export default function CasePage({ params }: { params: { id: string } }) {
               return; // Exit early if there's a mismatch
             }
 
-            setItemsWon(caseItemsWon);
-
             const newCases = generateCases(numCases, caseItemsWon, caseData);
-            console.log(newCases);
             setCases(newCases);
-
-            setSpinCounter((prev) => prev + 1);
+            setItemsWon(caseItemsWon);
             setRollValue(caseItems[0].rollValue.toString());
             setServerSeed(serverSeed as string);
           }
@@ -260,11 +210,10 @@ export default function CasePage({ params }: { params: { id: string } }) {
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-2">
         {cases.map((items, index) => (
           <CaseCarousel
-            key={`${index}-${spinCounter}`}
+            key={index}
             items={items}
             isPaidSpinClicked={isPaidSpinClicked}
             isDemoClicked={isDemoClicked}
-            itemWon={itemsWon ? itemsWon[index] : null}
             isFastAnimationClicked={fastClicked}
             numCases={numCases}
             onAnimationComplete={handleAnimationComplete}

@@ -16,7 +16,6 @@ interface CaseCarouselProps {
   items: BaseCaseItem[];
   isPaidSpinClicked: boolean;
   isDemoClicked: boolean;
-  itemWon: BaseCaseItem | null;
   isFastAnimationClicked: boolean;
   numCases: number;
   onAnimationComplete: () => void;
@@ -83,7 +82,6 @@ function carouselReducer(state: State, action: Action): State {
 const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
   ({
     items,
-    itemWon,
     isFastAnimationClicked,
     numCases,
     onAnimationComplete,
@@ -120,6 +118,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     useEffect(() => {
       const newDirection = calculateDirection();
       if (newDirection !== direction) {
+        console.log("Setting direction", newDirection, direction);
         setDirection(newDirection);
       }
     }, [windowSize, numCases, calculateDirection, direction]);
@@ -130,32 +129,47 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     }, []);
 
     useEffect(() => {
-      if (
-        (state.animationStage === 3 || state.animationStage === 0) &&
-        ((isPaidSpinClicked && itemWon) || isDemoClicked)
-      ) {
+      if (state.animationStage === 3 && (isDemoClicked || isPaidSpinClicked)) {
         dispatch(Action.RESET);
-        animationCompletedRef.current = false;
-        currentPositionRef.current = 0;
         setMiddleItem(0);
+        currentPositionRef.current = 0;
+
+        // Force a reflow
+        if (carouselRef.current) {
+          void carouselRef.current.offsetHeight;
+        }
+
+        // Start animation in the next frame
+        setTimeout(() => {
+          dispatch(Action.START_ANIMATION);
+        }, 50);
       }
-    }, [items, isDemoClicked, isPaidSpinClicked, itemWon]);
+    }, [items, isDemoClicked, isPaidSpinClicked]);
 
     useEffect(() => {
-      if (((isPaidSpinClicked && itemWon) || isDemoClicked) && state.animationStage === 0) {
-        animationCompletedRef.current = false;
+      if (state.animationStage === 0 && (isDemoClicked || isPaidSpinClicked)) {
+        if (carouselRef.current) {
+          console.log(
+            "Starting animation",
+            carouselRef.current.style?.transform,
+            carouselRef.current?.style.transition
+          );
+        }
         dispatch(Action.START_ANIMATION);
+        animationCompletedRef.current = false;
       }
-    }, [isDemoClicked, isPaidSpinClicked, state.animationStage, itemWon]);
+    }, [state.animationStage, isDemoClicked, isPaidSpinClicked]);
 
     useEffect(() => {
       const handleTransitionEnd = () => {
         if (state.animationStage === 1) {
+          console.log("First stage end");
           dispatch(Action.FIRST_STAGE_END);
         } else if (state.animationStage === 2 && !animationCompletedRef.current) {
           animationCompletedRef.current = true;
           onAnimationComplete();
           dispatch(Action.SECOND_STAGE_END);
+          console.log("Second stage end");
         }
       };
 
@@ -192,31 +206,41 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
 
     const carouselStyle = useMemo(() => {
       const { distance, tickerOffset } = state.offset;
-      const transformDistance =
-        state.animationStage === 1
-          ? distance
-          : state.animationStage === 2 || state.animationStage === 3
-          ? distance - tickerOffset
-          : 0;
+      let transformDistance = 0;
+      let transition = "none";
 
-      const transform =
-        direction === Direction.VERTICAL
-          ? `translate3d(0, ${transformDistance}px, 0)`
-          : `translate3d(${transformDistance}px, 0, 0)`;
-
-      const transition =
-        state.animationStage === 1 || state.animationStage == 3
-          ? `transform ${!isFastAnimationClicked ? "5s" : "2s"} cubic-bezier(0, 0.49, 0.1, 1)`
-          : state.animationStage === 2
-          ? `transform ${!isFastAnimationClicked ? "1s" : "0.5s"}`
-          : "none";
+      switch (state.animationStage) {
+        case 0:
+          console.log("Stage 0", distance, tickerOffset);
+          transformDistance = 0;
+          transition = "none";
+          break;
+        case 1:
+          transformDistance = distance;
+          transition = `transform ${
+            !isFastAnimationClicked ? "5s" : "2s"
+          } cubic-bezier(0, 0.49, 0.1, 1)`;
+          break;
+        case 2:
+          transformDistance = distance - tickerOffset;
+          transition = `transform ${!isFastAnimationClicked ? "1s" : "0.5s"}`;
+          break;
+        case 3:
+          transformDistance = distance - tickerOffset;
+          transition = `transform ${
+            !isFastAnimationClicked ? "5s" : "2s"
+          } cubic-bezier(0, 0.49, 0.1, 1)`;
+          break;
+      }
 
       return {
-        "--transform-distance": `${transformDistance}px`,
-        transform,
+        transform:
+          direction === Direction.HORIZONTAL
+            ? `translate3d(${transformDistance}px, 0, 0)`
+            : `translate3d(0, ${transformDistance}px, 0)`,
         transition,
-      } as React.CSSProperties & { "--transform-distance": string };
-    }, [state.animationStage, state.offset, numCases, direction]);
+      };
+    }, [state.animationStage, state.offset, isFastAnimationClicked]);
 
     const calculateMiddleItem = () => {
       const adjustedPosition = Math.abs(currentPositionRef.current);
