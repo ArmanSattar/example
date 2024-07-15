@@ -8,6 +8,7 @@ import { GET_CASES_URL } from "../../../types";
 import { useFetchImage } from "../hooks/useFetchImage";
 import { toast } from "sonner";
 import { CarouselItemSkeleton } from "./CarouselItemSkeleton";
+import { ITEM_HEIGHT, ITEM_WIDTH } from "../utils";
 
 interface CarouselItemProps {
   isMiddle: boolean;
@@ -98,7 +99,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
 
   return (
     <div
-      className={`relative flex flex-col items-center justify-center w-[192px] h-[192px] scale-90 opacity-50 will-change-transform ${
+      className={`relative flex flex-col items-center justify-center w-[${ITEM_WIDTH}px] h-[${ITEM_HEIGHT}px] scale-90 opacity-50 will-change-transform ${
         isMiddle ? "animate-middle-item z-10" : shouldScaleDown ? "animate-scale-down" : ""
       }`}
     >
@@ -108,13 +109,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
           isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000" : ""
         } ${isInfiniteAnimating ? "animate-final-item" : ""}`}
       >
-        <Image
-          src={data || "/images/placeholder.png"}
-          alt={"Case item"}
-          width={200}
-          height={200}
-          priority={isMiddle}
-        />
+        <Image src={data || "/images/placeholder.png"} alt={"Case item"} width={200} height={200} />
       </div>
       <div
         className={`absolute top-0 right-0 w-full h-full opacity-30 z-[-1] ${

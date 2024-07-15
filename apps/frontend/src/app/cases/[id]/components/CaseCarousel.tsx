@@ -4,13 +4,16 @@ import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } 
 import dynamic from "next/dynamic";
 import { WindowSize } from "../hooks/useWindowResize";
 import { BaseCaseItem } from "@solspin/game-engine-types";
+import {
+  animationCalculation,
+  AnimationCalculation,
+  DISTANCE_IN_ITEMS,
+  ITEM_HEIGHT,
+  ITEM_WIDTH,
+  itemOffsets,
+} from "../utils";
 
 const CarouselItem = dynamic(() => import("./CarouselItem"), { ssr: false });
-
-type AnimationCalculation = {
-  distance: number;
-  tickerOffset: number;
-};
 
 interface CaseCarouselProps {
   items: BaseCaseItem[];
@@ -20,31 +23,6 @@ interface CaseCarouselProps {
   onAnimationComplete: () => void;
   windowSize: WindowSize;
 }
-
-function getRandomInt(min: number, max: number) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-export const itemWidth = 192;
-const distanceInItems = 30;
-const animationDistanceBounds = {
-  lower: (distanceInItems - 0.5) * itemWidth,
-  upper: (distanceInItems + 0.5) * itemWidth,
-  midpoint: distanceInItems * itemWidth,
-};
-
-const animationCalculation = (): AnimationCalculation => {
-  const randomAnimationDistance = getRandomInt(
-    animationDistanceBounds.lower,
-    animationDistanceBounds.upper
-  );
-  return {
-    distance: -randomAnimationDistance,
-    tickerOffset: animationDistanceBounds.midpoint - randomAnimationDistance,
-  };
-};
 
 enum Action {
   RESET,
@@ -87,7 +65,9 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     const animationCompletedRef = useRef(false);
     const currentPositionRef = useRef(0);
     const carouselRef = useRef<HTMLDivElement | null>(null);
+    const carouselContainerRef = useRef<HTMLDivElement | null>(null);
     const [middleItem, setMiddleItem] = useState<number>(0);
+    const [startMiddleItem, setStartMiddleItem] = useState<number>(0);
     const [direction, setDirection] = useState<Direction>(Direction.HORIZONTAL);
 
     const calculateDirection = useCallback(() => {
@@ -108,6 +88,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
 
     useEffect(() => {
       const newDirection = calculateDirection();
+      console.log("New direction", newDirection, direction);
       if (newDirection !== direction) {
         console.log("Setting direction", newDirection, direction);
         setDirection(newDirection);
@@ -227,7 +208,6 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
 
     const calculateMiddleItem = () => {
       const adjustedPosition = Math.abs(currentPositionRef.current);
-      const itemOffsets = items.map((_, index) => index * itemWidth);
       const closestOffset = itemOffsets.reduce((prev, curr) => {
         return Math.abs(curr - adjustedPosition) < Math.abs(prev - adjustedPosition) ? curr : prev;
       });
@@ -238,27 +218,71 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       }
     };
 
+    const setMiddleDueToResizedCarousel = useCallback(
+      (width: number, height: number) => {
+        if (carouselContainerRef.current) {
+          const dimension = direction === Direction.HORIZONTAL ? width : height;
+
+          const middleElement = Math.ceil(
+            dimension / ((direction === Direction.HORIZONTAL ? ITEM_WIDTH : ITEM_HEIGHT) * 2)
+          );
+          console.log("startMiddle", middleElement, dimension, direction);
+          setStartMiddleItem(middleElement - 1);
+        }
+      },
+      [direction]
+    );
+
+    useEffect(() => {
+      if (!carouselContainerRef.current) return;
+
+      const carouselRefTemp = carouselContainerRef.current;
+
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const { width, height } = entry.contentRect;
+          setMiddleDueToResizedCarousel(width, height);
+        }
+      });
+
+      resizeObserver.observe(carouselContainerRef.current);
+
+      // Cleanup function
+      return () => {
+        if (carouselRefTemp) {
+          resizeObserver.unobserve(carouselRefTemp);
+        }
+      };
+    }, [setMiddleDueToResizedCarousel]);
+
     return (
       <div
         className={`relative ${
           numCases > 1 ? "py-0 lg:py-0" : "lg:py-2"
         } rounded-md main-element flex-grow w-full`}
       >
-        <div className={`mt-md flex overflow-hidden rounded-sm flex-col gap-xs h-[310px]`}>
-          <div className="relative mx-auto my-0 flex h-full items-center justify-center overflow-hidden bg-dark-4 w-full">
+        <div
+          className={`mt-md flex overflow-hidden rounded-sm flex-col gap-xs ${
+            direction === Direction.VERTICAL ? "h-[450px]" : "h-[310px]"
+          }`}
+        >
+          <div
+            className="relative flex h-full overflow-hidden bg-dark-4 w-full items-center justify-center"
+            ref={carouselContainerRef}
+          >
             <div
               ref={carouselRef}
-              className={`flex carousel-animation ${
-                direction === Direction.VERTICAL ? "flex-col" : "flex-row"
-              }`}
+              className={`flex absolute carousel-animation ${
+                direction === Direction.VERTICAL ? "flex-col top-0" : "flex-row left-0"
+              } h-max`}
               style={carouselStyle}
             >
               {items.map((item, index) => (
                 <CarouselItem
                   key={index}
                   item={item}
-                  isMiddle={index === Math.round(items.length / 2) - 1 + middleItem}
-                  isFinal={index === Math.round(items.length / 2) - 1 + distanceInItems}
+                  isMiddle={index === startMiddleItem + middleItem}
+                  isFinal={index === DISTANCE_IN_ITEMS + startMiddleItem}
                   animationEnd={state.animationStage === 2 || state.animationStage === 3}
                   animationStart={state.animationStage === 1}
                 />
