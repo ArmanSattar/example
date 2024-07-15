@@ -212,8 +212,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
           <CaseCarousel
             key={index}
             items={items}
-            isPaidSpinClicked={isPaidSpinClicked}
-            isDemoClicked={isDemoClicked}
+            isSpinClicked={isDemoClicked || isPaidSpinClicked}
             isFastAnimationClicked={fastClicked}
             numCases={numCases}
             onAnimationComplete={handleAnimationComplete}

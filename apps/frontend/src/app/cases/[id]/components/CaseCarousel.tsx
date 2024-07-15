@@ -14,8 +14,7 @@ type AnimationCalculation = {
 
 interface CaseCarouselProps {
   items: BaseCaseItem[];
-  isPaidSpinClicked: boolean;
-  isDemoClicked: boolean;
+  isSpinClicked: boolean;
   isFastAnimationClicked: boolean;
   numCases: number;
   onAnimationComplete: () => void;
@@ -29,7 +28,7 @@ function getRandomInt(min: number, max: number) {
 }
 
 export const itemWidth = 192;
-const distanceInItems = 20;
+const distanceInItems = 30;
 const animationDistanceBounds = {
   lower: (distanceInItems - 0.5) * itemWidth,
   upper: (distanceInItems + 0.5) * itemWidth,
@@ -80,15 +79,7 @@ function carouselReducer(state: State, action: Action): State {
 }
 
 const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
-  ({
-    items,
-    isFastAnimationClicked,
-    numCases,
-    onAnimationComplete,
-    windowSize,
-    isPaidSpinClicked,
-    isDemoClicked,
-  }) => {
+  ({ items, isFastAnimationClicked, numCases, onAnimationComplete, windowSize, isSpinClicked }) => {
     const [state, dispatch] = useReducer(carouselReducer, {
       animationStage: 0,
       offset: { distance: 0, tickerOffset: 0 },
@@ -121,7 +112,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         console.log("Setting direction", newDirection, direction);
         setDirection(newDirection);
       }
-    }, [windowSize, numCases, calculateDirection, direction]);
+    }, [windowSize, numCases, calculateDirection, direction, items]);
 
     const updatePosition = useCallback((position: number) => {
       currentPositionRef.current = position;
@@ -129,7 +120,8 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     }, []);
 
     useEffect(() => {
-      if (state.animationStage === 3 && (isDemoClicked || isPaidSpinClicked)) {
+      if ((state.animationStage === 3 || state.animationStage === 0) && isSpinClicked) {
+        console.log("Resetting carousel", state.animationStage, isSpinClicked);
         dispatch(Action.RESET);
         setMiddleItem(0);
         currentPositionRef.current = 0;
@@ -140,25 +132,12 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         }
 
         // Start animation in the next frame
-        setTimeout(() => {
+        requestAnimationFrame(() => {
           dispatch(Action.START_ANIMATION);
-        }, 50);
+          animationCompletedRef.current = false;
+        });
       }
-    }, [items, isDemoClicked, isPaidSpinClicked]);
-
-    useEffect(() => {
-      if (state.animationStage === 0 && (isDemoClicked || isPaidSpinClicked)) {
-        if (carouselRef.current) {
-          console.log(
-            "Starting animation",
-            carouselRef.current.style?.transform,
-            carouselRef.current?.style.transition
-          );
-        }
-        dispatch(Action.START_ANIMATION);
-        animationCompletedRef.current = false;
-      }
-    }, [state.animationStage, isDemoClicked, isPaidSpinClicked]);
+    }, [items]);
 
     useEffect(() => {
       const handleTransitionEnd = () => {
@@ -218,18 +197,22 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         case 1:
           transformDistance = distance;
           transition = `transform ${
-            !isFastAnimationClicked ? "5s" : "2s"
+            !isFastAnimationClicked
+              ? `${6.5 + Math.random() - 0.5}s`
+              : `${2 + Math.random() * 0.33 - 0.165}s`
           } cubic-bezier(0, 0.49, 0.1, 1)`;
           break;
         case 2:
           transformDistance = distance - tickerOffset;
-          transition = `transform ${!isFastAnimationClicked ? "1s" : "0.5s"}`;
+          transition = `transform ${
+            !isFastAnimationClicked
+              ? `${0.75 + Math.random() * 0.5 - 0.25}s`
+              : `${0.375 + Math.random() * 0.25 - 0.125}s`
+          }`;
           break;
         case 3:
           transformDistance = distance - tickerOffset;
-          transition = `transform ${
-            !isFastAnimationClicked ? "5s" : "2s"
-          } cubic-bezier(0, 0.49, 0.1, 1)`;
+          transition = `none`;
           break;
       }
 

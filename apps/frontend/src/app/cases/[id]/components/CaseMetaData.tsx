@@ -131,21 +131,17 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-2 ${
               spinClicked ? "opacity-50 cursor-not-allowed" : ""
             }`}
+            onClick={() => {
+              if (!spinClicked) {
+                dispatch(toggleFastClicked());
+              }
+            }}
             disabled={spinClicked}
           >
             <div
               className={`rounded-full w-2 h-2 ${fastClicked ? "bg-green-500" : "bg-red-700"}`}
             ></div>
-            <span
-              className="text-white"
-              onClick={() => {
-                if (!spinClicked) {
-                  dispatch(toggleFastClicked());
-                }
-              }}
-            >
-              Quick
-            </span>
+            <span className="text-white">Quick</span>
           </button>
         </div>
       </div>

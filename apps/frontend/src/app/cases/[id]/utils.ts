@@ -30,8 +30,8 @@ const generateCases = (
   baseCase: BaseCase
 ): BaseCaseItem[][] => {
   return Array.from({ length: numCases }, (_, rootIndex) =>
-    Array.from({ length: 51 }, (_, index) => {
-      if (index === 25 + 20 && itemsWon) {
+    Array.from({ length: 71 }, (_, index) => {
+      if (index === 55 && itemsWon) {
         return itemsWon[rootIndex];
       }
 
