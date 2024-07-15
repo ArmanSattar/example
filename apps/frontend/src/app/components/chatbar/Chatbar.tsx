@@ -74,6 +74,8 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
     };
   }, [socket]);
 
+  // TODO - Fix the height issue in mobile [ARMAN]
+
   return (
     <div
       className="absolute md:relative h-[calc(100dvh-5rem)] z-40 transition-all duration-500 ease-in-out flex-shrink-0 bg-background chat-bar shadow-2xl"
