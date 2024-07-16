@@ -74,18 +74,24 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
     };
   }, [socket]);
 
+  const [isOldestMessageVisible, setIsOldestMessageVisible] = useState(false);
+
+  const handleOldestMessageVisible = (isVisible: boolean) => {
+    setIsOldestMessageVisible(isVisible);
+  };
+
   return (
     <div
-      className="absolute md:relative h-[calc(100dvh-5rem)] z-40 transition-all duration-500 ease-in-out flex-shrink-0 bg-background chat-bar shadow-2xl"
-      style={{
-        width: isChatOpen ? "320px" : "0px",
-      }}
+      className={`fixed inset-y-0 left-0 md:relative md:h-[calc(100vh-5rem)] z-40 transition-all duration-500 ease-in-out flex-shrink-0 bg-background chat-bar shadow-2xl ${
+        isChatOpen ? "w-80" : "w-0"
+      }`}
     >
       <div
-        className={`h-full flex flex-col justify-between shadow-2xl transition-transform duration-500`}
+        className={`h-full flex flex-col justify-between shadow-2xl transition-transform duration-500 ${
+          isChatOpen ? "translate-x-0" : "translate-x-full"
+        }`}
         style={{
-          width: "320px",
-          transform: isChatOpen ? "translateX(0)" : "translateX(-320px)",
+          width: isChatOpen ? "20rem" : "0",
         }}
       >
         <ChatBody messages={messages} />
