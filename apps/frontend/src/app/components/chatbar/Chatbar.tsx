@@ -79,14 +79,6 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
       }
     };
   }, [socket]);
-  // TODO - Fix the height issue in mobile [ARMAN]
-
-  const [isOldestMessageVisible, setIsOldestMessageVisible] = useState(false);
-
-  const handleOldestMessageVisible = (isVisible: boolean) => {
-    setIsOldestMessageVisible(isVisible);
-  };
-
 
   const [isOldestMessageVisible, setIsOldestMessageVisible] = useState(false);
 
@@ -96,20 +88,22 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
 
   return (
     <div
-      className={`fixed inset-y-0 left-0 md:relative md:h-[calc(100vh-5rem)] z-40 transition-all duration-500 ease-in-out flex-shrink-0 bg-background chat-bar shadow-2xl ${
-        isChatOpen ? "w-80" : "w-0"
-      }`}
+      className="absolute md:relative inset-0 md:h-[calc(100vh-5rem)] z-40 transition-all duration-500 ease-in-out flex-shrink-0 bg-background chat-bar shadow-2xl"
+      style={{
+        width: isChatOpen ? "320px" : "0px",
+      }}
     >
       <div
-        className={`h-full flex flex-col justify-between shadow-2xl transition-transform duration-500 ${
-          isChatOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`h-full flex flex-col justify-between shadow-2xl transition-transform duration-500`}
         style={{
-          width: isChatOpen ? "20rem" : "0",
+          width: "320px",
+          transform: isChatOpen ? "translateX(0)" : "translateX(-320px)",
         }}
       >
         <ChatBody messages={messages} />
-        <ChatInput />
+        <div className="flex-shrink-0">
+          <ChatInput />
+        </div>
       </div>
       <div
         className={`absolute bottom-12 -right-12 transform translate-x-full -translate-y-1/2 transition-transform duration-500 ${
