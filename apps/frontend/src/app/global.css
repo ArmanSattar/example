@@ -298,18 +298,15 @@
   opacity: 0.5;
 }
 
-@keyframes infinite-final-item {
-  0% {
-    transform: translateY(-40px);
+@keyframes smooth-hover {
+  0%, 100% {
+    transform: translateY(0);
   }
   50% {
     transform: translateY(-20px);
   }
-  100% {
-    transform: translateY(-40px);
-  }
 }
 
 .animate-final-item {
-  animation: infinite-final-item 3s ease-in-out infinite;
+  animation: smooth-hover 3s ease-in-out infinite;
 }

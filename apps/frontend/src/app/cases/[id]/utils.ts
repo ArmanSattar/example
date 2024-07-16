@@ -3,7 +3,11 @@ import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
 const DISTANCE_IN_ITEMS = 30;
 const ITEM_WIDTH = 192;
 const ITEM_HEIGHT = 192;
-const NUMBER_OF_ITEMS = 51;
+const NUMBER_OF_ITEMS = 40;
+export enum Direction {
+  HORIZONTAL,
+  VERTICAL,
+}
 
 const generateClientSeed = async (): Promise<string> => {
   const array = new Uint8Array(16);
@@ -57,20 +61,21 @@ export type AnimationCalculation = {
   tickerOffset: number;
 };
 
-const animationDistanceBounds = {
-  lower: (DISTANCE_IN_ITEMS - 0.5) * ITEM_WIDTH,
-  upper: (DISTANCE_IN_ITEMS + 0.5) * ITEM_WIDTH,
-  midpoint: DISTANCE_IN_ITEMS * ITEM_WIDTH,
-};
+const animationCalculation = (
+  currentPosition: number,
+  isHorizontal: boolean
+): AnimationCalculation => {
+  console.log(currentPosition, "currentPosition");
+  const dimension = isHorizontal ? ITEM_WIDTH : ITEM_HEIGHT;
+  const distanceInsideCenterItem = currentPosition % dimension;
+  const lowerBound = DISTANCE_IN_ITEMS * dimension - distanceInsideCenterItem + 1;
+  const upperBound = DISTANCE_IN_ITEMS * dimension + (dimension - distanceInsideCenterItem) - 1;
+  const randomAnimationDistance = getRandomInt(lowerBound, upperBound);
+  const randomAnimationDistanceMidpoint = (upperBound + lowerBound) / 2;
 
-const animationCalculation = (): AnimationCalculation => {
-  const randomAnimationDistance = getRandomInt(
-    animationDistanceBounds.lower,
-    animationDistanceBounds.upper
-  );
   return {
     distance: -randomAnimationDistance,
-    tickerOffset: animationDistanceBounds.midpoint - randomAnimationDistance,
+    tickerOffset: randomAnimationDistanceMidpoint - randomAnimationDistance,
   };
 };
 
@@ -81,7 +86,6 @@ export {
   generateClientSeed,
   generateCases,
   itemOffsets,
-  animationDistanceBounds,
   animationCalculation,
   DISTANCE_IN_ITEMS,
   ITEM_WIDTH,
