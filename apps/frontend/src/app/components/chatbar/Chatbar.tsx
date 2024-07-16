@@ -53,28 +53,40 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-
+  
         if ("type" in data && data["type"] === "chat") {
           const newMessage: Message = data["message"];
-          setMessages((prevMessages) => [...prevMessages, newMessage]);
+          setMessages((prevMessages) => {
+            const updatedMessages = [...prevMessages, newMessage];
+            if (updatedMessages.length > 10) {
+              return updatedMessages.slice(1);
+            }
+            return updatedMessages;
+          });
         }
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
       }
     };
-
+  
     if (socket) {
       socket.addEventListener("message", handleMessage);
     }
-
+  
     return () => {
       if (socket) {
         socket.removeEventListener("message", handleMessage);
       }
     };
   }, [socket]);
-
   // TODO - Fix the height issue in mobile [ARMAN]
+
+  const [isOldestMessageVisible, setIsOldestMessageVisible] = useState(false);
+
+  const handleOldestMessageVisible = (isVisible: boolean) => {
+    setIsOldestMessageVisible(isVisible);
+  };
+
 
   return (
     <div

@@ -14,10 +14,12 @@ const ChatMessageSchema = z.object({
     .min(1, { message: "Message cannot be empty" })
     .max(250, { message: "Message cannot exceed 250 characters" })
     .refine((msg) => !/^\s+$/.test(msg), { message: "Message cannot contain only whitespace" }),
-  timestamp: z.number().int().positive(),
+  sentAt: z.number().int().positive(),
   userId: z.string().uuid(),
   username: z.string(),
   profilePicture: z.string(),
+  channel: z.string().optional(),
+  expirationTime: z.number(),
 });
 
 const WebSocketOrchestrationPayloadSchema = z.object({
@@ -36,7 +38,7 @@ const WebSocketChatMessagePayloadSchema = z.object({
 });
 const WebSocketChatMessageResponseSchema = ChatMessageSchema.pick({
   message: true,
-  timestamp: true,
+  sentAt: true,
   username: true,
   profilePicture: true,
 });

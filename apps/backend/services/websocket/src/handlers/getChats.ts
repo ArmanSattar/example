@@ -4,7 +4,7 @@ import { getMessageHistory } from "../data-access/chatMessageRepository";
 import { errorResponse, successResponse } from "@solspin/gateway-responses";
 const logger = getLogger("recent-messages-handler");
 
-const MESSAGE_HISTORY_MAX_NUMBER: number = Number(process.env.MESSAGE_HISTORY_MAX_NUMBER) || 25;
+const MESSAGE_HISTORY_MAX_NUMBER: number = 10;
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   try {
     logger.info("Recent messages handler invoked");

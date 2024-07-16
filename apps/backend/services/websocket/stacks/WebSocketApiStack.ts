@@ -15,8 +15,12 @@ export function ChatApiStack({ stack }: StackContext) {
           permissions: [
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
-              actions: ["dynamodb:GetItem", "dynamodb:Scan"],
+              actions: ["dynamodb:GetItem", "dynamodb:Scan", "dynamodb:Query"],
               resources: [websocketChatMessagesTable.tableArn],
+            }),
+            new iam.PolicyStatement({
+              actions: ["dynamodb:Scan", "dynamodb:Query"],
+              resources: [`${websocketChatMessagesTable.tableArn}/*`],
             }),
           ],
           environment: {
