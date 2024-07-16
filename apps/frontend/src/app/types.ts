@@ -30,6 +30,5 @@ if (!process.env.NEXT_PUBLIC_GET_CASES_URL) {
   throw new Error("Get cases URL not provided");
 }
 export const GET_CASES_URL = process.env.NEXT_PUBLIC_GET_CASES_URL;
-console.log("GET_CASES_URL", GET_CASES_URL);
 export const HOUSE_WALLET_ADDRESS = process.env.NEXT_PUBLIC_HOUSE_WALLET_PUBLIC_KEY;
 export const WALLETS_API_URL = process.env.NEXT_PUBLIC_WALLETS_API_URL;

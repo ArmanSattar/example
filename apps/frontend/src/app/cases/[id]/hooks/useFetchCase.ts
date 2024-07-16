@@ -6,7 +6,6 @@ export const useFetchCase = (name: string) => {
   return useQuery<BaseCase>({
     queryKey: ["case"],
     queryFn: async () => {
-      console.log("GET_CASES_URL", `${GET_CASES_URL}/cases/${name}.json`);
       const response = await fetch(`${GET_CASES_URL}/cases/${name}.json`);
 
       if (!response.ok) {

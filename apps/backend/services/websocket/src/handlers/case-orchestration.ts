@@ -10,11 +10,12 @@ import { performSpin } from "../helpers/performSpinHelper";
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { sendWebSocketMessage } from "@solspin/web-socket-message";
 import { GameResult, publishEvent } from "@solspin/events";
-import { BaseCaseItem, Service } from "@solspin/types";
+import { Service } from "@solspin/types";
 import { GameOutcome } from "@solspin/betting-types";
 import { getLogger } from "@solspin/logger";
 import {
   BaseCase,
+  BaseCaseItem,
   BaseCaseItemSchema,
   BaseCaseSchema,
   SpinResult,

@@ -13,7 +13,6 @@ import {
   toggleRarityInfoPopup,
 } from "../../../store/slices/demoSlice";
 import { ProvablyFair } from "./components/ProvablyFair";
-import { v4 as uuidv4 } from "uuid";
 import useWindowSize from "./hooks/useWindowResize";
 import { Back } from "../../components/Back";
 import { PreviousDrops } from "./components/PreviousDrops";
@@ -23,40 +22,7 @@ import { addToBalance } from "../../../store/slices/userSlice";
 import { useFetchCase } from "./hooks/useFetchCase";
 import { toast } from "sonner";
 import { SoundToggle } from "./components/SoundToggle";
-
-const generateClientSeed = async (): Promise<string> => {
-  const array = new Uint8Array(16);
-  crypto.getRandomValues(array);
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
-};
-
-const generateCases = (
-  numCases: number,
-  itemWon: BaseCaseItem | null,
-  baseCase: BaseCase | undefined
-): BaseCaseItem[][] => {
-  if (!baseCase) {
-    return [];
-  }
-  return Array.from({ length: numCases }, () =>
-    Array.from({ length: 51 }, (_, index) => {
-      if (index === 25 + 20 && itemWon) {
-        return itemWon;
-      }
-
-      const roll = Math.floor(Math.random() * 100000); // Generate a random number between 0 and 99999
-      const selectedItem = baseCase.items.find(
-        (item) => roll >= item.rollNumbers[0] && roll <= item.rollNumbers[1]
-      );
-
-      if (!selectedItem) {
-        throw new Error("No item found for roll number: " + roll);
-      }
-
-      return { ...selectedItem, id: uuidv4() };
-    })
-  );
-};
+import { generateCases, generateClientSeed } from "./utils";
 
 export default function CasePage({ params }: { params: { id: string } }) {
   const caseId = params.id;
@@ -72,7 +38,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const dispatch = useDispatch();
   const [cases, setCases] = useState<BaseCaseItem[][]>([]);
   const windowSize = useWindowSize();
-  const [itemWon, setItemWon] = useState<BaseCaseItem | null>(null);
+  const [itemsWon, setItemsWon] = useState<BaseCaseItem[] | null>(null);
   const [rollValue, setRollValue] = useState<string | null>(null);
   const [serverSeed, setServerSeed] = useState<string | null>(null);
   const [previousServerSeedHash, setPreviousServerSeedHash] = useState<string | null>(null);
@@ -86,7 +52,6 @@ export default function CasePage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     if (caseData) {
-      console.log("Generating cases");
       setCases(generateCases(numCases, null, caseData));
     }
   }, [numCases, caseData]);
@@ -136,10 +101,11 @@ export default function CasePage({ params }: { params: { id: string } }) {
       if (isDemoClicked) dispatch(toggleDemoClicked());
       if (isPaidSpinClicked) {
         dispatch(togglePaidSpinClicked());
-        dispatch(addToBalance(itemWon?.price || 0));
+        const amount = itemsWon?.reduce((sum, item) => sum + item.price, 0) || 0;
+        dispatch(addToBalance(amount));
       }
       setAnimationComplete(0);
-      setItemWon(null);
+      setItemsWon(null);
     }
   }, [animationComplete, numCases, isDemoClicked, dispatch, isPaidSpinClicked]);
 
@@ -172,13 +138,26 @@ export default function CasePage({ params }: { params: { id: string } }) {
           if ("case-results" in message) {
             const spinResult: SpinResponse = message["case-results"];
             const { caseItems, serverSeed } = spinResult;
+            console.log("Case items won", caseItems);
 
-            // TODO: Caseitems is the array of CaseItem. Make it work with multiple spins
-            const caseItemWon = caseItems[0].rewardItem as BaseCaseItem;
-            console.log("Case Item Won:", caseItemWon);
-            setItemWon(caseItemWon);
-            setCases(generateCases(numCases, caseItemWon, caseData));
-            setRollValue(rollValue);
+            if (!caseItems) {
+              toast.error("Error parsing WebSocket message: No case items found");
+              console.error("Error parsing WebSocket message: No case item");
+              return; // Exit early if there's a mismatch
+            }
+
+            const caseItemsWon = caseItems.map((item) => item.rewardItem as BaseCaseItem);
+
+            if (caseItemsWon.length !== numCases) {
+              toast.error("Error parsing WebSocket message: Incorrect number of case items");
+              console.error("Error parsing WebSocket message: Incorrect number of case items");
+              return; // Exit early if there's a mismatch
+            }
+
+            const newCases = generateCases(numCases, caseItemsWon, caseData);
+            setCases(newCases);
+            setItemsWon(caseItemsWon);
+            setRollValue(caseItems[0].rollValue.toString());
             setServerSeed(serverSeed as string);
           }
         }
@@ -196,7 +175,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
         socket.removeEventListener("message", handleMessage);
       }
     };
-  }, [socket, isFirstServerSeedHash, serverSeedHash, caseData]);
+  }, [socket, isFirstServerSeedHash, serverSeedHash, caseData, numCases]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -233,9 +212,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
           <CaseCarousel
             key={index}
             items={items}
-            isPaidSpinClicked={isPaidSpinClicked}
-            isDemoClicked={isDemoClicked}
-            itemWon={itemWon}
+            isSpinClicked={isDemoClicked || isPaidSpinClicked}
             isFastAnimationClicked={fastClicked}
             numCases={numCases}
             onAnimationComplete={handleAnimationComplete}

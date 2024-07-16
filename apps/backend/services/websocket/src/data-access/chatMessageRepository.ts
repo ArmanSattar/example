@@ -44,103 +44,38 @@ export const deleteMessage = async (messageId: string): Promise<void> => {
   }
 };
 
-export const getMessageHistory = async (limit: number = 50): Promise<ChatMessage[]> => {
+export const getMessageHistory = async (limit: number = 10): Promise<ChatMessage[]> => {
+  const CHANNEL = "GENERAL";
+
   const params = {
     TableName: tableName,
+    IndexName: "bySentAt",
+    KeyConditionExpression: "channel = :pkValue AND sentAt > :minSentAt",
+    ExpressionAttributeValues: {
+      ":pkValue": CHANNEL,
+      ":minSentAt": 0,
+    },
+    ScanIndexForward: false,
     Limit: limit,
   };
 
   try {
-    const data = await ddbDocClient.send(new ScanCommand(params));
-    // Ensure we return an array, even if data.Items is undefined or null
+    const data = await ddbDocClient.send(new QueryCommand(params));
+
     const items = data.Items
       ? data.Items.map((item) => ({
-          messageId: item.messageId?.S || "",
-          message: item.message?.S || "",
-          timestamp: item.timestamp ? Number(item.timestamp.N) : 0,
-          userId: item.userId?.S || "",
-          username: item.username?.S || "",
-          profilePicture: item.profilePicture?.S || "",
+          messageId: item.messageId || "",
+          message: item.message || "",
+          sentAt: item.sentAt || 0,
+          userId: item.userId || "",
+          username: item.username || "",
+          profilePicture: item.profilePicture || "",
         }))
       : [];
-    return items as ChatMessage[];
+
+    return items.reverse() as ChatMessage[];
   } catch (error) {
+    console.error("Error fetching message history:", error);
     throw new Error(`Failed to get message history: ${error}`);
-  }
-};
-
-export const updateMessage = async (
-  messageId: string,
-  updates: Partial<ChatMessage>
-): Promise<void> => {
-  const updateExpressions: string[] = [];
-  const expressionAttributeNames: { [key: string]: string } = {};
-  const expressionAttributeValues: { [key: string]: any } = {};
-
-  Object.entries(updates).forEach(([key, value], index) => {
-    if (key !== "messageId") {
-      // Don't update the key attribute
-      updateExpressions.push(`#field${index} = :value${index}`);
-      expressionAttributeNames[`#field${index}`] = key;
-      expressionAttributeValues[`:value${index}`] = value;
-    }
-  });
-
-  const params = {
-    TableName: tableName,
-    Key: {
-      messageId,
-    },
-    UpdateExpression: `SET ${updateExpressions.join(", ")}`,
-    ExpressionAttributeNames: expressionAttributeNames,
-    ExpressionAttributeValues: expressionAttributeValues,
-  };
-
-  try {
-    await ddbDocClient.send(new UpdateCommand(params));
-  } catch (error) {
-    throw new Error(`Failed to update message: ${error}`);
-  }
-};
-
-export const getOldestMessage = async (userId: string): Promise<ChatMessage | null> => {
-  const params = {
-    TableName: process.env.CHAT_MESSAGES_TABLE_NAME,
-    IndexName: "UserIdTimestampIndex",
-    KeyConditionExpression: "userId = :userId",
-    ExpressionAttributeValues: {
-      ":userId": userId,
-    },
-    Limit: 1,
-    ScanIndexForward: true,
-  };
-
-  try {
-    const data = await ddbDocClient.send(new QueryCommand(params));
-    return data.Items && data.Items.length > 0 ? (data.Items[0] as ChatMessage) : null;
-  } catch (error) {
-    throw new Error(`Failed to get oldest message: ${error}`);
-  }
-};
-
-export const incrementMessageCount = async (userId: string): Promise<number> => {
-  const params = {
-    TableName: tableName,
-    Key: {
-      userId,
-    },
-    UpdateExpression: "SET messageCount = if_not_exists(messageCount, :zero) + :one",
-    ExpressionAttributeValues: {
-      ":zero": 0,
-      ":one": 1,
-    },
-    ReturnValues: "UPDATED_NEW",
-  };
-
-  try {
-    const result = await ddbDocClient.send(new UpdateCommand(params));
-    return result.Attributes?.messageCount as number;
-  } catch (error) {
-    throw new Error(`Failed to increment message count: ${error}`);
   }
 };

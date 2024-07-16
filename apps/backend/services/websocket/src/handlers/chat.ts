@@ -11,7 +11,6 @@ import {
 } from "@solspin/websocket-types";
 import {
   saveMessage,
-  getOldestMessage,
   deleteMessage,
   getMessageHistory,
 } from "../data-access/chatMessageRepository";
@@ -49,27 +48,19 @@ export const handler = WebSocketApiHandler(async (event) => {
     }
 
     const userId = connectionInfo.userId;
-    // Get user info including username and profile picture
     const userInfo = await callGetUser(userId);
 
     const chatMessage: ChatMessage = {
       messageId: randomUUID(),
       message,
-      timestamp: Date.now(),
+      sentAt: Date.now(),
       userId,
       username: userInfo.username,
       profilePicture: userInfo.profilePicture,
+      channel: "GENERAL",
+      expirationTime: Math.floor(Date.now() / 1000) + 48 * 60 * 60,
     };
-    // Save the new message
     await saveMessage(chatMessage);
-
-    const messageHistory = await getMessageHistory();
-    if (messageHistory.length > MESSAGE_HISTORY_MAX_NUMBER) {
-      const oldestMessage = await getOldestMessage();
-      if (oldestMessage) {
-        await deleteMessage(oldestMessage.messageId);
-      }
-    }
 
     logger.info("Message successfuly saved");
 
@@ -78,7 +69,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     const broadcastChatMessage = {
       messageId: chatMessage.messageId,
       message: chatMessage.message,
-      timestamp: chatMessage.timestamp,
+      sentAt: chatMessage.sentAt,
       username: chatMessage.username,
       profilePicture: chatMessage.profilePicture,
     };

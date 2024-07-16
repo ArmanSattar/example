@@ -186,14 +186,14 @@
         "id": "18",
         "name": "Tec-9 | Hades",
         "imagePath": "/case-images/tec-9.svg",
-        "rollNumbers": [79900, 99899],
+        "rollNumbers": [79900, 99999],
         "rarity": "Industrial Grade",
         "wear": "Factory New"
       }
     ],
     "itemPrefixSums": [
       11, 36, 64, 94, 139, 219, 399, 854, 2199, 6089, 11089, 18639, 31789, 47789, 62789, 72399, 79899,
-      99899
+      99999
     ]
   }
 ]

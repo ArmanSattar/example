@@ -24,20 +24,24 @@ export function WebSocketHandlerAPI({ stack }: StackContext) {
     fields: {
       messageId: "string",
       message: "string",
-      timestamp: "number",
+      sentAt: "number",
       userId: "string",
       username: "string",
       profilePicture: "string",
+      channel: "string",
+      expirationTime: "number",
     },
-    primaryIndex: { partitionKey: "messageId", sortKey: "timestamp" },
+    primaryIndex: { partitionKey: "messageId" },
     globalIndexes: {
-      TimestampIndex: {
-        partitionKey: "timestamp",
+      bySentAt: {
+        partitionKey: "channel",
+        sortKey: "sentAt",
       },
     },
     cdk: {
       table: {
         removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
+        timeToLiveAttribute: "expirationTime",
       },
     },
   });
