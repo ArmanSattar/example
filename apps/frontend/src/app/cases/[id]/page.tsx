@@ -39,12 +39,13 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [cases, setCases] = useState<BaseCaseItem[][]>([]);
   const windowSize = useWindowSize();
   const [itemsWon, setItemsWon] = useState<BaseCaseItem[] | null>(null);
-  const [rollValue, setRollValue] = useState<string | null>(null);
+  const [rollValues, setRollValues] = useState<string[]>([]);
   const [serverSeed, setServerSeed] = useState<string | null>(null);
   const [previousServerSeedHash, setPreviousServerSeedHash] = useState<string | null>(null);
   const [isFirstServerSeedHash, setIsFirstServerSeedHash] = useState(true);
   const { data: caseInfo, isLoading, isError, error } = useFetchCase(caseId);
   const caseData = caseInfo as BaseCase;
+  const [hasBeenRolled, setHasBeenRolled] = useState<boolean>(false);
 
   const handleClientSeedChange = (newClientSeed: string) => {
     setClientSeed(newClientSeed);
@@ -143,7 +144,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
             if (!caseItems) {
               toast.error("Error parsing WebSocket message: No case items found");
               console.error("Error parsing WebSocket message: No case item");
-              return; // Exit early if there's a mismatch
+              return; 
             }
 
             const caseItemsWon = caseItems.map((item) => item.rewardItem as BaseCaseItem);
@@ -151,14 +152,16 @@ export default function CasePage({ params }: { params: { id: string } }) {
             if (caseItemsWon.length !== numCases) {
               toast.error("Error parsing WebSocket message: Incorrect number of case items");
               console.error("Error parsing WebSocket message: Incorrect number of case items");
-              return; // Exit early if there's a mismatch
+              return; 
             }
 
             const newCases = generateCases(numCases, caseItemsWon, caseData);
+            const generatedRollValues = caseItems.map((item) => item.rollValue.toString());
             setCases(newCases);
             setItemsWon(caseItemsWon);
-            setRollValue(caseItems[0].rollValue.toString());
+            setRollValues(generatedRollValues);
             setServerSeed(serverSeed as string);
+            setHasBeenRolled(true)
           }
         }
       } catch (error) {
@@ -195,9 +198,10 @@ export default function CasePage({ params }: { params: { id: string } }) {
           serverSeedHash={serverSeedHash || "Please Login"}
           clientSeed={clientSeed || "Generating..."}
           onClientSeedChange={handleClientSeedChange}
-          rollValue={rollValue}
+          rollValues={rollValues}
           serverSeed={serverSeed || ""}
           previousServerSeedHash={previousServerSeedHash}
+          hasRolled={hasBeenRolled}
         />
         <SoundToggle />
         <span
