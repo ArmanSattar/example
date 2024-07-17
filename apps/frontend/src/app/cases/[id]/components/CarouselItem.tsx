@@ -8,7 +8,7 @@ import { GET_CASES_URL } from "../../../types";
 import { useFetchImage } from "../hooks/useFetchImage";
 import { toast } from "sonner";
 import { CarouselItemSkeleton } from "./CarouselItemSkeleton";
-import { ITEM_HEIGHT, ITEM_WIDTH } from "../utils";
+import { Direction, ITEM_HEIGHT, ITEM_WIDTH } from "../utils";
 
 interface CarouselItemProps {
   isMiddle: boolean;
@@ -16,6 +16,7 @@ interface CarouselItemProps {
   animationEnd: boolean;
   animationStart: boolean;
   item: BaseCaseItem;
+  direction: Direction;
 }
 
 export const wearToColorAndAbbrev = new Map<string, [string, string]>([
@@ -35,18 +36,20 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   animationEnd,
   animationStart,
   item,
+  direction,
 }) => {
   const [shouldScaleDown, setShouldScaleDown] = useState(false);
   const [isInfiniteAnimating, setIsInfiniteAnimating] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const soundClicked = useSelector((state: RootState) => state.demo.soundClicked);
   const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${item.imagePath}`);
-
   const [type, name] = useMemo(() => item.name.split(" | "), [item.name]);
   const [wearAbbrev, wearColor] = useMemo(
     () => wearToColorAndAbbrev.get(item.wear) || ["", "text-gray-400"],
     [item.wear]
   );
+
+  const isVertical = direction === Direction.VERTICAL;
 
   const playSound = useCallback((src: string) => {
     const audio = new Audio(src);
@@ -99,26 +102,49 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
 
   return (
     <div
-      className={`relative flex flex-col items-center justify-center w-[${ITEM_WIDTH}px] h-[${ITEM_HEIGHT}px] scale-90 opacity-50 will-change-transform ${
+      className={`relative flex flex-col items-center justify-center w-[${ITEM_WIDTH}px] h-[${ITEM_HEIGHT}px] scale-90 opacity-30 will-change-transform ${
         isMiddle ? "animate-middle-item z-10" : shouldScaleDown ? "animate-scale-down" : ""
       }`}
     >
       <div
         ref={imageContainerRef}
-        className={`relative flex justify-center items-center h-full w-full mt-10 ${
-          isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000" : ""
-        } ${isInfiniteAnimating ? "animate-final-item" : ""}`}
+        className={`h-full w-full ${
+          isFinal && isMiddle && animationEnd
+            ? isVertical
+              ? "-translate-x-5 duration-1000"
+              : "-translate-y-10 duration-1000"
+            : ""
+        }`}
       >
-        <Image src={data || "/images/placeholder.png"} alt={"Case item"} width={200} height={200} />
+        <div
+          className={`relative flex justify-center items-center h-full w-full mt-10 ${
+            isInfiniteAnimating ? "animate-final-item" : ""
+          }`}
+        >
+          <Image
+            src={data || "/images/placeholder.png"}
+            alt={"Case item"}
+            width={200}
+            height={200}
+          />
+        </div>
       </div>
       <div
-        className={`absolute top-0 right-0 w-full h-full opacity-30 z-[-1] ${
-          isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000" : ""
+        className={`absolute top-0 right-0 w-full h-full opacity-60 z-[-1] ${
+          isFinal && isMiddle && animationEnd
+            ? isVertical
+              ? "-translate-x-5 duration-1000"
+              : "-translate-y-10 duration-1000"
+            : ""
         } case-${item.rarity.toLowerCase().replace(" ", "-")} scale-125`}
       ></div>
       <div
         className={`flex flex-col items-center space-y-1 w-3/4 opacity-0 ${
-          isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000 opacity-100" : ""
+          isFinal && isMiddle && animationEnd
+            ? isVertical
+              ? "-translate-x-5 duration-1000 opacity-100"
+              : "-translate-y-10 duration-1000 opacity-100"
+            : ""
         }`}
       >
         <div className="flex items-center justify-center w-full space-x-1 overflow-visible whitespace-nowrap">
