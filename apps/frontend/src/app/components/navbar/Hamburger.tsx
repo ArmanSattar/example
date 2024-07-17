@@ -68,8 +68,9 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
         </div>
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-36 bg-custom_gray shadow-lg lg:hidden rounded-md z-50">
+        <div className="absolute right-0 top-full mt-1 w-36 bg-custom_gray shadow-lg xl:hidden rounded-md z-50">
           {menuOptions.map((option, index) => (
+            index !== 3 ? 
             <button
               key={index}
               onClick={() => {
@@ -77,6 +78,18 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
                 setOpen(false);
               }}
               className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 first:rounded-t-md last:rounded-b-md"
+            >
+              {option.label}
+            </button>
+            :
+            <button
+              key={index}
+              onClick={() => {
+                option.onClick();
+                setOpen(false);
+              }}
+              className="block sm:hidden w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 first:rounded-t-md last:rounded-b-md"
+
             >
               {option.label}
             </button>

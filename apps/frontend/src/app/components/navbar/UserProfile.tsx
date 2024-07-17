@@ -44,7 +44,7 @@ export const UserProfile: React.FC = () => {
   return (
     <div className="flex items-center relative" ref={dropdownRef}>
       <div 
-        className="flex items-center space-x-4 p-2 rounded-lg cursor-pointer"
+        className="flex items-center space-x-4 p-2 rounded-lg cursor-pointer hover:opacity-90"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
         <div className="relative w-12 h-12 rounded-full overflow-hidden shadow-lg">
@@ -55,7 +55,7 @@ export const UserProfile: React.FC = () => {
             objectFit="cover"
           />
         </div>
-        <span className="text-white font-medium hidden sm:inline">{truncatedUsername}</span>
+        <span className="text-white font-medium hidden xl:inline">{truncatedUsername}</span>
       </div>
       
       {isDropdownOpen && (
