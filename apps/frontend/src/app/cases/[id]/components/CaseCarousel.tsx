@@ -74,6 +74,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     const startMiddleItem = useSelector((state: RootState) => state.caseCarousel.startMiddleItem);
     const reduxDispatch = useDispatch();
     const [direction, setDirection] = useState<Direction>(Direction.HORIZONTAL);
+    const isDemoClicked = useSelector((state: RootState) => state.demo.demoClicked);
     const [carouselDimensions, setCarouselDimensions] = useState<{ width: number; height: number }>(
       { width: 0, height: 0 }
     );
@@ -96,9 +97,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
 
     useEffect(() => {
       const newDirection = calculateDirection();
-      console.log("New direction", newDirection, direction);
       if (newDirection !== direction) {
-        console.log("Setting direction", newDirection, direction);
         setDirection(newDirection);
       }
     }, [windowSize, numCases, calculateDirection, direction, items]);
@@ -137,13 +136,11 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     useEffect(() => {
       const handleTransitionEnd = () => {
         if (state.animationStage === 1) {
-          console.log("First stage end");
           dispatch({ type: "FIRST_STAGE_END" });
         } else if (state.animationStage === 2 && !animationCompletedRef.current) {
           animationCompletedRef.current = true;
           onAnimationComplete();
           dispatch({ type: "SECOND_STAGE_END" });
-          console.log("Second stage end");
         }
       };
 
@@ -188,7 +185,6 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
 
       switch (state.animationStage) {
         case 0:
-          console.log("Stage 0", distance, tickerOffset);
           transformDistance = 0;
           transition = "none";
           break;
@@ -274,19 +270,17 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       };
     }, [setMiddleDueToResizedCarousel]);
 
-    console.log("CaseCarousel render", startMiddleItem + middleItem);
-
     return (
       <div className={`relative rounded-md main-element flex-grow w-full`}>
         <div
-          className={`w-0 h-0 absolute ${
+          className={`w-0 h-0 absolute z-20 ${
             direction === Direction.HORIZONTAL
               ? "top-0 inset-x-0 mx-auto border-l-[16px] border-r-[16px] border-t-[27.71px] border-l-transparent border-r-transparent border-t-yellow-400"
               : "left-0 inset-y-0 my-auto border-t-[16px] border-b-[16px] border-l-[27.71px] border-t-transparent border-b-transparent border-l-yellow-400"
           }`}
         ></div>
         <div
-          className={`w-0 h-0 absolute ${
+          className={`w-0 h-0 absolute z-20 ${
             direction === Direction.HORIZONTAL
               ? "bottom-0 inset-x-0 mx-auto border-l-[16px] border-r-[16px] border-b-[27.71px] border-l-transparent border-r-transparent border-b-yellow-400"
               : "right-0 inset-y-0 my-auto border-t-[16px] border-b-[16px] border-r-[27.71px] border-t-transparent border-b-transparent border-r-yellow-400"

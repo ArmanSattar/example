@@ -37,9 +37,11 @@ const generateCases = (
   numCases: number,
   itemsWon: BaseCaseItem[] | null,
   baseCase: BaseCase,
-  startItemIndex = 0
+  startItemIndex = 0,
+  cases: BaseCaseItem[][] = []
 ): BaseCaseItem[][] => {
-  return Array.from({ length: numCases }, (_, rootIndex) =>
+  console.log("Generating Cases");
+  const generatedCaseSpins = Array.from({ length: numCases - cases.length }, (_, rootIndex) =>
     Array.from({ length: NUMBER_OF_ITEMS }, (_, index) => {
       if (index === DISTANCE_IN_ITEMS + startItemIndex && itemsWon) {
         return itemsWon[rootIndex];
@@ -49,6 +51,8 @@ const generateCases = (
       return { ...binarySearch(baseCase.items, roll) };
     })
   );
+
+  return [...cases, ...generatedCaseSpins];
 };
 
 function getRandomInt(min: number, max: number) {

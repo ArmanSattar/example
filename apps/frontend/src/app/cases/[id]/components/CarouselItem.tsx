@@ -111,7 +111,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
         className={`h-full w-full ${
           isFinal && isMiddle && animationEnd
             ? isVertical
-              ? "-translate-x-10 duration-1000"
+              ? "-translate-x-5 duration-1000"
               : "-translate-y-10 duration-1000"
             : ""
         }`}
@@ -133,7 +133,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
         className={`absolute top-0 right-0 w-full h-full opacity-60 z-[-1] ${
           isFinal && isMiddle && animationEnd
             ? isVertical
-              ? "-translate-x-10 duration-1000"
+              ? "-translate-x-5 duration-1000"
               : "-translate-y-10 duration-1000"
             : ""
         } case-${item.rarity.toLowerCase().replace(" ", "-")} scale-125`}
@@ -142,7 +142,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
         className={`flex flex-col items-center space-y-1 w-3/4 opacity-0 ${
           isFinal && isMiddle && animationEnd
             ? isVertical
-              ? "-translate-x-10 duration-1000 opacity-100"
+              ? "-translate-x-5 duration-1000 opacity-100"
               : "-translate-y-10 duration-1000 opacity-100"
             : ""
         }`}

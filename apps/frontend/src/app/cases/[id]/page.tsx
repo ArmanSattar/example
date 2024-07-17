@@ -52,8 +52,8 @@ export default function CasePage({ params }: { params: { id: string } }) {
   };
 
   useEffect(() => {
-    if (caseData) {
-      setCases(generateCases(numCases, null, caseData, startMiddleItem));
+    if (caseData && cases.length < numCases) {
+      setCases(generateCases(numCases, null, caseData, startMiddleItem, cases));
     }
   }, [numCases, caseData]);
 
@@ -99,7 +99,9 @@ export default function CasePage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     if (animationComplete === numCases && (isDemoClicked || isPaidSpinClicked)) {
-      if (isDemoClicked) dispatch(toggleDemoClicked());
+      if (isDemoClicked) {
+        dispatch(toggleDemoClicked());
+      }
       if (isPaidSpinClicked) {
         dispatch(togglePaidSpinClicked());
         const amount = itemsWon?.reduce((sum, item) => sum + item.price, 0) || 0;
@@ -209,17 +211,21 @@ export default function CasePage({ params }: { params: { id: string } }) {
         </span>
       </div>
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-2">
-        {cases.map((items, index) => (
-          <CaseCarousel
-            key={index}
-            items={items}
-            isSpinClicked={isDemoClicked || isPaidSpinClicked}
-            isFastAnimationClicked={fastClicked}
-            numCases={numCases}
-            onAnimationComplete={handleAnimationComplete}
-            windowSize={windowSize}
-          />
-        ))}
+        {Array.from({ length: numCases }).map((_, i) =>
+          cases[i] ? (
+            <CaseCarousel
+              key={i}
+              items={cases[i]}
+              isSpinClicked={isDemoClicked || isPaidSpinClicked}
+              isFastAnimationClicked={fastClicked}
+              numCases={numCases}
+              onAnimationComplete={handleAnimationComplete}
+              windowSize={windowSize}
+            />
+          ) : (
+            <div key={i} className="w-full h-[310px] bg-gray-800 animate-pulse rounded-md"></div>
+          )
+        )}
       </div>
       {<CaseItems items={caseData.items} />}
       <PreviousDrops />
