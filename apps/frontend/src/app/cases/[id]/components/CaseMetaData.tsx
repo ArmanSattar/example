@@ -45,7 +45,7 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
         <Tag name={label} customStyle={""} />
       </div>
       <div
-        className={`flex flex-col space-y-1 lg:flex-row lg:space-x-1 justify-between items-center`}
+        className={`flex flex-col space-y-1 lg:flex-row lg:space-x-1 lg:space-y-0 justify-between items-center`}
       >
         <div className={`flex space-x-1`}>
           <span className="text-white text-sm">Highest Item</span>

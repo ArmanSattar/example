@@ -53,7 +53,7 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-  
+
         if ("type" in data && data["type"] === "chat") {
           const newMessage: Message = data["message"];
           setMessages((prevMessages) => {
@@ -68,11 +68,11 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
         console.error("Error parsing WebSocket message:", error);
       }
     };
-  
+
     if (socket) {
       socket.addEventListener("message", handleMessage);
     }
-  
+
     return () => {
       if (socket) {
         socket.removeEventListener("message", handleMessage);
@@ -106,7 +106,7 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
         </div>
       </div>
       <div
-        className={`absolute bottom-12 -right-12 transform translate-x-full -translate-y-1/2 transition-transform duration-500 ${
+        className={`absolute bottom-4 -right-10 transform translate-x-full -translate-y-1/2 transition-transform duration-500 ${
           isChatOpen ? "hidden" : ""
         }`}
       >

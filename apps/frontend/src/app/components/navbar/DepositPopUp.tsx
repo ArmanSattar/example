@@ -8,6 +8,7 @@ import { useSolPrice } from "./hooks/useSolPrice";
 import { useWalletBalance } from "./hooks/useWalletBalance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Dollar from "../../../../public/icons/dollar.svg";
+import ArrowHorizontal from "../../../../public/icons/arrows-horizontal.svg";
 import { postData } from "./utils/requests";
 import { DepositResponse } from "@solspin/types";
 import { HOUSE_WALLET_ADDRESS, WALLETS_API_URL } from "../../types";
@@ -26,7 +27,7 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
   const [dollarValue, setDollarValue] = useState<string>("");
   const [cryptoValue, setCryptoValue] = useState<string>("");
-  const {user} = useAuth()
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const connection = useConnection().connection;
   const wallet = useWallet();
@@ -34,20 +35,20 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
   const balance = useWalletBalance(wallet.publicKey, connection);
 
   if (!user) {
-    return null
+    return null;
   }
-  
+
   const { mutateAsync: postDataMutation } = useMutation({
     mutationFn: (data: DepositData) =>
       postData<DepositData, DepositResponse>(data, `${WALLETS_API_URL}/deposit`, "POST"),
     onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries({ queryKey: ["walletBalance"] });
-
-      if (data.txnId) {
-        toast.success(`Deposit request processed successfully. Txn: ${data.txnId}`);
-      } else {
-        toast.success("Deposit request processed successfully.");
-      }
+      queryClient.invalidateQueries({ queryKey: ["walletBalance"] }).then(() => {
+        if (data.txnId) {
+          toast.success(`Deposit request processed successfully. Txn: ${data.txnId}`);
+        } else {
+          toast.success("Deposit request processed successfully.");
+        }
+      });
     },
     onError: (error: Error) => {
       toast.error(`Error processing deposit request: ${error.message}`);
@@ -133,7 +134,6 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
     }
 
     try {
-      console.log(connection, wallet, HOUSE_WALLET_ADDRESS, amount);
       const signature = await createAndSignTransaction(
         connection,
         wallet,
@@ -180,7 +180,9 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
           </div>
           <div className="flex items-center justify-between w-full space-x-2">
             <div className="rounded-sm bg-gray-700 py-2 px-4 flex space-x-2 h-12 flex-grow justify-center items-center">
-              <Dollar className={"text-yellow-400 w-6 h-6 align-text-bottom"} />
+              <div className={"flex justify-center items-center  w-6 h-6"}>
+                <Dollar className={"text-yellow-400"} />
+              </div>
               <input
                 className="w-full bg-transparent text-white focus:outline-none"
                 type="text"
@@ -189,7 +191,7 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
                 onChange={handleDollarInputChange}
               />
             </div>
-            <Image src="/icons/arrows-horizontal.svg" alt="Arrows" width={32} height={32}/>
+            <ArrowHorizontal className={"text-gray-300 w-8 h-8"} />
             <div className="rounded-sm bg-gray-700 py-2 px-4 flex space-x-2 h-12 flex-grow">
               <Image src="/icons/sol-logo.svg" alt="Coin" width={20} height={20} />
               <input

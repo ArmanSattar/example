@@ -32,7 +32,7 @@ export const Balance = () => {
   }, [isError]);
 
   return (
-    <div className="rounded-lg bg-gray-700 flex items-center justify-between">
+    <div className="rounded-lg bg-gray-700 items-center justify-between hidden sm:flex">
       {isLoading ? (
         <div className="px-4">Loading...</div>
       ) : (
