@@ -43,6 +43,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [serverSeed, setServerSeed] = useState<string | null>(null);
   const [previousServerSeedHash, setPreviousServerSeedHash] = useState<string | null>(null);
   const [isFirstServerSeedHash, setIsFirstServerSeedHash] = useState(true);
+  const startMiddleItem = useSelector((state: RootState) => state.caseCarousel.startMiddleItem);
   const { data: caseInfo, isLoading, isError, error } = useFetchCase(caseId);
   const caseData = caseInfo as BaseCase;
 
@@ -52,7 +53,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     if (caseData) {
-      setCases(generateCases(numCases, null, caseData));
+      setCases(generateCases(numCases, null, caseData, startMiddleItem));
     }
   }, [numCases, caseData]);
 
@@ -83,7 +84,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
         );
       }
     } else if (isDemoClicked && animationComplete == 0) {
-      setCases(generateCases(numCases, null, caseData));
+      setCases(generateCases(numCases, null, caseData, startMiddleItem));
     }
   }, [
     isPaidSpinClicked,
@@ -154,7 +155,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
               return; // Exit early if there's a mismatch
             }
 
-            const newCases = generateCases(numCases, caseItemsWon, caseData);
+            const newCases = generateCases(numCases, caseItemsWon, caseData, startMiddleItem);
             setCases(newCases);
             setItemsWon(caseItemsWon);
             setRollValue(caseItems[0].rollValue.toString());

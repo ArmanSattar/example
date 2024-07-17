@@ -36,11 +36,12 @@ const binarySearch = (items: BaseCaseItem[], target: number): BaseCaseItem => {
 const generateCases = (
   numCases: number,
   itemsWon: BaseCaseItem[] | null,
-  baseCase: BaseCase
+  baseCase: BaseCase,
+  startItemIndex = 0
 ): BaseCaseItem[][] => {
   return Array.from({ length: numCases }, (_, rootIndex) =>
     Array.from({ length: NUMBER_OF_ITEMS }, (_, index) => {
-      if (index === DISTANCE_IN_ITEMS && itemsWon) {
+      if (index === DISTANCE_IN_ITEMS + startItemIndex && itemsWon) {
         return itemsWon[rootIndex];
       }
 

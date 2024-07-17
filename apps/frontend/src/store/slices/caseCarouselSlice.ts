@@ -2,10 +2,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface CaseCarouselState {
   serverSeed: string | null;
+  startMiddleItem: number;
 }
 
 const initialState: CaseCarouselState = {
   serverSeed: null,
+  startMiddleItem: 0,
 };
 
 const caseCarouselSlice = createSlice({
@@ -15,8 +17,11 @@ const caseCarouselSlice = createSlice({
     setServerSeed(state, action) {
       state.serverSeed = action.payload;
     },
+    setStartMiddleItem(state, action) {
+      state.startMiddleItem = action.payload;
+    },
   },
 });
 
-export const { setServerSeed } = caseCarouselSlice.actions;
+export const { setServerSeed, setStartMiddleItem } = caseCarouselSlice.actions;
 export default caseCarouselSlice.reducer;

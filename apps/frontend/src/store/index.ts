@@ -4,6 +4,7 @@ import demoReducer from "./slices/demoSlice";
 import chatBarReducer from "./slices/chatBarSlice";
 import navbarReducer from "./slices/navbarSlice";
 import userReducer from "./slices/userSlice";
+import caseCarouselReducer from "./slices/caseCarouselSlice";
 
 const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ const store = configureStore({
     chatBar: chatBarReducer,
     navbar: navbarReducer,
     user: userReducer,
+    caseCarousel: caseCarouselReducer,
   },
 });
 

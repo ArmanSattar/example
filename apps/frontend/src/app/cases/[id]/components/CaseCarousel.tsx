@@ -12,6 +12,9 @@ import {
   ITEM_HEIGHT,
   ITEM_WIDTH,
 } from "../utils";
+import { RootState } from "../../../../store";
+import { useDispatch, useSelector } from "react-redux";
+import { setStartMiddleItem } from "../../../../store/slices/caseCarouselSlice";
 
 const CarouselItem = dynamic(() => import("./CarouselItem"), { ssr: false });
 
@@ -68,7 +71,8 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     const carouselRef = useRef<HTMLDivElement | null>(null);
     const carouselContainerRef = useRef<HTMLDivElement | null>(null);
     const [middleItem, setMiddleItem] = useState<number>(0);
-    const [startMiddleItem, setStartMiddleItem] = useState<number>(0);
+    const startMiddleItem = useSelector((state: RootState) => state.caseCarousel.startMiddleItem);
+    const reduxDispatch = useDispatch();
     const [direction, setDirection] = useState<Direction>(Direction.HORIZONTAL);
     const [carouselDimensions, setCarouselDimensions] = useState<{ width: number; height: number }>(
       { width: 0, height: 0 }
@@ -152,9 +156,6 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
 
     useEffect(() => {
       let animationFrameId: number;
-      // const offsetHeight =
-      //   carouselDimensions.height / 2 + (carouselDimensions.height % ITEM_HEIGHT);
-      // const offsetWidth = carouselDimensions.width / 2 + (carouselDimensions.width % ITEM_WIDTH);
 
       const animate = () => {
         if (carouselRef.current) {
@@ -220,7 +221,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
             : `translate3d(0, ${transformDistance}px, 0)`,
         transition,
       };
-    }, [state.animationStage, state.offset, isFastAnimationClicked]);
+    }, [state.animationStage, state.offset, isFastAnimationClicked, direction]);
 
     const calculateMiddleItem = useCallback(() => {
       if (!carouselContainerRef.current || !carouselRef.current) return;
@@ -244,7 +245,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           const middleElement = Math.ceil(
             dimension / ((direction === Direction.HORIZONTAL ? ITEM_WIDTH : ITEM_HEIGHT) * 2)
           );
-          setStartMiddleItem(middleElement - 1);
+          reduxDispatch(setStartMiddleItem(middleElement - 1));
         }
       },
       [direction]
