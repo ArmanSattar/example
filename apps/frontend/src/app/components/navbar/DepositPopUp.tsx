@@ -179,7 +179,7 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
             </div>
           </div>
           <div className="flex items-center justify-between w-full space-x-2">
-            <div className="rounded-sm bg-black py-2 px-4 flex space-x-2 h-12 flex-grow justify-center items-center">
+            <div className="rounded-sm bg-gray-700 py-2 px-4 flex space-x-2 h-12 flex-grow justify-center items-center">
               <Dollar className={"text-yellow-400 w-6 h-6 align-text-bottom"} />
               <input
                 className="w-full bg-transparent text-white focus:outline-none"
@@ -189,8 +189,8 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
                 onChange={handleDollarInputChange}
               />
             </div>
-            <Image src="/icons/arrows-horizontal.svg" alt="Arrows" width={32} height={32} />
-            <div className="rounded-sm bg-black py-2 px-4 flex space-x-2 h-12 flex-grow">
+            <Image src="/icons/arrows-horizontal.svg" alt="Arrows" width={32} height={32}/>
+            <div className="rounded-sm bg-gray-700 py-2 px-4 flex space-x-2 h-12 flex-grow">
               <Image src="/icons/sol-logo.svg" alt="Coin" width={20} height={20} />
               <input
                 className="w-full bg-transparent text-white focus:outline-none"
