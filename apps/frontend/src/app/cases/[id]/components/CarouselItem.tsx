@@ -8,7 +8,7 @@ import { GET_CASES_URL } from "../../../types";
 import { useFetchImage } from "../hooks/useFetchImage";
 import { toast } from "sonner";
 import { CarouselItemSkeleton } from "./CarouselItemSkeleton";
-import { Direction, ITEM_HEIGHT, ITEM_WIDTH } from "../utils";
+import { Direction, ITEM_HEIGHT, ITEM_WIDTH, wearToColorAndAbbrev } from "../utils";
 
 interface CarouselItemProps {
   isMiddle: boolean;
@@ -18,14 +18,6 @@ interface CarouselItemProps {
   item: BaseCaseItem;
   direction: Direction;
 }
-
-export const wearToColorAndAbbrev = new Map<string, [string, string]>([
-  ["Factory New", ["FN", "text-yellow-500"]],
-  ["Minimal Wear", ["MW", "text-green-400"]],
-  ["Field Tested", ["FT", "text-blue-400"]],
-  ["Well Worn", ["WW", "text-orange-400"]],
-  ["Battle Scarred", ["BS", "text-red-400"]],
-]);
 
 const TICK_SOUND = "/sounds/tick.wav";
 const CHA_CHING_SOUND = "/sounds/cashier-cha-ching.mp3";

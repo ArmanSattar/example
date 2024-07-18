@@ -223,10 +223,9 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       if (!carouselContainerRef.current || !carouselRef.current) return;
 
       const itemSize = direction === Direction.HORIZONTAL ? ITEM_WIDTH : ITEM_HEIGHT;
-      const currentPosition = currentPositionRef.current;
 
       // Calculate the index of the middle item based on the current position
-      const middleIndex = Math.floor(Math.abs(currentPosition) / itemSize);
+      const middleIndex = Math.floor(Math.abs(currentPositionRef.current) / itemSize);
 
       if (middleIndex !== middleItem) {
         setMiddleItem(middleIndex);

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface HamburgerButtonProps {
@@ -26,9 +26,9 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -42,7 +42,7 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
   return (
     <div className="flex items-center relative" ref={dropdownRef}>
       <button
-        className={`text-white w-12 h-12 relative focus:outline-none bg-custom_gray rounded-md ${className}`}
+        className={`text-white w-10 h-10 md:h-12 md:w-12 relative focus:outline-none bg-custom_gray rounded-md ${className}`}
         onClick={toggleOpen}
       >
         <span className="sr-only">Open main menu</span>
@@ -69,31 +69,31 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
       </button>
       {open && (
         <div className="absolute right-0 top-full mt-1 w-36 bg-custom_gray shadow-lg xl:hidden rounded-md z-50">
-          {menuOptions.map((option, index) => (
-            index !== 3 ? 
-            <button
-              key={index}
-              onClick={() => {
-                option.onClick();
-                setOpen(false);
-              }}
-              className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 first:rounded-t-md last:rounded-b-md"
-            >
-              {option.label}
-            </button>
-            :
-            <button
-              key={index}
-              onClick={() => {
-                option.onClick();
-                setOpen(false);
-              }}
-              className="block sm:hidden w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 first:rounded-t-md last:rounded-b-md"
-
-            >
-              {option.label}
-            </button>
-          ))}
+          {menuOptions.map((option, index) =>
+            index !== 3 ? (
+              <button
+                key={index}
+                onClick={() => {
+                  option.onClick();
+                  setOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 first:rounded-t-md last:rounded-b-md"
+              >
+                {option.label}
+              </button>
+            ) : (
+              <button
+                key={index}
+                onClick={() => {
+                  option.onClick();
+                  setOpen(false);
+                }}
+                className="block sm:hidden w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 first:rounded-t-md last:rounded-b-md"
+              >
+                {option.label}
+              </button>
+            )
+          )}
         </div>
       )}
     </div>

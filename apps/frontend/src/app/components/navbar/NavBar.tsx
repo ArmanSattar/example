@@ -45,7 +45,7 @@ export const NavBar = () => {
   };
 
   return (
-    <header className="text-white top-0 left-0 bg-background w-full border-b-green-400 gradient-border-bottom shadow-2xl sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0 xl:px-0">
+    <header className="text-white top-0 left-0 bg-background w-full border-b-green-400 gradient-border-bottom shadow-2xl sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0">
       <div className="flex justify-between items-center w-full h-full z-10">
         <div className="flex items-center justify-between h-full">
           <div className="flex items-center w-[60px] sm:w-[80px] lg:w-[320px] justify-center">
@@ -90,7 +90,7 @@ export const NavBar = () => {
             ))}
           </ul>
         </div>
-        <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3">
+        <div className="flex items-center gap-4">
           {user && <Balance />}
           {user && (
             <button
@@ -100,13 +100,7 @@ export const NavBar = () => {
               Withdraw
             </button>
           )}
-          {user ? (
-            <UserProfile />
-          ) : (
-            <div className="hidden sm:block">
-              <CustomWalletMultiButton />
-            </div>
-          )}
+          {user ? <UserProfile /> : <CustomWalletMultiButton />}
           <Hamburger className="xl:hidden" />
         </div>
       </div>

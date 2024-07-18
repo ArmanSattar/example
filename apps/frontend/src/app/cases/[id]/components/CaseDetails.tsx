@@ -41,16 +41,18 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
   }
 
   return (
-    <div className="flex flex-col sm:flex-row justify-start sm:items-center items-start w-full space-y-4">
-      <div className="relative min-w-[225px] min-h-[100px]">
-        <Image
-          src={data || "/images/placeholder.png"}
-          alt={name}
-          height={100}
-          width={225}
-          objectFit="contain"
-          className="object-contain"
-        />
+    <div className="flex flex-col sm:flex-row justify-start sm:items-center items-start w-full gap-10 sm:gap-4">
+      <div className="relative flex justify-center items-center w-full sm:w-1/2">
+        <div className="min-w-[225px] min-h-[100px] max-sm:w-[300px]">
+          <Image
+            src={data || "/images/placeholder.png"}
+            alt={name}
+            height={300}
+            width={300}
+            objectFit="contain"
+            className="object-contain"
+          />
+        </div>
       </div>
       <CaseMetaData
         name={name}

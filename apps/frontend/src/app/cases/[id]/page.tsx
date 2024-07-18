@@ -73,7 +73,6 @@ export default function CasePage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     if (caseData && isPaidSpinClicked && animationComplete == 0) {
-      console.log("Spinning cases");
       if (connectionStatus === "connected") {
         sendMessage(
           JSON.stringify({
@@ -147,7 +146,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
             if (!caseItems) {
               toast.error("Error parsing WebSocket message: No case items found");
               console.error("Error parsing WebSocket message: No case item");
-              return; 
+              return;
             }
 
             const caseItemsWon = caseItems.map((item) => item.rewardItem as BaseCaseItem);
@@ -155,7 +154,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
             if (caseItemsWon.length !== numCases) {
               toast.error("Error parsing WebSocket message: Incorrect number of case items");
               console.error("Error parsing WebSocket message: Incorrect number of case items");
-              return; 
+              return;
             }
 
             const newCases = generateCases(numCases, caseItemsWon, caseData);
@@ -164,7 +163,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
             setItemsWon(caseItemsWon);
             setRollValues(generatedRollValues);
             setServerSeed(serverSeed as string);
-            setHasBeenRolled(true)
+            setHasBeenRolled(true);
           }
         }
       } catch (error) {

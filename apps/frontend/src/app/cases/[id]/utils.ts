@@ -84,13 +84,17 @@ const animationCalculation = (
   };
 };
 
-const dummyItems = Array.from({ length: NUMBER_OF_ITEMS }, (_, index) => ({}));
-const itemOffsets = dummyItems.map((_, index) => index * ITEM_WIDTH);
+export const wearToColorAndAbbrev = new Map<string, [string, string]>([
+  ["Factory New", ["FN", "text-green-500"]],
+  ["Minimal Wear", ["MW", "text-green-400"]],
+  ["Field Tested", ["FT", "text-yellow-400"]],
+  ["Well Worn", ["WW", "text-orange-400"]],
+  ["Battle Scarred", ["BS", "text-red-400"]],
+]);
 
 export {
   generateClientSeed,
   generateCases,
-  itemOffsets,
   animationCalculation,
   DISTANCE_IN_ITEMS,
   ITEM_WIDTH,

@@ -1,11 +1,11 @@
 import Image from "next/image";
 import React from "react";
 import { Money } from "../../../components/Money";
-import { wearToColorAndAbbrev } from "./CarouselItem";
 import { BaseCaseItem } from "@solspin/game-engine-types";
 import { useFetchImage } from "../hooks/useFetchImage";
 import { GET_CASES_URL } from "../../../types";
 import { toast } from "sonner";
+import { wearToColorAndAbbrev } from "../utils";
 
 interface CaseItemProps {
   item: BaseCaseItem;
