@@ -28,6 +28,7 @@ interface AuthContextType {
   login: () => Promise<void>;
   logout: () => Promise<void>;
   checkToken: () => Promise<boolean>;
+  updateUser: (updatedUserData: Partial<User>) => void;
 }
 
 const apiUrl: string = `${process.env.NEXT_PUBLIC_USER_MANAGEMENT_API_URL}`;
@@ -169,11 +170,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [disconnect, connectionStatus, sendMessage]);
 
+  const updateUser = useCallback((updatedUserData: Partial<User>) => {
+    setUser((currentUser) => {
+      if (currentUser) {
+        return { ...currentUser, ...updatedUserData };
+      }
+      return currentUser;
+    });
+  }, []);
+
   const contextValue: AuthContextType = {
     user,
     login,
     logout,
     checkToken,
+    updateUser
   };
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
