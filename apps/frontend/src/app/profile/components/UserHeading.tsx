@@ -15,7 +15,7 @@ export const UserHeading: React.FC<UserInfoProps> = ({
   progress
 }) => {
   return (
-    <div className="w-4/5 mx-auto my-4 flex items-center p-4 py-8 bg-background rounded-lg">
+    <div className="w-full md:w-11/12 lg:w-4/5 mx-auto my-8 p-4 sm:p-6 bg-background rounded-lg relative">
       <div className="relative w-16 h-16 rounded-full overflow-hidden">
         <Image
           src="/header-image.png"

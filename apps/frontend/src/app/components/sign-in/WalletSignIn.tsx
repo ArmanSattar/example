@@ -3,10 +3,12 @@ import React, { useCallback, useState } from "react";
 import dynamic from "next/dynamic";
 import { useAuth } from "../../context/AuthContext";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 
 const CustomWalletMultiButton = () => {
   const { select, wallets, connecting, connected, publicKey, disconnect } = useWallet();
-  const { login } = useAuth(); // Your custom auth hook
+  const { setVisible } = useWalletModal();
+  const { login } = useAuth(); 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const handleClick = useCallback(async () => {
@@ -26,19 +28,7 @@ const CustomWalletMultiButton = () => {
         setIsAuthenticating(false);
       }
     } else if (!connecting) {
-      // If not connected and not in the process of connecting, initiate wallet connection
-      try {
-        if (wallets.length === 1) {
-          console.log('Selecting single wallet:', wallets[0].adapter.name);
-          await select(wallets[0].adapter.name);
-        } else {
-          console.log('Opening wallet selection modal');
-          await select(wallets[0].adapter.name);
-        }
-      } catch (error) {
-        console.error('Wallet connection failed:', error);
-        // Handle connection failure (e.g., show error message)
-      }
+      setVisible(true)
     }
   }, [connected, connecting, select, wallets, publicKey, login]);
 
