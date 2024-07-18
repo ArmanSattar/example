@@ -196,7 +196,7 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
         <div className="flex flex-col items-start justify-start w-2/3">
           <span className="text-white text-sm mb-1 ml-2">Amount</span>
           <div className="flex items-center justify-center w-full space-x-2">
-            <div className="rounded-sm bg-black py-2 px-4 flex space-x-2 h-12 w-full">
+            <div className="rounded-sm bg-gray-700 py-2 px-4 flex space-x-2 h-12 w-full">
               <Image src="/icons/dollar.svg" alt="Coin" width={20} height={20} />
               <input
                 className="w-full bg-transparent text-white focus:outline-none"
@@ -211,7 +211,7 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
         <div className="flex flex-col items-start justify-start w-2/3">
           <span className="text-white text-sm mb-1 ml-2">Wallet Address</span>
           <div className="flex items-center justify-center w-full space-x-2">
-            <div className="rounded-sm bg-black py-2 px-4 flex space-x-2 h-12 w-full">
+            <div className="rounded-sm bg-gray-700 py-2 px-4 flex space-x-2 h-12 w-full">
               <Image src="/icons/wallet.svg" alt="Coin" width={20} height={20} />
               <input
                 className="w-full bg-transparent text-white focus:outline-none"
