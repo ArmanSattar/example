@@ -45,19 +45,19 @@ export const NavBar = () => {
   };
 
   return (
-    <header className="text-white top-0 left-0 bg-background w-full border-b-green-400 gradient-border-bottom shadow-2xl sticky z-50 h-14 sm:h-16 md:h-20 px-1 sm:px-2 md:px-4">
+    <header className="text-white top-0 left-0 bg-background w-full border-b-green-400 gradient-border-bottom shadow-2xl sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0 xl:px-0">
       <div className="flex justify-between items-center w-full h-full z-10">
         <div className="flex items-center justify-between h-full">
           <div className="flex items-center w-[60px] sm:w-[80px] lg:w-[320px] justify-center">
             <Image
               src="/icons/logo.webp"
               alt="logo"
-              width={40}
-              height={40}
+              width={48}
+              height={48}
               className="sm:w-[60px] sm:h-[60px] md:w-[80px] md:h-[80px]"
             />
           </div>
-          <ul className="hidden xl:flex xl:space-x-10 h-full">
+          <ul className="hidden xl:flex xl:space-x-10 h-full pl-4">
             {navLinks.map((navLink, index) => (
               <Link
                 key={navLink.href}
