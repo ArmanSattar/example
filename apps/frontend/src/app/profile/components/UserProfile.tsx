@@ -204,13 +204,13 @@ const UserInfoSection: React.FC<UserInfoProps> = ({ username }) => {
   ];
 
   return (
-    <div className="w-4/5 mx-auto my-8 p-6 bg-background rounded-lg relative">
-      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
-
-      {activeTab === '/profile' && <Profile username={username} />}
-      {activeTab === '/bets' && <BetHistoryTable bets={betsData} />}
-      {activeTab === '/stats' && <StatCards />}
-    </div>
+    <div className="w-full md:w-11/12 lg:w-4/5 mx-auto my-8 p-4 sm:p-6 bg-background rounded-lg relative">
+    <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+  
+    {activeTab === '/profile' && <Profile username={username} />}
+    {activeTab === '/bets' && <BetHistoryTable bets={betsData} />}
+    {activeTab === '/stats' && <StatCards />}
+  </div>
   );
 };
 
