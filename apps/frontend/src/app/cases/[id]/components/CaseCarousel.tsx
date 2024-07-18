@@ -1,6 +1,14 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import dynamic from "next/dynamic";
 import { WindowSize } from "../hooks/useWindowResize";
 import { BaseCaseItem } from "@solspin/game-engine-types";
@@ -25,6 +33,7 @@ interface CaseCarouselProps {
   numCases: number;
   onAnimationComplete: () => void;
   windowSize: WindowSize;
+  skipAnimation: boolean;
 }
 
 type Action =
@@ -61,7 +70,15 @@ function carouselReducer(state: State, action: Action): State {
 }
 
 const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
-  ({ items, isFastAnimationClicked, numCases, onAnimationComplete, windowSize, isSpinClicked }) => {
+  ({
+    items,
+    isFastAnimationClicked,
+    numCases,
+    onAnimationComplete,
+    windowSize,
+    isSpinClicked,
+    skipAnimation,
+  }) => {
     const [state, dispatch] = useReducer(carouselReducer, {
       animationStage: 0,
       offset: { distance: 0, tickerOffset: 0 },
@@ -106,7 +123,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       calculateMiddleItem();
     }, []);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
       if ((state.animationStage === 3 || state.animationStage === 0) && isSpinClicked) {
         if (carouselRef.current) {
           dispatch({ type: "RESET" });
@@ -149,6 +166,14 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         return () => carousel.removeEventListener("transitionend", handleTransitionEnd);
       }
     }, [state.animationStage, onAnimationComplete]);
+
+    useEffect(() => {
+      if ((skipAnimation && state.animationStage === 1) || state.animationStage === 2) {
+        animationCompletedRef.current = true;
+        onAnimationComplete();
+        dispatch({ type: "SECOND_STAGE_END" });
+      }
+    }, [skipAnimation]);
 
     useEffect(() => {
       let animationFrameId: number;

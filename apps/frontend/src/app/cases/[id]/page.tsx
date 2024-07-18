@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { SoundToggle } from "./components/SoundToggle";
 import { generateCases, generateClientSeed } from "./utils";
 import LoadingOverlay from "../../components/LoadingOverlay";
+import { PreviousDrops } from "./components/PreviousDrops";
 
 export default function CasePage({ params }: { params: { id: string } }) {
   const caseId = params.id;
@@ -45,6 +46,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [isFirstServerSeedHash, setIsFirstServerSeedHash] = useState(true);
   const startMiddleItem = useSelector((state: RootState) => state.caseCarousel.startMiddleItem);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSkipAnimationClicked, setisSkipAnimationClicked] = useState(false);
   const { data: caseInfo, isLoading: isCaseInfoLoading, isError, error } = useFetchCase(caseId);
   const caseData = caseInfo as BaseCase;
   const [hasBeenRolled, setHasBeenRolled] = useState<boolean>(false);
@@ -122,6 +124,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
         const amount = itemsWon?.reduce((sum, item) => sum + item.price, 0) || 0;
         dispatch(addToBalance(amount));
       }
+      if (isSkipAnimationClicked) setisSkipAnimationClicked(false);
       setAnimationComplete(0);
       setItemsWon(null);
     }
@@ -201,7 +204,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
     toast.error(`Failed to fetch case data`);
     return null;
   }
-
+  console.log(isPaidSpinClicked, isDemoClicked);
   return (
     <div className="w-full h-full flex flex-col gap-10 py-2">
       <LoadingOverlay isLoading={isLoading} />
@@ -242,6 +245,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
                   numCases={numCases}
                   onAnimationComplete={handleAnimationComplete}
                   windowSize={windowSize}
+                  skipAnimation={isSkipAnimationClicked}
                 />
               ) : (
                 <div
@@ -251,7 +255,22 @@ export default function CasePage({ params }: { params: { id: string } }) {
               )
             )}
           </div>
-          {<CaseItems items={caseData.items} />}
+          {(isDemoClicked || isPaidSpinClicked) && (
+            <div className={"w-full flex justify-center items-center"}>
+              <button
+                className={"py-2 px-4 rounded-md w-max bg-gray-700 text-white"}
+                onClick={() => {
+                  if (!isSkipAnimationClicked) {
+                    setisSkipAnimationClicked(true);
+                  }
+                }}
+              >
+                Skip Animation
+              </button>
+            </div>
+          )}
+          <CaseItems items={caseData.items} />
+          <PreviousDrops />
         </>
       )}
     </div>
