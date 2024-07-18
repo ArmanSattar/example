@@ -40,9 +40,9 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
 
   return (
     <div className="flex flex-col justify-between items-start w-full space-y-4">
-      <div className="flex space-x-3 justify-between items-center">
-        <span className="text-white font-bold text-lg">{name}</span>
-        <Tag name={label} customStyle={""} />
+      <div className="flex gap-6 justify-between items-center">
+        <span className="text-white font-bold text-3xl">{name}</span>
+        {label !== "" && <Tag name={label} customStyle={"!text-lg !px-3"} />}
       </div>
       <div
         className={`flex flex-col space-y-1 lg:flex-row lg:space-x-1 lg:space-y-0 justify-between items-center`}

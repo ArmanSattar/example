@@ -42,8 +42,8 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
 
   return (
     <div className="flex flex-col sm:flex-row justify-start sm:items-center items-start w-full gap-10 sm:gap-4">
-      <div className="relative flex justify-center items-center w-full sm:w-1/2">
-        <div className="min-w-[225px] min-h-[100px] max-sm:w-[300px]">
+      <div className="relative flex justify-center sm:justify-start items-center w-full sm:w-max">
+        <div className="flex justify-center items-center min-w-[225px] sm:min-w-[300px] min-h-[100px] -mt-10">
           <Image
             src={data || "/images/placeholder.png"}
             alt={name}

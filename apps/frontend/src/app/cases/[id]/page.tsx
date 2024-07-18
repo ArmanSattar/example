@@ -192,7 +192,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="w-full h-full flex flex-col space-y-10 py-2">
+    <div className="w-full h-full flex flex-col gap-10 py-2">
       <Back text="Back to Cases" to={""} />
       <CaseDetails {...caseData} numberOfItems={caseData.items.length} />
       <div className="w-full flex space-x-4 items-center justify-start">
