@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import SoundOn from "../../../../../public/icons/sound-on.svg";
 import SoundOff from "../../../../../public/icons/sound-off.svg";
 import { RootState } from "../../../../store";
@@ -11,11 +11,14 @@ export const SoundToggle = () => {
   const { user } = useAuth();
   const dispatch = useDispatch();
 
-  const muteAllSounds = user ? user.muteAllSounds : !soundClicked;
+  useEffect(() => {
+    if (user && user.muteAllSounds && soundClicked) {
+      dispatch(toggleSoundClicked());
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user && soundClicked === user.muteAllSounds) {
-      console.log('here')
       dispatch(toggleSoundClicked());
     }
   }, [user, soundClicked, dispatch]);
@@ -31,13 +34,13 @@ export const SoundToggle = () => {
         dispatch(toggleSoundClicked());
       }}
     >
-      {!muteAllSounds ? (
+      {soundClicked ? (
         <SoundOn className={"w-6 h-6 text-gray-400 group-hover:text-gray-300"} />
       ) : (
         <SoundOff className={"w-6 h-6 text-gray-400 group-hover:text-gray-300"} />
       )}
       <span className="text-gray-400 group-hover:text-gray-300">
-        {!muteAllSounds ? "Sound On" : "Sound Off"}
+        {soundClicked ? "Sound On" : "Sound Off"}
       </span>
     </div>
   );

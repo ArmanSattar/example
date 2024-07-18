@@ -74,7 +74,6 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     const startMiddleItem = useSelector((state: RootState) => state.caseCarousel.startMiddleItem);
     const reduxDispatch = useDispatch();
     const [direction, setDirection] = useState<Direction>(Direction.HORIZONTAL);
-    const isDemoClicked = useSelector((state: RootState) => state.demo.demoClicked);
     const [carouselDimensions, setCarouselDimensions] = useState<{ width: number; height: number }>(
       { width: 0, height: 0 }
     );

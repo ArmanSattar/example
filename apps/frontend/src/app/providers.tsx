@@ -1,6 +1,4 @@
-// app/providers.tsx
 "use client";
-
 import { Provider } from "react-redux";
 import { WebSocketProvider } from "./context/WebSocketContext";
 import { WalletContextProvider } from "./context/WalletContextProvider";

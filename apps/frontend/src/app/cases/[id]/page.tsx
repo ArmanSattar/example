@@ -15,7 +15,6 @@ import {
 import { ProvablyFair } from "./components/ProvablyFair";
 import useWindowSize from "./hooks/useWindowResize";
 import { Back } from "../../components/Back";
-import { PreviousDrops } from "./components/PreviousDrops";
 import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
 import { SpinResponse } from "@solspin/orchestration-types";
 import { addToBalance } from "../../../store/slices/userSlice";
@@ -23,6 +22,7 @@ import { useFetchCase } from "./hooks/useFetchCase";
 import { toast } from "sonner";
 import { SoundToggle } from "./components/SoundToggle";
 import { generateCases, generateClientSeed } from "./utils";
+import LoadingOverlay from "../../components/LoadingOverlay";
 
 export default function CasePage({ params }: { params: { id: string } }) {
   const caseId = params.id;
@@ -44,13 +44,28 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const [previousServerSeedHash, setPreviousServerSeedHash] = useState<string | null>(null);
   const [isFirstServerSeedHash, setIsFirstServerSeedHash] = useState(true);
   const startMiddleItem = useSelector((state: RootState) => state.caseCarousel.startMiddleItem);
-  const { data: caseInfo, isLoading, isError, error } = useFetchCase(caseId);
+  const [isLoading, setIsLoading] = useState(true);
+  const { data: caseInfo, isLoading: isCaseInfoLoading, isError, error } = useFetchCase(caseId);
   const caseData = caseInfo as BaseCase;
   const [hasBeenRolled, setHasBeenRolled] = useState<boolean>(false);
+  const [childComponentsLoaded, setChildComponentsLoaded] = useState({
+    caseDetails: false,
+  });
 
   const handleClientSeedChange = (newClientSeed: string) => {
     setClientSeed(newClientSeed);
   };
+
+  const handleChildLoaded = useCallback((componentName: string) => {
+    console.log("Component loaded:", componentName);
+    setChildComponentsLoaded((prev) => ({ ...prev, [componentName]: true }));
+  }, []);
+
+  useEffect(() => {
+    if (!isCaseInfoLoading && !isError && Object.values(childComponentsLoaded).every(Boolean)) {
+      setIsLoading(false);
+    }
+  }, [isCaseInfoLoading, isError, childComponentsLoaded]);
 
   useEffect(() => {
     if (caseData && cases.length < numCases) {
@@ -182,10 +197,6 @@ export default function CasePage({ params }: { params: { id: string } }) {
     };
   }, [socket, isFirstServerSeedHash, serverSeedHash, caseData, numCases]);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   if (isError || error) {
     toast.error(`Failed to fetch case data`);
     return null;
@@ -193,45 +204,56 @@ export default function CasePage({ params }: { params: { id: string } }) {
 
   return (
     <div className="w-full h-full flex flex-col gap-10 py-2">
-      <Back text="Back to Cases" to={""} />
-      <CaseDetails {...caseData} numberOfItems={caseData.items.length} />
-      <div className="w-full flex space-x-4 items-center justify-start">
-        <ProvablyFair
-          serverSeedHash={serverSeedHash || "Please Login"}
-          clientSeed={clientSeed || "Generating..."}
-          onClientSeedChange={handleClientSeedChange}
-          rollValues={rollValues}
-          serverSeed={serverSeed || ""}
-          previousServerSeedHash={previousServerSeedHash}
-          hasRolled={hasBeenRolled}
-        />
-        <SoundToggle />
-        <span
-          onClick={() => dispatch(toggleRarityInfoPopup())}
-          className="text-white hover:cursor-pointer"
-        >
-          Rarity Info
-        </span>
-      </div>
-      <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-2">
-        {Array.from({ length: numCases }).map((_, i) =>
-          cases[i] ? (
-            <CaseCarousel
-              key={i}
-              items={cases[i]}
-              isSpinClicked={isDemoClicked || isPaidSpinClicked}
-              isFastAnimationClicked={fastClicked}
-              numCases={numCases}
-              onAnimationComplete={handleAnimationComplete}
-              windowSize={windowSize}
+      <LoadingOverlay isLoading={isLoading} />
+      {caseData && (
+        <>
+          <Back text="Back to Cases" to={""} />
+          <CaseDetails
+            {...caseData}
+            numberOfItems={caseData.items.length}
+            onLoaded={() => handleChildLoaded("caseDetails")}
+          />
+          <div className="w-full flex space-x-4 items-center justify-start">
+            <ProvablyFair
+              serverSeedHash={serverSeedHash || "Please Login"}
+              clientSeed={clientSeed || "Generating..."}
+              onClientSeedChange={handleClientSeedChange}
+              rollValues={rollValues}
+              serverSeed={serverSeed || ""}
+              previousServerSeedHash={previousServerSeedHash}
+              hasRolled={hasBeenRolled}
             />
-          ) : (
-            <div key={i} className="w-full h-[310px] bg-gray-800 animate-pulse rounded-md"></div>
-          )
-        )}
-      </div>
-      {<CaseItems items={caseData.items} />}
-      <PreviousDrops />
+            <SoundToggle />
+            <span
+              onClick={() => dispatch(toggleRarityInfoPopup())}
+              className="text-white hover:cursor-pointer"
+            >
+              Rarity Info
+            </span>
+          </div>
+          <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-2">
+            {Array.from({ length: numCases }).map((_, i) =>
+              cases[i] ? (
+                <CaseCarousel
+                  key={i}
+                  items={cases[i]}
+                  isSpinClicked={isDemoClicked || isPaidSpinClicked}
+                  isFastAnimationClicked={fastClicked}
+                  numCases={numCases}
+                  onAnimationComplete={handleAnimationComplete}
+                  windowSize={windowSize}
+                />
+              ) : (
+                <div
+                  key={i}
+                  className="w-full h-[310px] bg-gray-800 animate-pulse rounded-md"
+                ></div>
+              )
+            )}
+          </div>
+          {<CaseItems items={caseData.items} />}
+        </>
+      )}
     </div>
   );
 }

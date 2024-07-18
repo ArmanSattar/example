@@ -6,7 +6,9 @@ export const useFetchCase = (name: string) => {
   return useQuery<BaseCase>({
     queryKey: ["case"],
     queryFn: async () => {
-      const response = await fetch(`${GET_CASES_URL}/cases/${name}.json`);
+      const response = await fetch(`${GET_CASES_URL}/cases/${name}.json`, {
+        cache: "force-cache",
+      });
 
       if (!response.ok) {
         throw new Error("Failed to fetch cases");
@@ -14,9 +16,8 @@ export const useFetchCase = (name: string) => {
 
       return await response.json();
     },
-    staleTime: 86400000, // 1 day
-    gcTime: 86400000, // 1 day
-    refetchInterval: 60000, // 1 minute
+    staleTime: Infinity,
+    gcTime: Infinity,
     retry: 3,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

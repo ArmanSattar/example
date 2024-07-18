@@ -6,7 +6,9 @@ export const useFetchCases = () => {
   return useQuery<BaseCase[]>({
     queryKey: ["cases"],
     queryFn: async () => {
-      const response = await fetch(`${GET_CASES_URL}/cases.json`);
+      const response = await fetch(`${GET_CASES_URL}/cases.json`, {
+        cache: "force-cache",
+      });
 
       if (!response.ok) {
         throw new Error("Failed to fetch cases");

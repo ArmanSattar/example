@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { CaseMetaData } from "./CaseMetaData";
 import { useFetchImage } from "../hooks/useFetchImage";
@@ -13,6 +13,7 @@ interface CaseDetailsProps {
   highestPrice: number;
   lowestPrice: number;
   numberOfItems: number;
+  onLoaded: () => void;
 }
 
 export const CaseDetails: React.FC<CaseDetailsProps> = ({
@@ -23,13 +24,15 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
   highestPrice,
   lowestPrice,
   numberOfItems,
+  onLoaded,
 }) => {
   const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${imagePath}`);
 
-  // TODO - Add loading spinner
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    if (!isLoading) {
+      onLoaded();
+    }
+  }, [isLoading]);
 
   if (isError) {
     toast.error("Error fetching image");
@@ -41,7 +44,7 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
   }
 
   return (
-    <div className="flex flex-col sm:flex-row justify-start sm:items-center items-start w-full gap-10 sm:gap-4">
+    <div className="relative flex flex-col sm:flex-row justify-start sm:items-center items-start w-full gap-10 sm:gap-4">
       <div className="relative flex justify-center sm:justify-start items-center w-full sm:w-max">
         <div className="flex justify-center items-center min-w-[225px] sm:min-w-[300px] min-h-[100px] -mt-10">
           <Image

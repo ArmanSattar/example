@@ -9,6 +9,7 @@ import { fromMinorAmount } from "./utils/money";
 import { useWalletInfo } from "./hooks/useWalletInfo";
 import { setBalance } from "../../../store/slices/userSlice";
 import { RootState } from "../../../store";
+import { Spinner } from "../Spinner";
 
 export const Balance = () => {
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ export const Balance = () => {
   return (
     <div className="flex rounded-lg bg-gray-700 items-center justify-between">
       {isLoading ? (
-        <div className="px-4">Loading...</div>
+        <Spinner size={"small"} color={"text-white"} />
       ) : (
         <Money amount={fromMinorAmount(balance)} className="px-4" />
       )}
