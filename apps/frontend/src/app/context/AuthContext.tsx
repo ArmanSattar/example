@@ -76,7 +76,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [checkToken]);
 
   const login = useCallback(async () => {
-    if (!publicKey || !signMessage) {
+    if (!connected || !publicKey || !signMessage) {
       toast.error("Wallet not connected or does not support message signing!");
       return;
     }
@@ -100,7 +100,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         `Sign this message to log in to Solspin:\nNonce: ${nonce}`
       );
 
-      // Sign the message
       const signedMessage = await signMessage(message);
       const signature = bs58.encode(signedMessage);
 
@@ -116,7 +115,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       });
 
       if (loginResponse.ok) {
-        const { message, data } = await loginResponse.json();
+        const { data } = await loginResponse.json();
 
         if (data && data.user && data.token) {
           const token = data.token;
@@ -138,11 +137,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw new Error("Login failed");
       }
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error("Failed to log in!");
+      if ((error as Error).name === "WalletSignMessageError") {
+        await disconnect();
+      } else if ((error as Error).name !== "TypeError") {
+        console.error("Login error:", error);
+        toast.error((error as Error).message);
+      }
+
       setUser(null);
     }
-  }, [publicKey, signMessage, connectionStatus, sendMessage]);
+  }, [publicKey, signMessage, connectionStatus, sendMessage, connected, disconnect]);
 
   const logout = useCallback(async () => {
     try {
