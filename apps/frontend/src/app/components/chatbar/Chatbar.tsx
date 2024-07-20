@@ -85,28 +85,25 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
   const handleOldestMessageVisible = (isVisible: boolean) => {
     setIsOldestMessageVisible(isVisible);
   };
-
+  console.log(isChatOpen);
   return (
     <div
-      className="absolute md:relative inset-0 md:h-[calc(100vh-5rem)] z-40 transition-all duration-500 ease-in-out flex-shrink-0 bg-background chat-bar shadow-2xl"
-      style={{
-        width: isChatOpen ? "320px" : "0px",
-      }}
+      className={`absolute lg:relative inset-0 md:h-[calc(100vh-5rem)] ${
+        isChatOpen ? "w-screen md:w-[320px]" : "w-0"
+      } z-40 transition-all duration-500 ease-in-out flex-shrink-0 bg-background shadow-2xl`}
     >
       <div
-        className={`h-full flex flex-col justify-between shadow-2xl transition-transform duration-500`}
-        style={{
-          width: "320px",
-          transform: isChatOpen ? "translateX(0)" : "translateX(-320px)",
-        }}
+        className={`h-full flex flex-col justify-between shadow-2xl transition-transform duration-500 w-full ${
+          !isChatOpen ? "-translate-x-full hidden" : "translate-x-0"
+        }`}
       >
         <ChatBody messages={messages} />
-        <div className="flex-shrink-0">
+        <div className="w-full">
           <ChatInput />
         </div>
       </div>
       <div
-        className={`absolute bottom-4 -right-10 transform translate-x-full -translate-y-1/2 transition-transform duration-500 ${
+        className={`absolute hidden md:block bottom-4 -right-10 transform translate-x-full -translate-y-1/2 ${
           isChatOpen ? "hidden" : ""
         }`}
       >

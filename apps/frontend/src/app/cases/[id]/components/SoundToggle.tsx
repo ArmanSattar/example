@@ -34,13 +34,13 @@ export const SoundToggle = () => {
         dispatch(toggleSoundClicked());
       }}
     >
-      {soundClicked ? (
+      {!soundClicked ? (
         <SoundOn className={"w-6 h-6 text-gray-400 group-hover:text-gray-300"} />
       ) : (
         <SoundOff className={"w-6 h-6 text-gray-400 group-hover:text-gray-300"} />
       )}
       <span className="text-gray-400 group-hover:text-gray-300">
-        {soundClicked ? "Sound On" : "Sound Off"}
+        {!soundClicked ? "Sound Off" : "Sound On"}
       </span>
     </div>
   );

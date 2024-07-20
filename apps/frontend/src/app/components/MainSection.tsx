@@ -16,7 +16,6 @@ export const MainSection = ({ children }: { children: React.ReactNode }) => {
   const isWithdrawOpen = useSelector((state: RootState) => state.navbar.isWithdrawOpen);
   const isRarityInfoOpen = useSelector((state: RootState) => state.demo.rarityInfoPopup);
 
-  console.log(isRarityInfoOpen);
   const toggleChatOpen = () => {
     setChatOpen(!isChatOpen);
   };

@@ -5,6 +5,7 @@ import React from "react";
 import { NavBar } from "./components/navbar/NavBar";
 import { Providers } from "./providers";
 import { MainSection } from "./components/MainSection";
+import { BottomNavbar } from "./components/bottom-nav/BottomNavbar";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,6 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <NavBar />
           <MainSection>{children}</MainSection>
+          <BottomNavbar />
         </Providers>
       </body>
     </html>

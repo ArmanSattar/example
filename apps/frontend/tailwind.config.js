@@ -17,6 +17,7 @@ module.exports = {
         search_bar_gray: "#0e151a",
       },
       fontSize: {
+        "md-1": "1.0625rem",
         "2xs": ".75rem",
         "3xs": ".5rem",
         "4xs": ".4rem",

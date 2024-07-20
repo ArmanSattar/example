@@ -216,7 +216,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
             numberOfItems={caseData.items.length}
             onLoaded={() => handleChildLoaded("caseDetails")}
           />
-          <div className="w-full flex space-x-4 items-center justify-start">
+          <div className="w-full min-h-10 flex space-x-4 items-center justify-start">
             <ProvablyFair
               serverSeedHash={serverSeedHash || "Please Login"}
               clientSeed={clientSeed || "Generating..."}
@@ -233,6 +233,18 @@ export default function CasePage({ params }: { params: { id: string } }) {
             >
               Rarity Info
             </span>
+            {(isDemoClicked || isPaidSpinClicked) && (
+              <button
+                className={"py-2 px-4 rounded-md w-max bg-gray-700 text-white"}
+                onClick={() => {
+                  if (!isSkipAnimationClicked) {
+                    setisSkipAnimationClicked(true);
+                  }
+                }}
+              >
+                Skip Animation
+              </button>
+            )}
           </div>
           <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-2">
             {Array.from({ length: numCases }).map((_, i) =>
@@ -255,20 +267,6 @@ export default function CasePage({ params }: { params: { id: string } }) {
               )
             )}
           </div>
-          {(isDemoClicked || isPaidSpinClicked) && (
-            <div className={"w-full flex justify-center items-center"}>
-              <button
-                className={"py-2 px-4 rounded-md w-max bg-gray-700 text-white"}
-                onClick={() => {
-                  if (!isSkipAnimationClicked) {
-                    setisSkipAnimationClicked(true);
-                  }
-                }}
-              >
-                Skip Animation
-              </button>
-            </div>
-          )}
           <CaseItems items={caseData.items} />
           <PreviousDrops />
         </>

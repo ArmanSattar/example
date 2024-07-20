@@ -1,27 +1,27 @@
-import React, { useState, KeyboardEvent } from 'react';
-import { useWebSocket } from '../../context/WebSocketContext';
+import React, { KeyboardEvent, useState } from "react";
+import { useWebSocket } from "../../context/WebSocketContext";
 
 export const ChatInput: React.FC = () => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const { sendMessage } = useWebSocket();
 
   const handleSendMessage = () => {
     if (message.trim()) {
       const websocketMessage = JSON.stringify({ action: "chat", message });
       sendMessage(websocketMessage);
-      setMessage('');
+      setMessage("");
     }
   };
 
   const handleKeyPress = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault(); 
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
       handleSendMessage();
     }
   };
 
   return (
-    <div className="flex-none px-4 w-full h-24 flex items-center justify-between z-50 border-t-green-500 gradient-border-top">
+    <div className="px-4 w-full h-24 flex items-center justify-between z-50 border-t-green-500 gradient-border-top">
       <textarea
         className="bg-dark rounded-lg p-4 text-white w-full h-auto resize-none focus:outline-none focus:ring-2 focus:ring-opacity-50 overflow-hidden"
         placeholder="Enter your text here..."
