@@ -3,7 +3,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletName, WalletReadyState } from '@solana/wallet-adapter-base';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../../context/AuthContext';
-import { disconnect } from 'process';
+
 
 interface CustomWalletModalProps {
     isOpen: boolean;
@@ -15,6 +15,7 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
     const ref = useRef<HTMLDivElement>(null);
     const { wallets, select, connect, connecting, connected, publicKey } = useWallet();
     const [fadeIn, setFadeIn] = useState(false);
+    const [shouldAttemptLogin, setShouldAttemptLogin] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { login } = useAuth();
 
@@ -28,57 +29,60 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
         }
     }, [isOpen]);
 
-    useEffect(() => {
-        const handleConnection = async () => {
-            if (connected && publicKey) {
-                console.log('Wallet connected successfully');
-                console.log("Public key is", publicKey.toBase58());
-                try {
-                    await login();
-                    onClose();
-                } catch (error) {
-                    console.error('Login failed:', error);
-                    setError('Login failed. Please try again.');
-                }
-            }
-        };
+    
 
-        handleConnection();
-    }, [connected, publicKey, login, onClose]);
-
-    const handleWalletClick = useCallback(async (walletName: WalletName<string> | null) => {
-        setError(null);
-        try {
-            console.log(`Selecting wallet: ${walletName}`);
-            await select(walletName);
-            
-            // Increase the delay and add a check
-            await new Promise(resolve => setTimeout(resolve, 200));
-            
-            const selectedWallet = wallets.find(w => w.adapter.name === walletName);
-            if (!selectedWallet) {
-                throw new Error('Selected wallet not found');
-            }
-            
-            console.log(`Wallet selected: ${selectedWallet.adapter.name}`);
-            console.log('Attempting to connect...');
-
-            if (selectedWallet.readyState !== WalletReadyState.Installed) {
-                setError("Wallet is not detected please install it and try again")
-                select(null)
-            }
-            
-        
-        } catch (error) {
-            console.error('Wallet connection error:', error);
-            if ((error as Error).name === 'WalletNotSelectedError') {
-                setError('Wallet not selected. Please try again or choose a different wallet.');
-            } else {
-                setError(`Failed to connect: ${(error as Error).message}`);
+useEffect(() => {
+    const handleConnection = async () => {
+        if (connected && publicKey && shouldAttemptLogin) {
+            console.log('Wallet connected successfully');
+            console.log("Public key is", publicKey.toBase58());
+            try {
+                await login();
+                onClose();
+                setShouldAttemptLogin(false);  // Reset the flag
+            } catch (error) {
+                console.error('Login failed:', error);
+                setError('Login failed. Please try again.');
             }
         }
-    }, [select, connect, wallets]);
-    
+    };
+
+    handleConnection();
+}, [connected, publicKey, login, onClose, shouldAttemptLogin]);
+
+const handleWalletClick = useCallback(async (walletName: WalletName<string> | null) => {
+    setError(null);
+    try {
+        console.log(`Selecting wallet: ${walletName}`);
+        await select(walletName);
+        
+        // Increase the delay and add a check
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        const selectedWallet = wallets.find(w => w.adapter.name === walletName);
+        if (!selectedWallet) {
+            throw new Error('Selected wallet not found');
+        }
+        
+        console.log(`Wallet selected: ${selectedWallet.adapter.name}`);
+        console.log('Attempting to connect...');
+
+        if (selectedWallet.readyState !== WalletReadyState.Installed) {
+            setError("Wallet is not detected please install it and try again")
+            select(null)
+        } else {
+            setShouldAttemptLogin(true);  // Set the flag to attempt login
+        }
+        
+    } catch (error) {
+        console.error('Wallet connection error:', error);
+        if ((error as Error).name === 'WalletNotSelectedError') {
+            setError('Wallet not selected. Please try again or choose a different wallet.');
+        } else {
+            setError(`Failed to connect: ${(error as Error).message}`);
+        }
+    }
+}, [select, wallets]);
     const handleClose = useCallback((event: { preventDefault: () => void; }) => {
         event.preventDefault();
         setError(null);

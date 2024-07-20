@@ -6,31 +6,12 @@ import { CustomWalletModal } from './WalletModal';
 
 const CustomWalletMultiButton = () => {
   const { select, wallets, connecting, connected, publicKey, disconnect } = useWallet();
-  const { login } = useAuth(); 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleClick = useCallback(async () => {
-    console.log("Button clicked");
-    if (connected && publicKey) {
-      // If already connected, attempt to login
-      setIsAuthenticating(true);
-      try {
-        console.log("Attempting login");
-        await login();
-        console.log("Login successful");
-        // Handle successful login (e.g., redirect or update UI)
-      } catch (error) {
-        console.error("Login failed:", error);
-        // Handle login failure (e.g., show error message)
-      } finally {
-        setIsAuthenticating(false);
-      }
-    }
-  }, [connected, connecting, select, wallets, publicKey, login]);
 
   const getButtonText = () => {
     if (isAuthenticating) return "Authenticating...";
