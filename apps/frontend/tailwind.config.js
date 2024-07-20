@@ -11,10 +11,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "#1A1C24",
-        main_background: "#252833",
+        background: "#070C1D",
+        main_background: "#070C1D",
         custom_gray: "#23303A",
         search_bar_gray: "#0e151a",
+        blue_one: "#0A182D",
       },
       fontSize: {
         "md-1": "1.0625rem",

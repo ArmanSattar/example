@@ -94,7 +94,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
 
   return (
     <div
-      className={`relative flex flex-col items-center justify-center w-[${ITEM_WIDTH}px] h-[${ITEM_HEIGHT}px] scale-90 opacity-30 will-change-transform ${
+      className={`relative flex flex-col items-center justify-center w-[${ITEM_WIDTH}px] h-[${ITEM_HEIGHT}px] scale-90 opacity-50 will-change-transform ${
         isMiddle ? "animate-middle-item z-10" : shouldScaleDown ? "animate-scale-down" : ""
       }`}
     >

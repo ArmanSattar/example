@@ -4,6 +4,7 @@ import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
 import useWindowSize from "../hooks/useWindowResize";
 import { ProvablyFair } from "./ProvablyFair";
 import {
+  setNumCases,
   toggleDemoClicked,
   toggleFastClicked,
   togglePaidSpinClicked,
@@ -185,7 +186,11 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
   }, [socket, isFirstServerSeedHash, serverSeedHash, caseData, numCases]);
 
   return (
-    <div className={"flex flex-col p-4 space-y-4 w-full bg-dark items-center"}>
+    <div
+      className={
+        "flex flex-col p-4 space-y-4 bg-blue_one justify-between w-full items-center rounded-md border-green-500 border-b-2 border-l-2 border-r-2 case-carousel shadow-2xl"
+      }
+    >
       <ProvablyFair
         serverSeedHash={serverSeedHash || "Please Login"}
         clientSeed={clientSeed || "Generating..."}
@@ -195,7 +200,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
         previousServerSeedHash={previousServerSeedHash}
         hasRolled={hasBeenRolled}
       />
-      <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-2">
+      <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-4">
         {Array.from({ length: numCases }).map((_, i) =>
           cases[i] ? (
             <CaseCarousel
@@ -213,75 +218,110 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
           )
         )}
       </div>
-      <div className={`flex justify-center items-center gap-2 w-full sm:w-max`}>
-        <button
-          className={`flex flex-[2] sm:flex-grow-0 bg-green-500 rounded-md h-12 p-4 space-x-1 justify-center items-center ${
-            spinClicked ? "opacity-50 cursor-not-allowed" : ""
-          } ${user ? "" : "hidden"}`}
-          onClick={() => {
-            if (!spinClicked && balance >= price * numCases) {
-              dispatch(togglePaidSpinClicked());
-              dispatch(addToBalance(-price * numCases));
-            }
-          }}
-          disabled={spinClicked}
-        >
-          <span className="text-white font-semibold whitespace-nowrap">
-            Open {numCases} Case{numCases > 1 ? "s" : ""}
-          </span>
-          <span className="hidden sm:block text-white font-semibold text-sm">·</span>
-          <span className="text-white font-semibold whitespace-nowrap">
-            ${Math.round(price * numCases * 100) / 100}
-          </span>
-        </button>
-        <button
-          className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 ${
-            spinClicked ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          onClick={() => {
-            if (!isDemoClicked) {
-              dispatch(toggleDemoClicked());
-            }
-          }}
-          disabled={spinClicked}
-        >
-          <span className="text-white">Demo</span>
-        </button>
-        <button
-          className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-2 ${
-            spinClicked ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          onClick={() => {
-            if (!spinClicked) {
-              dispatch(toggleFastClicked());
-            }
-          }}
-          disabled={spinClicked}
-        >
-          <div
-            className={`rounded-full w-2 h-2 ${fastClicked ? "bg-green-500" : "bg-red-700"}`}
-          ></div>
-          <span className="text-white">Quick</span>
-        </button>
-        <SoundToggle />
-        <span
-          onClick={() => dispatch(toggleRarityInfoPopup())}
-          className="text-white hover:cursor-pointer"
-        >
-          Rarity Info
-        </span>
-        {(isDemoClicked || isPaidSpinClicked) && (
-          <button
-            className={"py-2 px-4 rounded-md w-max bg-gray-700 text-white"}
-            onClick={() => {
-              if (!isSkipAnimationClicked) {
-                setisSkipAnimationClicked(true);
-              }
-            }}
+      <div className={`flex justify-between items-center gap-2 w-full`}>
+        <div className={`flex space-x-2 justify-start items-center`}>
+          {Array.from({ length: 4 }, (_, index) => (
+            <button
+              key={index}
+              className={`bg-custom_gray group hover:${
+                spinClicked ? "" : "bg-gray-700"
+              } rounded-md min-w-[48px] sm:flex-grow-0 flex-grow  h-12 p-2 ${
+                index + 1 === numCases ? "bg-gray-700" : ""
+              } ${
+                spinClicked
+                  ? `opacity-50 cursor-not-allowed ${
+                      index + 1 === numCases ? "" : "hover:bg-custom_gray"
+                    }`
+                  : ""
+              }`}
+              onClick={() => !spinClicked && dispatch(setNumCases(index + 1))}
+              disabled={spinClicked}
+            >
+              <span
+                className={`text-gray-300 group-hover:text-white ${
+                  index + 1 === numCases ? "text-white" : ""
+                }`}
+              >
+                {index + 1}
+              </span>
+            </button>
+          ))}
+        </div>
+        <div className={"flex justify-between items-center gap-x-2"}>
+          {isDemoClicked || isPaidSpinClicked ? (
+            <button
+              className={"py-2 px-4 rounded-md w-max bg-gray-700 text-white"}
+              onClick={() => {
+                if (!isSkipAnimationClicked) {
+                  setisSkipAnimationClicked(true);
+                }
+              }}
+            >
+              Skip Animation
+            </button>
+          ) : (
+            <>
+              <button
+                className={`flex flex-[2] sm:flex-grow-0 bg-green-500 rounded-md h-12 p-4 space-x-1 justify-center items-center ${
+                  spinClicked ? "opacity-50 cursor-not-allowed" : ""
+                } ${user ? "" : "hidden"}`}
+                onClick={() => {
+                  if (!spinClicked && balance >= price * numCases) {
+                    dispatch(togglePaidSpinClicked());
+                    dispatch(addToBalance(-price * numCases));
+                  }
+                }}
+                disabled={spinClicked}
+              >
+                <span className="text-white font-semibold whitespace-nowrap">
+                  Open {numCases} Case{numCases > 1 ? "s" : ""}
+                </span>
+                <span className="hidden sm:block text-white font-semibold text-sm">·</span>
+                <span className="text-white font-semibold whitespace-nowrap">
+                  ${Math.round(price * numCases * 100) / 100}
+                </span>
+              </button>
+              <button
+                className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 ${
+                  spinClicked ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={() => {
+                  if (!isDemoClicked) {
+                    dispatch(toggleDemoClicked());
+                  }
+                }}
+                disabled={spinClicked}
+              >
+                <span className="text-white">Demo</span>
+              </button>
+              <button
+                className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-2 ${
+                  spinClicked ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={() => {
+                  if (!spinClicked) {
+                    dispatch(toggleFastClicked());
+                  }
+                }}
+                disabled={spinClicked}
+              >
+                <div
+                  className={`rounded-full w-2 h-2 ${fastClicked ? "bg-green-500" : "bg-red-700"}`}
+                ></div>
+                <span className="text-white">Quick</span>
+              </button>
+            </>
+          )}
+        </div>
+        <div className={"flex space-x-4 justify-end items-center"}>
+          <SoundToggle />
+          <span
+            onClick={() => dispatch(toggleRarityInfoPopup())}
+            className="text-white hover:cursor-pointer"
           >
-            Skip Animation
-          </button>
-        )}
+            Rarity Info
+          </span>
+        </div>
       </div>
     </div>
   );
