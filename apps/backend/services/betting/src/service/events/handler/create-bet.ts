@@ -3,6 +3,7 @@ import { EventBridgeEvent } from "aws-lambda";
 import { Service } from "@solspin/types";
 import { Betting, BetTransaction, publishEvent } from "@solspin/events";
 import { recordBet } from "../../../data-access/record-bet";
+import { updateOrCreateBetStats } from "../../../data-access/update-bet-stats";
 import { errorResponse, successResponse } from "@solspin/gateway-responses";
 import { getLogger } from "@solspin/logger";
 import { EVENT_BUS_ARN } from "../../../foundation/runtime";
@@ -22,6 +23,7 @@ export const handler = async (event: EventBridgeEvent<"CreateBetEvent", CreateBe
     // TODO - Check game exists
 
     const createdBet = await recordBet(userId, gameType, amountBet, outcome, outcomeAmount);
+    await updateOrCreateBetStats(userId, amountBet, outcomeAmount);
 
     const response = Betting.CreateBetResponseSchema.parse(createdBet);
 

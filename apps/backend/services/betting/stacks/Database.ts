@@ -29,8 +29,24 @@ export function DatabaseStack({ stack }: StackContext) {
     },
   });
 
+  const betStatsTable = new Table(stack, "BetStats", {
+    fields: {
+      userId: "string",
+      totalBet: "number",
+      totalProfit: "string",
+    },
+    primaryIndex: { partitionKey: "userId" },
+    cdk: {
+      table: {
+        removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
+      },
+    },
+  });
+
   return {
     betsTableArn: betsTable.tableArn,
     betsTableName: betsTable.tableName,
+    betStatsTableArn: betStatsTable.tableArn,
+    betStatsTableName: betStatsTable.tableName,
   };
 }
