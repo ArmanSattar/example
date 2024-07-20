@@ -2,13 +2,16 @@
 import React, { useCallback, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { CustomWalletModal } from './WalletModal';
 
 const CustomWalletMultiButton = () => {
   const { select, wallets, connecting, connected, publicKey, disconnect } = useWallet();
-  const { setVisible } = useWalletModal();
   const { login } = useAuth(); 
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const handleClick = useCallback(async () => {
     console.log("Button clicked");
@@ -26,8 +29,6 @@ const CustomWalletMultiButton = () => {
       } finally {
         setIsAuthenticating(false);
       }
-    } else if (!connecting) {
-      setVisible(true)
     }
   }, [connected, connecting, select, wallets, publicKey, login]);
 
@@ -38,15 +39,19 @@ const CustomWalletMultiButton = () => {
   };
 
   return (
-    <button
-      onClick={handleClick}
-      disabled={connecting || isAuthenticating}
-      className={`bg-red-500 text-white h-10 md:h-12 px-4 rounded-md border-none cursor-pointer transition-opacity duration-300 ${
-        connecting || isAuthenticating ? "cursor-not-allowed opacity-70" : "hover:bg-red-600"
-      }`}
-    >
-      {getButtonText()}
-    </button>
+
+    <div>
+      <button
+        onClick={openModal}
+        disabled={connecting || isAuthenticating}
+        className={`bg-red-500 text-white h-10 md:h-12 px-4 rounded-md border-none cursor-pointer transition-opacity duration-300 ${
+          connecting || isAuthenticating ? "cursor-not-allowed opacity-70" : "hover:bg-red-600"
+        }`}
+      >
+        {getButtonText()}
+      </button> 
+      <CustomWalletModal isOpen={isModalOpen} onClose={closeModal} />
+    </div>
   );
 };
 
