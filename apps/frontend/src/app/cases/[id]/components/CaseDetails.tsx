@@ -44,9 +44,9 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
   }
 
   return (
-    <div className="relative flex flex-col sm:flex-row justify-between xl:justify-center xl:gap-12 sm:items-center items-start w-full gap-10 sm:gap-4 bg-dark rounded-md shadow-2xl px-8 py-12">
+    <div className="relative flex flex-col sm:flex-row justify-around xl:gap-12 sm:items-center items-start w-full gap-10 sm:gap-4 bg-dark rounded-md shadow-2xl px-8 py-20">
       <div className="relative flex justify-center sm:justify-start items-center w-full sm:w-max">
-        <div className="flex justify-center items-center min-w-[225px] sm:min-w-[300px] min-h-[100px] -mt-10">
+        <div className="flex justify-center items-center min-w-[225px] sm:min-w-[300px] min-h-[100px] -mt-10 xl:scale-125">
           <Image
             src={data || "/images/placeholder.png"}
             alt={name}
@@ -62,7 +62,6 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
         highestPrice={highestPrice}
         lowestPrice={lowestPrice}
         totalItems={numberOfItems}
-        price={price}
         label={tag}
       />
     </div>

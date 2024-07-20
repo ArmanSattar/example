@@ -60,17 +60,14 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
 
   return (
     <>
-      <p
-        className="inline-block text-white cursor-pointer px-2 py-1"
-        onClick={handleProvablyFairClick}
-      >
+      <span className="text-white cursor-pointer text-lg" onClick={handleProvablyFairClick}>
         Provably Fair
-      </p>
+      </span>
       {isPopupOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
           <div className="bg-background p-8 rounded-lg shadow-lg w-11/12 max-w-4xl h-4/5 overflow-y-auto">
             <h2 className="text-2xl font-bold mb-6 text-white">Provably Fair System</h2>
-            
+
             {hasRolled && (
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-4 text-white">Previous Spin</h3>
@@ -97,7 +94,9 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
                   />
                 </div>
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Roll Values</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Roll Values
+                  </label>
                   <div className="grid grid-cols-2 gap-4">
                     {rollValues.map((value, index) => (
                       <input
@@ -113,7 +112,7 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
                 </div>
               </div>
             )}
-            
+
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-4 text-white">Next Spin</h3>
               <div className="mb-6">

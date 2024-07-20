@@ -149,7 +149,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       }
     }, [items]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
       const handleTransitionEnd = () => {
         if (state.animationStage === 1) {
           dispatch({ type: "FIRST_STAGE_END" });
@@ -167,11 +167,12 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       }
     }, [state.animationStage, onAnimationComplete]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
       if ((skipAnimation && state.animationStage === 1) || state.animationStage === 2) {
         animationCompletedRef.current = true;
         onAnimationComplete();
         dispatch({ type: "SECOND_STAGE_END" });
+        setMiddleItem(DISTANCE_IN_ITEMS + startMiddleItem);
       }
     }, [skipAnimation]);
 
