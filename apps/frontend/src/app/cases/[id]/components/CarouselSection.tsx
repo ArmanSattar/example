@@ -19,6 +19,7 @@ import { SpinResponse } from "@solspin/orchestration-types";
 import { toast } from "sonner";
 import { useWebSocket } from "../../../context/WebSocketContext";
 import { useAuth } from "../../../context/AuthContext";
+import FilterDropdownMenu from "../../components/FilterDropdownMenu";
 
 interface CarouselSectionProps {
   caseData: BaseCase;
@@ -219,7 +220,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
         )}
       </div>
       <div className={`relative flex justify-between items-center gap-2 w-full`}>
-        <div className={`flex space-x-2 justify-start items-center`}>
+        <div className={`hidden space-x-2 justify-start items-center lg:flex`}>
           {Array.from({ length: 4 }, (_, index) => (
             <button
               key={index}
@@ -239,6 +240,18 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
             </button>
           ))}
         </div>
+        <div className={"lg:hidden"}>
+          <FilterDropdownMenu
+            title={""}
+            options={["1", "2", "3", "4"]}
+            onSelect={(option) => dispatch(setNumCases(parseInt(option[0])))}
+            type={"radio"}
+            width={""}
+            height={"h-12"}
+            textSize={"text-md"}
+            defaultText={numCases.toString()}
+          />
+        </div>
         <div
           className={
             "absolute bottom-0 mx-auto inset-x-0 flex justify-center items-center w-max gap-x-2"
@@ -246,7 +259,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
         >
           {isDemoClicked || isPaidSpinClicked ? (
             <button
-              className={"py-2 px-4 rounded-md w-max bg-gray-700 text-white action-btn-gray"}
+              className={"py-2 px-4 h-12 rounded-md w-max bg-gray-700 text-white action-btn-gray"}
               onClick={() => {
                 if (!isSkipAnimationClicked) {
                   setisSkipAnimationClicked(true);

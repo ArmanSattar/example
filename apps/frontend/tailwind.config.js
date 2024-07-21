@@ -16,6 +16,7 @@ module.exports = {
         custom_gray: "#23303A",
         search_bar_gray: "#0e151a",
         blue_one: "#0A182D",
+        gray_action_btn: "var(--gray-action-btn)",
       },
       fontSize: {
         "md-1": "1.0625rem",

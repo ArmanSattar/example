@@ -10,6 +10,7 @@
 :root {
   --color-primary: 78, 180, 191;
   --color-secondary: #4EB4BF;
+  --gray-action-btn: #31353d;
   --gradient-border-nav: linear-gradient(90deg, rgba(78, 180, 191, 0.12) 0%, rgba(43, 217, 168, 0.12) 100%);
   --green-gradient: linear-gradient(90deg, #4EB4BF 0%, #2BD9A8 100%);
   --filter-dropdown: rgba(83, 108, 122, 0.15);

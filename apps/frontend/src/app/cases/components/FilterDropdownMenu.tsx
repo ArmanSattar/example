@@ -8,6 +8,9 @@ interface FilterDropdownMenuProps {
   onSelect: (options: string[]) => void;
   type: "checkbox" | "radio";
   width: string;
+  height?: string;
+  textSize?: string;
+  defaultText?: string;
 }
 
 const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
@@ -16,6 +19,9 @@ const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
   onSelect,
   type,
   width,
+  height,
+  textSize,
+  defaultText = "None",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
@@ -44,12 +50,15 @@ const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
+    if (defaultText !== "None") setSelectedOptions([defaultText]);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  const displayText = selectedOptions.length > 0 ? selectedOptions.join(", ") : "None";
+  const displayText = selectedOptions.length > 0 ? selectedOptions.join(", ") : defaultText;
+
+  const textSizeClass = textSize ? textSize : "text-xs";
 
   return (
     <div ref={dropdownRef} className="relative inline-block text-left" style={{ width }}>
@@ -58,12 +67,14 @@ const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
           type="button"
           aria-haspopup="true"
           aria-expanded={isOpen}
-          className={`inline-flex justify-between items-center w-full rounded-md h-10 ${
+          className={`inline-flex justify-between items-center w-full rounded-md ${
+            height !== "" ? height : "h-10"
+          } ${
             isOpen ? "rounded-b-none" : ""
-          } bg-gray-700 px-4 py-2 text-sm font-medium text-white focus:outline-none transition-custom`}
+          } bg-gray_action_btn px-4 py-2 text-sm font-medium text-white focus:outline-none transition-custom`}
           onClick={toggleDropdown}
         >
-          <span className="text-xs truncate">{displayText}</span>
+          <span className={`${textSizeClass} truncate`}>{displayText}</span>
           <svg
             className={`ml-2 h-5 w-5 transition-transform ${isOpen ? "transform rotate-180" : ""}`}
             xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +92,7 @@ const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
       </div>
 
       {isOpen && (
-        <div className="origin-top-right absolute right-0 w-full rounded-b-md shadow-lg bg-gray-700 z-50">
+        <div className="origin-top-right absolute right-0 w-full rounded-b-md shadow-lg bg-gray_action_btn z-50">
           <div
             className="py-1"
             role="menu"
@@ -91,7 +102,7 @@ const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
             {options.map((option) => (
               <label
                 key={option}
-                className="flex items-center w-full px-4 py-2 text-xs text-white hover:bg-gray-600 cursor-pointer"
+                className={`flex items-center w-full px-4 py-2 ${textSizeClass} text-white bg-gray_action_btn hover:brightness-125 cursor-pointer`}
               >
                 <input
                   type={type}
