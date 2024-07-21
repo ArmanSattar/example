@@ -13,7 +13,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
       <WalletContextProvider>
-        <WebSocketProvider url="wss://jgw8g5i343.execute-api.eu-west-2.amazonaws.com/dev">
+        <WebSocketProvider url="wss://8xazz5itd1.execute-api.eu-west-2.amazonaws.com/dev">
           <AuthProvider>
             <QueryClientProvider client={queryClient}>
               <Toaster
