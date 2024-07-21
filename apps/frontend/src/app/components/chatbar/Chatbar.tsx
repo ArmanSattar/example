@@ -26,6 +26,7 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
   const isChatOpen = useSelector((state: RootState) => state.chatBar.chatBarOpen);
   const [messages, setMessages] = useState<Message[]>([]);
   const { socket, sendMessage, connectionStatus } = useWebSocket();
+  const [playerCount, setPlayerCount] = useState<number>(0);
   const toggleChatOpen = () => {
     dispatch(toggleChatBarClicked());
     chatOpenCallback();
@@ -56,8 +57,8 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
           const message = data["message"]
           console.log(message)
           if (message && "player-count" in message){
-            const playerCount = message["player-count"]["count"]
-            console.log(`player count is ${playerCount}`)
+            const playersCount = message["player-count"]["count"]
+            setPlayerCount(playersCount)
 
           } else if (message && "chat-message" in message) {
 
@@ -93,7 +94,6 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
   const handleOldestMessageVisible = (isVisible: boolean) => {
     setIsOldestMessageVisible(isVisible);
   };
-  console.log(isChatOpen);
   return (
     <div
       className={`absolute lg:relative inset-0 md:h-[calc(100vh-5rem)] ${
@@ -107,7 +107,7 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
       >
         <ChatBody messages={messages} />
         <div className="w-full">
-          <ChatInput />
+          <ChatInput playersOnline={playerCount}/>
         </div>
       </div>
       <div
