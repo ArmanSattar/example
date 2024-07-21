@@ -48,7 +48,12 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
 
     fetchMessages();
   }, []);
-
+  useEffect(() => {
+    console.log('in here')
+    if (connectionStatus === "connected") {
+      sendMessage(JSON.stringify({"action": "player-count"}))
+    }
+  }, [connectionStatus, sendMessage])
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       try {
