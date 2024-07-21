@@ -246,7 +246,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
         >
           {isDemoClicked || isPaidSpinClicked ? (
             <button
-              className={"py-2 px-4 rounded-md w-max bg-gray-700 text-white"}
+              className={"py-2 px-4 rounded-md w-max bg-gray-700 text-white action-btn-gray"}
               onClick={() => {
                 if (!isSkipAnimationClicked) {
                   setisSkipAnimationClicked(true);
@@ -278,7 +278,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
                 </span>
               </button>
               <button
-                className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 ${
+                className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 action-btn-gray ${
                   spinClicked ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 onClick={() => {
@@ -291,7 +291,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
                 <span className="text-white">Demo</span>
               </button>
               <button
-                className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-2 ${
+                className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-2 action-btn-gray ${
                   spinClicked ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 onClick={() => {

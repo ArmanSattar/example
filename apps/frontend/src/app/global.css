@@ -616,3 +616,14 @@ html {
     transform: scale(1.5);
   }
 }
+
+.action-btn-gray {
+  background-color: #31353d;
+  box-shadow: 0 10px 27px #010a1d1f, inset 0 2px #3b3f47, inset 0 -2px #272b33 !important;
+}
+
+.action-btn-gray:hover {
+  transform: translateY(-2px);
+  transition: all ease-in-out 200ms;
+  filter: brightness(120%);
+}
