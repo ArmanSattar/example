@@ -6,6 +6,11 @@ const ConnectionInfoSchema = z.object({
   serverSeed: z.string().optional(),
   connectionId: z.string(),
 });
+
+const ActiveConnectionsSchema = z.object({
+  id: z.string(),
+  activeConnections: z.number().min(0).positive(),
+});
 const ChatMessageSchema = z.object({
   messageId: z.string().uuid(),
   message: z
@@ -45,6 +50,7 @@ const WebSocketChatMessageResponseSchema = ChatMessageSchema.pick({
 
 export {
   ConnectionInfoSchema,
+  ActiveConnectionsSchema,
   WebSocketOrchestrationPayloadSchema,
   WebSocketChatMessagePayloadSchema,
   ChatMessageSchema,
@@ -52,6 +58,7 @@ export {
 };
 
 export type ConnectionInfo = z.infer<typeof ConnectionInfoSchema>;
+export type ActiveConnections = z.infer<typeof ActiveConnectionsSchema>;
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;
 export type WebSocketOrchestrationPayload = z.infer<typeof WebSocketOrchestrationPayloadSchema>;
 export type WebSocketChatMessagePayload = z.infer<typeof WebSocketChatMessagePayloadSchema>;

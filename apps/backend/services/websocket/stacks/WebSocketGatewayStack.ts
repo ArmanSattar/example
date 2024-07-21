@@ -4,7 +4,8 @@ import { WebSocketHandlerAPI } from "./WebSocketHandlerStack";
 import * as cdk from "aws-cdk-lib";
 
 export function WebSocketGateway({ stack }: StackContext) {
-  const { websocketConnectionsTable, websocketChatMessagesTable } = use(WebSocketHandlerAPI);
+  const { websocketConnectionsTable, websocketChatMessagesTable, websocketStatsTable } =
+    use(WebSocketHandlerAPI);
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
   const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
     stack,
@@ -67,6 +68,7 @@ export function WebSocketGateway({ stack }: StackContext) {
           EVENT_BUS_ARN: eventBusArn,
           BET_TRANSACTION_FUNCTION_NAME: betTransactionFunction.functionName,
           GET_USER_FUNCTION_NAME: getUserFunction.functionName,
+          WEBSOCKET_STATS_TABLE_NAME: websocketStatsTable.tableName,
         },
       },
     },
@@ -80,13 +82,29 @@ export function WebSocketGateway({ stack }: StackContext) {
               actions: ["dynamodb:PutItem", "dynamodb:DeleteItem"],
               resources: [websocketConnectionsTable.tableArn],
             }),
+            new PolicyStatement({
+              actions: ["dynamodb:UpdateItem"],
+              resources: [websocketStatsTable.tableArn],
+            }),
           ],
+          environment: {
+            WEBSOCKET_STATS_TABLE_NAME: websocketStatsTable.tableName,
+          },
         },
       },
       $default: {
         function: {
           handler: "src/handlers/closeConnection.handler",
           timeout: 10,
+          permissions: [
+            new PolicyStatement({
+              actions: ["dynamodb:DeleteItem"],
+              resources: [websocketStatsTable.tableArn],
+            }),
+          ],
+          environment: {
+            WEBSOCKET_STATS_TABLE_NAME: websocketStatsTable.tableName,
+          },
         },
       },
       $disconnect: {
@@ -98,7 +116,14 @@ export function WebSocketGateway({ stack }: StackContext) {
               actions: ["dynamodb:DeleteItem"],
               resources: [websocketConnectionsTable.tableArn],
             }),
+            new PolicyStatement({
+              actions: ["dynamodb:UpdateItem"],
+              resources: [websocketStatsTable.tableArn],
+            }),
           ],
+          environment: {
+            WEBSOCKET_STATS_TABLE_NAME: websocketStatsTable.tableName,
+          },
         },
       },
       logout: {
@@ -251,6 +276,7 @@ export function WebSocketGateway({ stack }: StackContext) {
         permissions: ["dynamodb:Scan", "dynamodb:DeleteItem", "execute-api:ManageConnections"],
         environment: {
           WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketConnectionsTable.tableName,
+          WEBSOCKET_STATS_TABLE_NAME: websocketStatsTable.tableName,
           DOMAIN: domainName,
         },
       },
@@ -260,10 +286,28 @@ export function WebSocketGateway({ stack }: StackContext) {
   pruneConnectionCRON.attachPermissions([
     "dynamodb:Scan",
     "dynamodb:DeleteItem",
+    "dynamodb:UpdateItem",
     "execute-api:ManageConnections",
   ]);
 
   pruneConnectionCRON.bind([websocketConnectionsTable]);
+  pruneConnectionCRON.bind([websocketStatsTable]);
+
+  const broadcastPlayersOnlineCRON = new Cron(stack, "BroadcastPlayersOnlineCRON", {
+    schedule: "rate(1 minute)",
+    job: {
+      function: {
+        handler: "src/handlers/broadcastPlayersOnline.handler",
+        permissions: ["dynamodb:GetItem", "execute-api:ManageConnections"],
+        environment: {
+          WEBSOCKET_STATS_TABLE_NAME: websocketStatsTable.tableName,
+          WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketConnectionsTable.tableName,
+          DOMAIN: domainName,
+        },
+        bind: [websocketStatsTable, websocketConnectionsTable],
+      },
+    },
+  });
 
   stack.addOutputs({
     ApiEndpoint: api.url,

@@ -26,7 +26,6 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
   const isChatOpen = useSelector((state: RootState) => state.chatBar.chatBarOpen);
   const [messages, setMessages] = useState<Message[]>([]);
   const { socket, sendMessage, connectionStatus } = useWebSocket();
-
   const toggleChatOpen = () => {
     dispatch(toggleChatBarClicked());
     chatOpenCallback();
@@ -53,16 +52,25 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-
         if ("type" in data && data["type"] === "chat") {
-          const newMessage: Message = data["message"];
-          setMessages((prevMessages) => {
-            const updatedMessages = [...prevMessages, newMessage];
-            if (updatedMessages.length > 10) {
-              return updatedMessages.slice(1);
-            }
-            return updatedMessages;
-          });
+          const message = data["message"]
+          console.log(message)
+          if (message && "player-count" in message){
+            const playerCount = message["player-count"]["count"]
+            console.log(`player count is ${playerCount}`)
+
+          } else if (message && "chat-message" in message) {
+
+            const newMessage: Message = message["chat-message"];
+            setMessages((prevMessages) => {
+              const updatedMessages = [...prevMessages, newMessage];
+              if (updatedMessages.length > 10) {
+                return updatedMessages.slice(1);
+              }
+              return updatedMessages;
+            });
+          }
+         
         }
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);

@@ -23,9 +23,9 @@ export const handler = ApiHandler(async (event) => {
       if (!connectionId) continue;
       try {
         const message = {
-          message: "ping",
+          type: "ping",
         };
-        await sendWebSocketMessage(messageEndpoint, connectionId, message);
+        await sendWebSocketMessage(messageEndpoint, connectionId, message, "health-check");
       } catch (error) {
         if ((error as Error).name === "GoneException") {
           // Connection is closed, delete it from the table

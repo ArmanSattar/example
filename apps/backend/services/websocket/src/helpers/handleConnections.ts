@@ -6,6 +6,7 @@ import {
   getConnectionInfoFromDB,
   updateConnectionInfo,
 } from "../data-access/connectionRepository";
+import { getActiveConnections, updateActiveConnections } from "../data-access/statsRepository";
 
 export const handleNewConnection = async (connectionId: string): Promise<string> => {
   const connectionInfo: ConnectionInfo = {
@@ -14,6 +15,7 @@ export const handleNewConnection = async (connectionId: string): Promise<string>
   };
 
   await saveConnectionInfo(connectionId, connectionInfo);
+  await updateActiveConnections(true);
   return connectionId;
 };
 
@@ -49,8 +51,13 @@ export const handleLogout = async (connectionId: string): Promise<void> => {
 
 export const handleConnectionClose = async (connectionId: string): Promise<void> => {
   await deleteConnectionInfo(connectionId);
+  await updateActiveConnections(false);
 };
 
 export const getConnectionInfo = async (connectionId: string): Promise<ConnectionInfo | null> => {
   return await getConnectionInfoFromDB(connectionId);
+};
+
+export const getActiveConnectionsNumber = async (): Promise<number> => {
+  return await getActiveConnections();
 };

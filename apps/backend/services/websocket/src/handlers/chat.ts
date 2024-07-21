@@ -67,11 +67,13 @@ export const handler = WebSocketApiHandler(async (event) => {
     const connectionIds: string[] = await getAllConnectionIds();
 
     const broadcastChatMessage = {
-      messageId: chatMessage.messageId,
-      message: chatMessage.message,
-      sentAt: chatMessage.sentAt,
-      username: chatMessage.username,
-      profilePicture: chatMessage.profilePicture,
+      "chat-message": {
+        messageId: chatMessage.messageId,
+        message: chatMessage.message,
+        sentAt: chatMessage.sentAt,
+        username: chatMessage.username,
+        profilePicture: chatMessage.profilePicture,
+      },
     };
     broadcastMessage(messageEndpoint, broadcastChatMessage, connectionIds, TYPE);
 
