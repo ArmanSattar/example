@@ -266,12 +266,12 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
                 }
               }}
             >
-              Skip Animation
+              <span className={"text-white font-semibold"}>Skip Animation</span>
             </button>
           ) : (
             <>
               <button
-                className={`flex flex-[2] sm:flex-grow-0 bg-green-500 rounded-md h-12 p-4 space-x-1 justify-center items-center ${
+                className={`flex flex-[2] sm:flex-grow-0 bg-green-500 action-btn-green rounded-md h-12 p-4 space-x-1 justify-center items-center ${
                   spinClicked ? "opacity-50 cursor-not-allowed" : ""
                 } ${user ? "" : "hidden"}`}
                 onClick={() => {
@@ -301,7 +301,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
                 }}
                 disabled={spinClicked}
               >
-                <span className="text-white">Demo</span>
+                <span className="text-white font-semibold">Demo</span>
               </button>
               <button
                 className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-2 action-btn-gray ${
@@ -317,7 +317,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
                 <div
                   className={`rounded-full w-2 h-2 ${fastClicked ? "bg-green-500" : "bg-red-700"}`}
                 ></div>
-                <span className="text-white">Quick</span>
+                <span className="text-white font-semibold">Quick</span>
               </button>
             </>
           )}
@@ -326,7 +326,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
           <SoundToggle />
           <span
             onClick={() => dispatch(toggleRarityInfoPopup())}
-            className="text-white hover:cursor-pointer"
+            className="text-white hover:cursor-pointer font-semibold"
           >
             Rarity Info
           </span>

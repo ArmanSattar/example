@@ -628,3 +628,13 @@ html {
   transition: all ease-in-out 200ms;
   filter: brightness(120%);
 }
+
+.action-btn-green {
+  box-shadow: 0 10px 27px #00ff0c1a, 0 -3px #00913c inset, 0 2px #35d87b inset !important;
+}
+
+.action-btn-green:hover {
+  transform: translateY(-2px);
+  transition: all ease-in-out 200ms;
+  filter: brightness(110%);
+}

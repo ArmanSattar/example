@@ -4,7 +4,7 @@ import { useFetchImage } from "../hooks/useFetchImage";
 import { GET_CASES_URL } from "../../../types";
 import { toast } from "sonner";
 import { Tag } from "../../components/Tag";
-import { Money } from "../../../components/Money";
+import { CaseMetaData } from "./CaseMetaData";
 
 interface CaseDetailsProps {
   name: string;
@@ -45,33 +45,31 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
   }
 
   return (
-    <div className="relative flex flex-col sm:flex-row justify-start xl:gap-12 sm:items-center items-start w-full gap-10 sm:gap-4 rounded-xl -mt-[5vh]">
-      <div className="relative flex justify-start sm:justify-start items-center w-full sm:w-max">
-        <div className="flex justify-center items-center min-w-[150px] sm:min-w-[150px] min-h-[100px] -mt-10">
-          <Image
-            src={data || "/images/placeholder.png"}
-            alt={name}
-            height={150}
-            width={150}
-            objectFit="contain"
-            className="object-contain"
-          />
-          <div className={"flex flex-col justify-start items-start"}>
-            <div className={"flex gap-2 justify-between items-center"}>
-              <span className="text-white font-bold text-2xl">{name}</span>
-              {tag !== "" && <Tag name={tag} customStyle={"!text-md !px-3"} />}
-            </div>
-            <Money amount={price} />
+    <div className={"w-full flex justify-center items-center -mt-[8vh]"}>
+      <div className="relative flex flex-col justify-start h-full max-w-[40vw] items-center main-element rounded-md p-4 gap-2">
+        <div className={"flex-col flex justify-start items-center gap-4"}>
+          <div className="flex gap-6 justify-between items-center mb-4">
+            <span className="text-white font-bold text-3xl whitespace-nowrap">{name}</span>
+            {tag !== "" && <Tag name={tag} customStyle={"!text-lg !px-3"} />}
           </div>
+          <div className="relative flex justify-center items-center -mt-12 w-[200px] h-[200px] lg:w-[300px] lg:h-[275px]">
+            <Image
+              src={data || "/images/placeholder.png"}
+              alt={name}
+              fill={true}
+              objectFit="contain"
+              className="object-contain"
+            />
+          </div>
+          <CaseMetaData
+            name={name}
+            highestPrice={highestPrice}
+            lowestPrice={lowestPrice}
+            totalItems={numberOfItems}
+            label={tag}
+          />
         </div>
       </div>
-      {/*<CaseMetaData*/}
-      {/*  name={name}*/}
-      {/*  highestPrice={highestPrice}*/}
-      {/*  lowestPrice={lowestPrice}*/}
-      {/*  totalItems={numberOfItems}*/}
-      {/*  label={tag}*/}
-      {/*/>*/}
     </div>
   );
 };

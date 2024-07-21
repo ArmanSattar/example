@@ -1,8 +1,7 @@
 "use client";
 
-import { CaseDetails } from "./components/CaseDetails";
 import { CaseItems } from "./components/CaseItems";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Back } from "../../components/Back";
 import { BaseCase } from "@solspin/game-engine-types";
 import { useFetchCase } from "./hooks/useFetchCase";
@@ -10,6 +9,7 @@ import { toast } from "sonner";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import { PreviousDrops } from "./components/PreviousDrops";
 import { CarouselSection } from "./components/CarouselSection";
+import Case from "../components/Case";
 
 export default function CasePage({ params }: { params: { id: string } }) {
   const caseId = params.id;
@@ -17,13 +17,8 @@ export default function CasePage({ params }: { params: { id: string } }) {
   const { data: caseInfo, isLoading: isCaseInfoLoading, isError, error } = useFetchCase(caseId);
   const caseData = caseInfo as BaseCase;
   const [childComponentsLoaded, setChildComponentsLoaded] = useState({
-    caseDetails: false,
+    caseDetails: true,
   });
-
-  const handleChildLoaded = useCallback((componentName: string) => {
-    console.log("Component loaded:", componentName);
-    setChildComponentsLoaded((prev) => ({ ...prev, [componentName]: true }));
-  }, []);
 
   useEffect(() => {
     if (!isCaseInfoLoading && !isError && Object.values(childComponentsLoaded).every(Boolean)) {
@@ -37,16 +32,19 @@ export default function CasePage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="w-full h-full flex flex-col justify-between gap-y-[10vh] py-2">
+    <div className="w-full h-full flex flex-col justify-between gap-y-[8vh] py-2">
       <LoadingOverlay isLoading={isLoading} />
       {caseData && (
         <>
           <Back text="Back to Cases" to={""} />
-          <CaseDetails
-            {...caseData}
-            numberOfItems={caseData.items.length}
-            onLoaded={() => handleChildLoaded("caseDetails")}
-          />
+          {/*<CaseDetails*/}
+          {/*  {...caseData}*/}
+          {/*  numberOfItems={caseData.items.length}*/}
+          {/*  onLoaded={() => handleChildLoaded("caseDetails")}*/}
+          {/*/>*/}
+          <div className={"w-full flex justify-center items-center -mt-[6vh]"}>
+            <Case {...caseData} disableClick={true} />
+          </div>
           <CarouselSection caseData={caseData} />
           <CaseItems items={caseData.items} />
           <PreviousDrops />
