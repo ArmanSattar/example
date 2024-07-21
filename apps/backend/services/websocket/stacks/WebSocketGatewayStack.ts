@@ -250,6 +250,18 @@ export function WebSocketGateway({ stack }: StackContext) {
           },
         },
       },
+      "player-count": {
+        function: {
+          handler: "src/handlers/sendPlayersOnline.handler",
+          timeout: 10,
+          permissions: [
+            new PolicyStatement({
+              actions: ["dynamodb:GetItem"],
+              resources: [websocketStatsTable.tableArn],
+            }),
+          ],
+        },
+      },
     },
   });
 
