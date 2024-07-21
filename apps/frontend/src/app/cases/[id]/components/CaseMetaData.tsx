@@ -24,8 +24,8 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
       </div>
       <div className={"w-full flex justify-center items-center"}>
         <div className={`flex justify-between items-center w-full`}>
-          <div className="rounded-md py-3 px-4 bg-custom_gray space-x-1 2xl:space-x-3">
-            <span className="text-white text-sm whitespace-nowrap xl:text-md-1 2xl:text-lg">
+          <div className="border-[1.5px] border-purple-500 bg-purple-500 bg-opacity-20 rounded-md py-3 px-4 space-x-1 2xl:space-x-3">
+            <span className="text-white opacity-50 text-sm whitespace-nowrap xl:text-md-1 2xl:text-lg">
               Highest Item
             </span>
             <span className="text-white text-sm xl:text-lg">·</span>
@@ -33,8 +33,8 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
               ${highestPrice}
             </span>
           </div>
-          <div className="rounded-md py-3 px-4 bg-custom_gray space-x-1 2xl:space-x-3">
-            <span className="text-white text-sm whitespace-nowrap xl:text-md-1 2xl:text-lg">
+          <div className="border-[1.5px] border-purple-500 bg-purple-500 bg-opacity-20 rounded-md py-3 px-4 space-x-1 2xl:space-x-3">
+            <span className="text-white opacity-50 text-sm whitespace-nowrap xl:text-md-1 2xl:text-lg">
               Lowest Item
             </span>
             <span className="text-white text-sm xl:text-lg">·</span>
@@ -42,8 +42,8 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
               ${lowestPrice}
             </span>
           </div>
-          <div className="rounded-md py-3 px-4 bg-custom_gray space-x-1 xl:text-md-1 2xl:space-x-3">
-            <span className="text-white text-sm whitespace-nowrap xl:text-md-1 2xl:text-lg">
+          <div className="border-[1.5px] border-purple-500 bg-purple-500 bg-opacity-20 rounded-md py-3 px-4 space-x-1 xl:text-md-1 2xl:space-x-3">
+            <span className="text-white opacity-50 text-sm whitespace-nowrap xl:text-md-1 2xl:text-lg">
               Total Items
             </span>
             <span className="text-white text-sm xl:text-lg">·</span>
@@ -53,7 +53,9 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
           </div>
         </div>
       </div>
-      <div className={`w-full bg-custom_gray rounded-md flex justify-center items-center p-6`}>
+      <div
+        className={`w-full border-[1.5px] border-green-400 bg-green-400 bg-opacity-20 rounded-md flex justify-center items-center p-6`}
+      >
         <p className="text-white font-light text-md xl:text-lg">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt
           ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation

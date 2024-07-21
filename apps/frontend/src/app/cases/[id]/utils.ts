@@ -18,7 +18,7 @@ const generateClientSeed = async (): Promise<string> => {
 const binarySearch = (items: BaseCaseItem[], target: number): BaseCaseItem => {
   let left = 0;
   let right = items.length - 1;
-
+  console.log(target);
   while (left <= right) {
     const mid = Math.floor((left + right) / 2);
     if (target < items[mid].rollNumbers[0]) {
@@ -40,7 +40,6 @@ const generateCases = (
   startItemIndex = 0,
   cases: BaseCaseItem[][] = []
 ): BaseCaseItem[][] => {
-  console.log("Generating Cases");
   const generatedCaseSpins = Array.from({ length: numCases - cases.length }, (_, rootIndex) =>
     Array.from({ length: NUMBER_OF_ITEMS }, (_, index) => {
       if (index === DISTANCE_IN_ITEMS + startItemIndex && itemsWon) {

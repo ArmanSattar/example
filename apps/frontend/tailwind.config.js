@@ -11,8 +11,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "#070C1D",
-        main_background: "#070C1D",
+        background: "#1A1C24",
+        main_background: "#252833",
         custom_gray: "#23303A",
         search_bar_gray: "#0e151a",
         blue_one: "#0A182D",

@@ -94,60 +94,71 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
 
   return (
     <div
-      className={`relative flex flex-col items-center justify-center w-[${ITEM_WIDTH}px] h-[${ITEM_HEIGHT}px] scale-90 opacity-50 will-change-transform ${
-        isMiddle ? "animate-middle-item z-10" : shouldScaleDown ? "animate-scale-down" : ""
+      className={`w-[${ITEM_WIDTH}px] h-[${ITEM_HEIGHT}px] ${
+        direction === Direction.VERTICAL ? "p-1" : "p-0.5"
       }`}
     >
       <div
-        ref={imageContainerRef}
-        className={`h-full w-full ${
-          isFinal && isMiddle && animationEnd
-            ? isVertical
-              ? "-translate-x-5 duration-1000"
-              : "-translate-y-10 duration-1000"
-            : ""
+        className={`relative flex flex-col items-center justify-center w-full h-full case-${item.rarity
+          .toLowerCase()
+          .replace(" ", "-")}-container${
+          isMiddle ? "-highlight" : ""
+        } rounded-xl overflow-clip will-change-transform ${
+          isMiddle && isFinal && animationEnd ? "border-4 border-cyan-500" : ""
         }`}
       >
+        <div className={`case-${item.rarity.toLowerCase().replace(" ", "-")}-blur`}></div>
         <div
-          className={`relative flex justify-center items-center h-full w-full mt-10 ${
-            isInfiniteAnimating ? "animate-final-item" : ""
+          ref={imageContainerRef}
+          className={`h-full w-full ${
+            isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000" : ""
           }`}
         >
-          <Image
-            src={data || "/images/placeholder.png"}
-            alt={"Case item"}
-            width={200}
-            height={200}
-          />
+          <div
+            className={`relative flex justify-center items-center h-full w-full mt-8 scale-110 ${
+              isInfiniteAnimating
+                ? "animate-final-item scale-125 brightness-110"
+                : isMiddle
+                ? "animate-middle-item"
+                : shouldScaleDown
+                ? "animate-scale-down"
+                : ""
+            } case-${item.rarity.toLowerCase().replace(" ", "-")}-shadow`}
+          >
+            <Image
+              src={data || "/images/placeholder.png"}
+              alt={"Case item"}
+              width={200}
+              height={200}
+              objectFit="contain"
+            />
+          </div>
         </div>
-      </div>
-      <div
-        className={`absolute top-0 right-0 w-full h-full opacity-60 z-[-1] ${
-          isFinal && isMiddle && animationEnd
-            ? isVertical
-              ? "-translate-x-5 duration-1000"
-              : "-translate-y-10 duration-1000"
-            : ""
-        } case-${item.rarity.toLowerCase().replace(" ", "-")} scale-125`}
-      ></div>
-      <div
-        className={`flex flex-col items-center space-y-1 w-3/4 opacity-0 ${
-          isFinal && isMiddle && animationEnd
-            ? isVertical
-              ? "-translate-x-5 duration-1000 opacity-100"
-              : "-translate-y-10 duration-1000 opacity-100"
-            : ""
-        }`}
-      >
-        <div className="flex items-center justify-center w-full space-x-1 overflow-visible whitespace-nowrap">
-          <span className={`font-light italic text-xs ${wearColor}`}>{item.wear}</span>
+        <div
+          className={`flex flex-col items-center space-y-1 w-3/4 opacity-0 ${
+            isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000 opacity-100" : ""
+          }`}
+        >
+          <div className="flex items-center justify-center w-full space-x-1 overflow-visible whitespace-nowrap">
+            <span className={`font-light italic text-xs ${wearColor}`}>{item.wear}</span>
+          </div>
+          <div className="flex items-center justify-center w-full space-x-1 overflow-visible whitespace-nowrap">
+            <span className={"text-white text-sm font-semibold"}>{type}</span>
+            <span className={"text-gray-200 text-sm font-light"}>|</span>
+            <span className={"text-white text-sm font-semibold"}>{name}</span>
+          </div>
+          <Money amount={item.price} />
         </div>
-        <div className="flex items-center justify-center w-full space-x-1 overflow-visible whitespace-nowrap">
-          <span className={"text-white text-sm font-semibold"}>{type}</span>
-          <span className={"text-gray-200 text-sm font-light"}>|</span>
-          <span className={"text-white text-sm font-semibold"}>{name}</span>
-        </div>
-        <Money amount={item.price} />
+        <div
+          className={`absolute -bottom-10 inset-x-0 w-full h-2/5 opacity-30 case-${item.rarity
+            .toLowerCase()
+            .replace(" ", "-")}-gradient -z-10`}
+        ></div>
+        <div
+          className={`absolute inset-x-0 bottom-0.5 w-full h-2 case-${item.rarity
+            .toLowerCase()
+            .replace(" ", "-")}-beam brightness-125`}
+        ></div>
       </div>
     </div>
   );

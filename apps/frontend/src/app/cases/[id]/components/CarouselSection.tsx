@@ -188,7 +188,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
   return (
     <div
       className={
-        "flex flex-col p-4 space-y-4 bg-blue_one justify-between w-full items-center rounded-md border-green-500 border-b-2 border-l-2 border-r-2 case-carousel shadow-2xl"
+        "flex flex-col p-4 space-y-4 justify-between w-full items-center rounded-lg case-carousel main-element"
       }
     >
       <ProvablyFair
@@ -218,21 +218,13 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
           )
         )}
       </div>
-      <div className={`flex justify-between items-center gap-2 w-full`}>
+      <div className={`relative flex justify-between items-center gap-2 w-full`}>
         <div className={`flex space-x-2 justify-start items-center`}>
           {Array.from({ length: 4 }, (_, index) => (
             <button
               key={index}
-              className={`bg-custom_gray group hover:${
-                spinClicked ? "" : "bg-gray-700"
-              } rounded-md min-w-[48px] sm:flex-grow-0 flex-grow  h-12 p-2 ${
-                index + 1 === numCases ? "bg-gray-700" : ""
-              } ${
-                spinClicked
-                  ? `opacity-50 cursor-not-allowed ${
-                      index + 1 === numCases ? "" : "hover:bg-custom_gray"
-                    }`
-                  : ""
+              className={`border-[1.5px] border-purple-500 bg-purple-500 bg-opacity-20 group hover:bg-opacity-30 rounded-md min-w-[48px] sm:flex-grow-0 flex-grow h-12 p-2 ${
+                index + 1 === numCases ? "!bg-opacity-100" : ""
               }`}
               onClick={() => !spinClicked && dispatch(setNumCases(index + 1))}
               disabled={spinClicked}
@@ -247,7 +239,11 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
             </button>
           ))}
         </div>
-        <div className={"flex justify-between items-center gap-x-2"}>
+        <div
+          className={
+            "absolute bottom-0 mx-auto inset-x-0 flex justify-center items-center w-max gap-x-2"
+          }
+        >
           {isDemoClicked || isPaidSpinClicked ? (
             <button
               className={"py-2 px-4 rounded-md w-max bg-gray-700 text-white"}

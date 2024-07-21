@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import Scales from "../../../../../public/icons/scales.svg";
 
 interface ProvablyFairProps {
   serverSeedHash: string;
@@ -60,9 +61,10 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
 
   return (
     <>
-      <span className="text-white cursor-pointer text-lg" onClick={handleProvablyFairClick}>
-        Provably Fair
-      </span>
+      <div className="flex items-center gap-2 cursor-pointer" onClick={handleProvablyFairClick}>
+        <Scales />
+        <span className="text-white cursor-pointer text-lg">Provably Fair</span>
+      </div>
       {isPopupOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
           <div className="bg-background p-8 rounded-lg shadow-lg w-11/12 max-w-4xl h-4/5 overflow-y-auto">
