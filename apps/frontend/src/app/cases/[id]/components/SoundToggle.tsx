@@ -1,21 +1,13 @@
-import React, { useEffect } from "react";
+import React from "react";
 import SoundOn from "../../../../../public/icons/sound-on.svg";
 import SoundOff from "../../../../../public/icons/sound-off.svg";
 import { RootState } from "../../../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSoundOn } from "../../../../store/slices/demoSlice";
-import { useAuth } from "../../../context/AuthContext";
 
 export const SoundToggle = () => {
   const isSoundOn = useSelector((state: RootState) => state.demo.soundOn);
-  const { user } = useAuth();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (user && isSoundOn !== user.muteAllSounds) {
-      dispatch(toggleSoundOn());
-    }
-  }, [user, user?.muteAllSounds]);
 
   return (
     <div
