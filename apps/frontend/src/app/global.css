@@ -46,6 +46,10 @@
   --case-contraband-color-transparent: rgba(228, 174, 57, 0.2);
 }
 
+html {
+  font-family: var(--font-poppins);
+}
+
 ::-webkit-scrollbar {
   width: 7px;
   opacity: 0;

@@ -101,7 +101,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
       <div
         className={`relative flex flex-col items-center justify-center w-full h-full opacity-50 case-${item.rarity
           .toLowerCase()
-          .replace(" ", "-")}-container${
+          .replace(" ", "-")}-container ${
           isMiddle ? "-highlight !opacity-100" : ""
         } rounded-xl overflow-clip will-change-transform ${
           isMiddle && isFinal && animationEnd ? "animate-final" : ""
@@ -135,18 +135,11 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
           </div>
         </div>
         <div
-          className={`flex flex-col items-center space-y-1 w-3/4 opacity-0 ${
+          className={`flex flex-col items-center space-y-0.5 w-3/4 opacity-0 -mt-5 ${
             isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000 opacity-100" : ""
           }`}
         >
-          <div className="flex items-center justify-center w-full space-x-1 overflow-visible whitespace-nowrap">
-            <span className={`font-light italic text-xs ${wearColor}`}>{item.wear}</span>
-          </div>
-          <div className="flex items-center justify-center w-full space-x-1 overflow-visible whitespace-nowrap">
-            <span className={"text-white text-sm font-semibold"}>{type}</span>
-            <span className={"text-gray-200 text-sm font-light"}>|</span>
-            <span className={"text-white text-sm font-semibold"}>{name}</span>
-          </div>
+          <span className={"text-white text-sm font-semibold whitespace-nowrap"}>{name}</span>
           <Money amount={item.price} />
         </div>
         <div

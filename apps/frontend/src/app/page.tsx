@@ -8,7 +8,6 @@ export default function Index() {
 
   useEffect(() => {
     router.push("/cases");
-    router.push("/profile")
   });
 
   return <div className="w-full h-full"></div>;
