@@ -188,7 +188,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
   return (
     <div
       className={
-        "flex flex-col p-4 space-y-4 justify-between w-full items-center rounded-lg case-carousel main-element"
+        "flex flex-col p-4 space-y-4 justify-between w-full items-center rounded-lg main-element"
       }
     >
       <ProvablyFair

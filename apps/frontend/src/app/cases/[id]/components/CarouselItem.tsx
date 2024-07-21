@@ -99,12 +99,12 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
       }`}
     >
       <div
-        className={`relative flex flex-col items-center justify-center w-full h-full case-${item.rarity
+        className={`relative flex flex-col items-center justify-center w-full h-full opacity-50 case-${item.rarity
           .toLowerCase()
           .replace(" ", "-")}-container${
-          isMiddle ? "-highlight" : ""
+          isMiddle ? "-highlight !opacity-100" : ""
         } rounded-xl overflow-clip will-change-transform ${
-          isMiddle && isFinal && animationEnd ? "border-4 border-cyan-500" : ""
+          isMiddle && isFinal && animationEnd ? "animate-final" : ""
         }`}
       >
         <div className={`case-${item.rarity.toLowerCase().replace(" ", "-")}-blur`}></div>
@@ -157,7 +157,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
         <div
           className={`absolute inset-x-0 bottom-0.5 w-full h-2 case-${item.rarity
             .toLowerCase()
-            .replace(" ", "-")}-beam brightness-125`}
+            .replace(" ", "-")}-beam brightness-150`}
         ></div>
       </div>
     </div>

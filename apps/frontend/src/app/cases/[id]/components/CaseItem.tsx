@@ -29,7 +29,7 @@ export const CaseItem: React.FC<CaseItemProps> = ({ item }) => {
 
   return (
     <div className="flex items-center rounded-md space-x-4 p-4 main-element overflow-hidden h-40 group min-w-[260px] max-w-[300px]">
-      <div className="relative flex flex-col items-center justify-center bg-gray-900 border-black border-[1px] rounded-lg min-w-[125px] min-h-[125px] overflow-clip">
+      <div className="relative flex flex-col items-center justify-center bg-black border-black border-[1px] rounded-lg min-w-[125px] min-h-[125px] overflow-clip">
         <div className="relative flex justify-center items-center h-full w-full scale-125 z-10">
           <Image
             src={data || "/images/placeholder.png"}
@@ -40,7 +40,7 @@ export const CaseItem: React.FC<CaseItemProps> = ({ item }) => {
           />
         </div>
         <div
-          className={`absolute -bottom-4 inset-x-0 w-full h-1/3 opacity-30 case-${item.rarity
+          className={`absolute -bottom-8 inset-x-0 w-full h-2/3 opacity-30 case-${item.rarity
             .toLowerCase()
             .replace(" ", "-")}-gradient`}
         ></div>
