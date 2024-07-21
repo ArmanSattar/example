@@ -5,7 +5,7 @@ interface DemoState {
   demoClicked: boolean;
   numCases: number;
   fastClicked: boolean;
-  soundClicked: boolean;
+  soundOn: boolean;
   rarityInfoPopup: boolean;
   paidSpinClicked: boolean;
 }
@@ -14,7 +14,7 @@ const initialState: DemoState = {
   demoClicked: false,
   numCases: 1,
   fastClicked: false,
-  soundClicked: true,
+  soundOn: true,
   rarityInfoPopup: false,
   paidSpinClicked: false,
 };
@@ -32,8 +32,8 @@ const demoSlice = createSlice({
     setNumCases(state, action) {
       state.numCases = action.payload;
     },
-    toggleSoundClicked(state) {
-      state.soundClicked = !state.soundClicked;
+    toggleSoundOn(state) {
+      state.soundOn = !state.soundOn;
     },
     toggleRarityInfoPopup(state) {
       state.rarityInfoPopup = !state.rarityInfoPopup;
@@ -49,7 +49,7 @@ export const {
   setNumCases,
   toggleFastClicked,
   toggleRarityInfoPopup,
-  toggleSoundClicked,
+  toggleSoundOn,
   togglePaidSpinClicked,
 } = demoSlice.actions;
 export default demoSlice.reducer;

@@ -1,7 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
-import axios from 'axios';
-import { toast } from 'sonner';
-import { useAuth } from '../../context/AuthContext'; 
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "sonner";
+import { useAuth } from "../../context/AuthContext";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleSoundOn } from "../../../store/slices/demoSlice";
+import { RootState } from "../../../store";
 
 interface UserInfoProps {
   username: string;
@@ -14,17 +17,19 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
   const [showSelfExcludePopup, setShowSelfExcludePopup] = useState(false);
   const [showChangeUsernamePopup, setShowChangeUsernamePopup] = useState(false);
   const [showChangeProfilePicturePopup, setShowChangeProfilePicturePopup] = useState(false);
-  const [currentUsername, setCurrentUsername] = useState('');
-  const [newUsername, setNewUsername] = useState('');
-  const [excludeDuration, setExcludeDuration] = useState('1 week');
+  const [currentUsername, setCurrentUsername] = useState("");
+  const [newUsername, setNewUsername] = useState("");
+  const [excludeDuration, setExcludeDuration] = useState("1 week");
   const [isMuted, setIsMuted] = useState(false);
-  const [profilePicture, setProfilePicture] = useState('/header-image.png');
+  const [profilePicture, setProfilePicture] = useState("/header-image.png");
+  const dispatch = useDispatch();
+  const isSoundOn = useSelector((state: RootState) => state.demo.soundOn);
 
   useEffect(() => {
     if (user) {
       setCurrentUsername(user.username);
       setNewUsername(user.username);
-      setIsMuted(user.muteAllSounds)
+      setIsMuted(user.muteAllSounds);
       setIsLoading(false);
     }
   }, [user]);
@@ -61,19 +66,19 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, 
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
 
       if (response.status === 200) {
-        updateUser({username: newUsername})
+        updateUser({ username: newUsername });
         toast.success("Successfully updated username!");
       } else {
         toast.error("Something went wrong...");
       }
     } catch (error) {
-      toast.error('Failed to update username');
+      toast.error("Failed to update username");
     }
 
     setShowChangeUsernamePopup(false);
@@ -81,6 +86,7 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
 
   const toggleMute = async () => {
     setIsMuted(!isMuted);
+    if (isSoundOn === !isMuted) dispatch(toggleSoundOn());
 
     try {
       const response = await axios.put(
@@ -92,21 +98,20 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
 
       if (response.status === 200) {
-        updateUser({muteAllSounds: !isMuted})
+        updateUser({ muteAllSounds: !isMuted });
         toast.success(`Successfully turned sounds ${isMuted ? "on" : "off"}!`);
       } else {
         toast.error("Something went wrong...");
       }
     } catch (error) {
-      toast.error('Failed to change the sound setting');
+      toast.error("Failed to change the sound setting");
     }
-
   };
 
   const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,7 +119,7 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
       const newProfilePicture = URL.createObjectURL(event.target.files[0]);
       setProfilePicture(newProfilePicture);
       setShowChangeProfilePicturePopup(false);
-      console.log('Profile picture changed');
+      console.log("Profile picture changed");
     }
   };
 
@@ -155,7 +160,9 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
             placeholder="Enter here..."
             className="block w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
-          <button className="ml-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-300 ease-in-out">Submit</button>
+          <button className="ml-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-300 ease-in-out">
+            Submit
+          </button>
         </div>
       </div>
 
@@ -163,7 +170,12 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
         <div className="flex items-center">
           <span className="text-white mr-4">Mute all sounds</span>
           <label className="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" checked={isMuted} onChange={toggleMute} className="sr-only peer" />
+            <input
+              type="checkbox"
+              checked={isMuted}
+              onChange={toggleMute}
+              className="sr-only peer"
+            />
             <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
           </label>
         </div>
@@ -171,8 +183,13 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
 
       <div className="hidden mt-6 flex space-x-4">
         <button className="px-4 py-2 bg-[#5865F2] hover:bg-[#4752C4] text-white rounded-lg transition duration-300 ease-in-out flex items-center">
-          <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+          <svg
+            className="w-6 h-6 mr-2"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z" />
           </svg>
           Link Discord
         </button>
@@ -270,7 +287,7 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300 ease-in-out"
                 onClick={() => {
                   setShowChangeProfilePicturePopup(false);
-                  console.log('Profile picture upload confirmed');
+                  console.log("Profile picture upload confirmed");
                 }}
               >
                 Confirm

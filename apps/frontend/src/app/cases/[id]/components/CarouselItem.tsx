@@ -33,7 +33,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   const [shouldScaleDown, setShouldScaleDown] = useState(false);
   const [isInfiniteAnimating, setIsInfiniteAnimating] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const soundClicked = useSelector((state: RootState) => state.demo.soundClicked);
+  const isSoundOn = useSelector((state: RootState) => state.demo.soundOn);
   const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${item.imagePath}`);
   const [type, name] = useMemo(() => item.name.split(" | "), [item.name]);
   const [wearAbbrev, wearColor] = useMemo(
@@ -49,7 +49,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   }, []);
 
   useEffect(() => {
-    if (isMiddle && soundClicked) {
+    if (isMiddle && isSoundOn) {
       const soundSrc = animationEnd ? CHA_CHING_SOUND : TICK_SOUND;
       playSound(soundSrc);
 
@@ -57,7 +57,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
         setShouldScaleDown(true);
       }
     }
-  }, [isMiddle, soundClicked, animationEnd, shouldScaleDown, playSound]);
+  }, [isMiddle, isSoundOn, animationEnd, shouldScaleDown, playSound]);
 
   useEffect(() => {
     if (animationStart) {
