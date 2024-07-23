@@ -320,7 +320,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           >
             <div
               ref={carouselRef}
-              className={`flex absolute carousel-animation ${
+              className={`flex absolute will-change-transform transform-gpu ${
                 direction === Direction.VERTICAL ? "flex-col top-0" : "flex-row left-0"
               } h-max`}
               style={carouselStyle}
