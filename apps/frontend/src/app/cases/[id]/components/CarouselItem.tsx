@@ -25,8 +25,6 @@ const CHA_CHING_SOUND = "/sounds/cashier-cha-ching.mp3";
 const CarouselItem: React.FC<CarouselItemProps> = ({
   isMiddle,
   isFinal,
-  animationEnd,
-  animationStart,
   item,
   direction,
 }) => {
@@ -50,27 +48,26 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
 
   useEffect(() => {
     if (isMiddle && isSoundOn) {
-      const soundSrc = animationEnd ? CHA_CHING_SOUND : TICK_SOUND;
+      const soundSrc = isFinal ? CHA_CHING_SOUND : TICK_SOUND;
       playSound(soundSrc);
 
       if (!shouldScaleDown) {
         setShouldScaleDown(true);
       }
     }
-  }, [isMiddle, isSoundOn, animationEnd, shouldScaleDown, playSound]);
+  }, [isMiddle, isSoundOn, isFinal, shouldScaleDown, playSound]);
 
   useEffect(() => {
-    if (animationStart) {
-      setShouldScaleDown(false);
-      setIsInfiniteAnimating(false);
-    }
-  }, [animationStart]);
+    setShouldScaleDown(false);
+    setIsInfiniteAnimating(false);
+
+  }, [item]);
 
   const handleTransitionEnd = useCallback(() => {
-    if (isFinal && isMiddle && animationEnd) {
+    if (isFinal && isMiddle) {
       setIsInfiniteAnimating(true);
     }
-  }, [isFinal, isMiddle, animationEnd]);
+  }, [isFinal, isMiddle]);
 
   useEffect(() => {
     const imageContainer = imageContainerRef.current;
@@ -81,7 +78,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
     return () => {
       imageContainer.removeEventListener("transitionend", handleTransitionEnd);
     };
-  }, [isFinal, isMiddle, animationEnd, handleTransitionEnd]);
+  }, [isFinal, isMiddle, handleTransitionEnd]);
 
   if (isLoading) {
     return <CarouselItemSkeleton />;
@@ -101,17 +98,17 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
       <div
         className={`relative flex flex-col items-center justify-center w-full h-full opacity-50 case-${item.rarity
           .toLowerCase()
-          .replace(" ", "-")}-container ${
+          .replace(" ", "-")}-container will-change-transform ${
           isMiddle ? "-highlight !opacity-100" : ""
-        } rounded-xl overflow-clip will-change-transform ${
-          isMiddle && isFinal && animationEnd ? "animate-final" : ""
+        } rounded-xl overflow-clip ${
+          isMiddle && isFinal ? "animate-final" : ""
         }`}
       >
         <div className={`case-${item.rarity.toLowerCase().replace(" ", "-")}-blur`}></div>
         <div
           ref={imageContainerRef}
           className={`h-full w-full ${
-            isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000" : ""
+            isFinal && isMiddle ? "-translate-y-10 duration-1000" : ""
           }`}
         >
           <div
@@ -134,9 +131,11 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
             />
           </div>
         </div>
+        {isFinal && isMiddle &&
+          <>
         <div
           className={`flex flex-col items-center space-y-0.5 w-3/4 opacity-0 -mt-5 ${
-            isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000 opacity-100" : ""
+            isFinal && isMiddle ? "-translate-y-10 duration-1000 opacity-100" : ""
           }`}
         >
           <span className={"text-white text-sm font-semibold whitespace-nowrap"}>{name}</span>
@@ -152,6 +151,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
             .toLowerCase()
             .replace(" ", "-")}-beam brightness-150`}
         ></div>
+          </>}
       </div>
     </div>
   );

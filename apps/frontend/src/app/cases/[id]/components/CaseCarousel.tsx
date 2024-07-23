@@ -186,6 +186,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
               ? matrix.m42 - carouselDimensions.height / 2
               : matrix.m41 - carouselDimensions.width / 2; // m42 for Y, m41 for X
           updatePosition(position);
+          console.log(position)
         }
         animationFrameId = requestAnimationFrame(animate);
       };
@@ -245,10 +246,8 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     const calculateMiddleItem = useCallback(() => {
       if (!carouselContainerRef.current || !carouselRef.current) return;
 
-      const itemSize = direction === Direction.HORIZONTAL ? ITEM_WIDTH : ITEM_HEIGHT;
-
       // Calculate the index of the middle item based on the current position
-      const middleIndex = Math.floor(Math.abs(currentPositionRef.current) / itemSize);
+      const middleIndex = Math.floor(Math.abs(currentPositionRef.current) / ITEM_WIDTH);
 
       if (middleIndex !== middleItem) {
         setMiddleItem(middleIndex);
