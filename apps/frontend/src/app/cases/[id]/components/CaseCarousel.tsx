@@ -129,8 +129,6 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           dispatch({ type: "RESET" });
           currentPositionRef.current = 0;
 
-          void carouselRef.current.offsetHeight;
-
           requestAnimationFrame(() => {
             const currentPosition =
               (direction === Direction.HORIZONTAL
