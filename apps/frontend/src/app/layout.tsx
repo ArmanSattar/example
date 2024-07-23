@@ -5,6 +5,7 @@ import { Providers } from "./providers";
 import { MainSection } from "./components/MainSection";
 import { BottomNavbar } from "./components/bottom-nav/BottomNavbar";
 import { Poppins } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <NavBar />
           <MainSection>{children}</MainSection>
+          <SpeedInsights />
           <BottomNavbar />
         </Providers>
       </body>
