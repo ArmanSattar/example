@@ -2,24 +2,15 @@ import { CaseCarousel } from "./CaseCarousel";
 import React, { useCallback, useEffect, useState } from "react";
 import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
 import useWindowSize from "../hooks/useWindowResize";
-import { ProvablyFair } from "./ProvablyFair";
-import {
-  setNumCases,
-  toggleDemoClicked,
-  toggleFastClicked,
-  togglePaidSpinClicked,
-  toggleRarityInfoPopup,
-} from "../../../../store/slices/demoSlice";
+import { toggleDemoClicked, togglePaidSpinClicked } from "../../../../store/slices/demoSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { addToBalance } from "../../../../store/slices/userSlice";
 import { RootState } from "../../../../store";
-import { SoundToggle } from "./SoundToggle";
 import { generateCases, generateClientSeed } from "../utils";
 import { SpinResponse } from "@solspin/orchestration-types";
 import { toast } from "sonner";
 import { useWebSocket } from "../../../context/WebSocketContext";
 import { useAuth } from "../../../context/AuthContext";
-import FilterDropdownMenu from "../../components/FilterDropdownMenu";
 
 interface CarouselSectionProps {
   caseData: BaseCase;
@@ -189,18 +180,18 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
   return (
     <div
       className={
-        "flex flex-col p-4 space-y-4 justify-between w-full items-center rounded-lg main-element"
+        "flex flex-col space-y-4 justify-between w-full items-center rounded-lg bg-navbar_bg"
       }
     >
-      <ProvablyFair
-        serverSeedHash={serverSeedHash || "Please Login"}
-        clientSeed={clientSeed || "Generating..."}
-        onClientSeedChange={handleClientSeedChange}
-        rollValues={rollValues}
-        serverSeed={serverSeed || ""}
-        previousServerSeedHash={previousServerSeedHash}
-        hasRolled={hasBeenRolled}
-      />
+      {/*<ProvablyFair*/}
+      {/*  serverSeedHash={serverSeedHash || "Please Login"}*/}
+      {/*  clientSeed={clientSeed || "Generating..."}*/}
+      {/*  onClientSeedChange={handleClientSeedChange}*/}
+      {/*  rollValues={rollValues}*/}
+      {/*  serverSeed={serverSeed || ""}*/}
+      {/*  previousServerSeedHash={previousServerSeedHash}*/}
+      {/*  hasRolled={hasBeenRolled}*/}
+      {/*/>*/}
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-4">
         {Array.from({ length: numCases }).map((_, i) =>
           cases[i] ? (
@@ -219,119 +210,119 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
           )
         )}
       </div>
-      <div className={`relative flex justify-between items-center gap-2 w-full`}>
-        <div className={`hidden space-x-2 justify-start items-center lg:flex`}>
-          {Array.from({ length: 4 }, (_, index) => (
-            <button
-              key={index}
-              className={`border-[1.5px] border-purple-500 bg-purple-500 bg-opacity-20 group hover:bg-opacity-30 rounded-md min-w-[48px] sm:flex-grow-0 flex-grow h-12 p-2 ${
-                index + 1 === numCases ? "!bg-opacity-100" : ""
-              }`}
-              onClick={() => !spinClicked && dispatch(setNumCases(index + 1))}
-              disabled={spinClicked}
-            >
-              <span
-                className={`text-gray-300 group-hover:text-white ${
-                  index + 1 === numCases ? "text-white" : ""
-                }`}
-              >
-                {index + 1}
-              </span>
-            </button>
-          ))}
-        </div>
-        <div className={"lg:hidden"}>
-          <FilterDropdownMenu
-            title={""}
-            options={["1", "2", "3", "4"]}
-            onSelect={(option) => dispatch(setNumCases(parseInt(option[0])))}
-            type={"radio"}
-            width={""}
-            height={"h-12"}
-            textSize={"text-md"}
-            defaultText={numCases.toString()}
-          />
-        </div>
-        <div
-          className={
-            "absolute bottom-0 mx-auto inset-x-0 flex justify-center items-center w-max gap-x-2"
-          }
-        >
-          {isDemoClicked || isPaidSpinClicked ? (
-            <button
-              className={"py-2 px-4 h-12 rounded-md w-max bg-gray-700 text-white action-btn-gray"}
-              onClick={() => {
-                if (!isSkipAnimationClicked) {
-                  setisSkipAnimationClicked(true);
-                }
-              }}
-            >
-              <span className={"text-white font-semibold"}>Skip Animation</span>
-            </button>
-          ) : (
-            <>
-              <button
-                className={`flex flex-[2] sm:flex-grow-0 bg-green-500 action-btn-green rounded-md h-12 p-4 space-x-1 justify-center items-center ${
-                  spinClicked ? "opacity-50 cursor-not-allowed" : ""
-                } ${user ? "" : "hidden"}`}
-                onClick={() => {
-                  if (!spinClicked && balance >= price * numCases) {
-                    dispatch(togglePaidSpinClicked());
-                    dispatch(addToBalance(-price * numCases));
-                  }
-                }}
-                disabled={spinClicked}
-              >
-                <span className="text-white font-semibold whitespace-nowrap">
-                  Open {numCases} Case{numCases > 1 ? "s" : ""}
-                </span>
-                <span className="hidden sm:block text-white font-semibold text-sm">·</span>
-                <span className="text-white font-semibold whitespace-nowrap">
-                  ${Math.round(price * numCases * 100) / 100}
-                </span>
-              </button>
-              <button
-                className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 action-btn-gray ${
-                  spinClicked ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() => {
-                  if (!isDemoClicked) {
-                    dispatch(toggleDemoClicked());
-                  }
-                }}
-                disabled={spinClicked}
-              >
-                <span className="text-white font-semibold">Demo</span>
-              </button>
-              <button
-                className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-2 action-btn-gray ${
-                  spinClicked ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() => {
-                  if (!spinClicked) {
-                    dispatch(toggleFastClicked());
-                  }
-                }}
-                disabled={spinClicked}
-              >
-                <div
-                  className={`rounded-full w-2 h-2 ${fastClicked ? "bg-green-500" : "bg-red-700"}`}
-                ></div>
-                <span className="text-white font-semibold">Quick</span>
-              </button>
-            </>
-          )}
-        </div>
-        <div className={"flex space-x-4 justify-end items-center"}>
-          <SoundToggle />
-          <span
-            onClick={() => dispatch(toggleRarityInfoPopup())}
-            className="text-white hover:cursor-pointer font-semibold"
-          >
-            Rarity Info
-          </span>
-        </div>
-      </div>
+      {/*<div className={`relative flex justify-between items-center gap-2 w-full`}>*/}
+      {/*<div className={`hidden space-x-2 justify-start items-center lg:flex`}>*/}
+      {/*  {Array.from({ length: 4 }, (_, index) => (*/}
+      {/*    <button*/}
+      {/*      key={index}*/}
+      {/*      className={`border-[1.5px] border-purple-500 bg-purple-500 bg-opacity-20 group hover:bg-opacity-30 rounded-md min-w-[48px] sm:flex-grow-0 flex-grow h-12 p-2 ${*/}
+      {/*        index + 1 === numCases ? "!bg-opacity-100" : ""*/}
+      {/*      }`}*/}
+      {/*      onClick={() => !spinClicked && dispatch(setNumCases(index + 1))}*/}
+      {/*      disabled={spinClicked}*/}
+      {/*    >*/}
+      {/*      <span*/}
+      {/*        className={`text-gray-300 group-hover:text-white ${*/}
+      {/*          index + 1 === numCases ? "text-white" : ""*/}
+      {/*        }`}*/}
+      {/*      >*/}
+      {/*        {index + 1}*/}
+      {/*      </span>*/}
+      {/*    </button>*/}
+      {/*  ))}*/}
+      {/*</div>*/}
+      {/*<div className={"lg:hidden"}>*/}
+      {/*  <FilterDropdownMenu*/}
+      {/*    title={""}*/}
+      {/*    options={["1", "2", "3", "4"]}*/}
+      {/*    onSelect={(option) => dispatch(setNumCases(parseInt(option[0])))}*/}
+      {/*    type={"radio"}*/}
+      {/*    width={""}*/}
+      {/*    height={"h-12"}*/}
+      {/*    textSize={"text-md"}*/}
+      {/*    defaultText={numCases.toString()}*/}
+      {/*  />*/}
+      {/*</div>*/}
+      {/*  <div*/}
+      {/*    className={*/}
+      {/*      "absolute bottom-0 mx-auto inset-x-0 flex justify-center items-center w-max gap-x-2"*/}
+      {/*    }*/}
+      {/*  >*/}
+      {/*    {isDemoClicked || isPaidSpinClicked ? (*/}
+      {/*      <button*/}
+      {/*        className={"py-2 px-4 h-12 rounded-md w-max bg-gray-700 text-white action-btn-gray"}*/}
+      {/*        onClick={() => {*/}
+      {/*          if (!isSkipAnimationClicked) {*/}
+      {/*            setisSkipAnimationClicked(true);*/}
+      {/*          }*/}
+      {/*        }}*/}
+      {/*      >*/}
+      {/*        <span className={"text-white font-semibold"}>Skip Animation</span>*/}
+      {/*      </button>*/}
+      {/*    ) : (*/}
+      {/*      <>*/}
+      {/*        <button*/}
+      {/*          className={`flex flex-[2] sm:flex-grow-0 bg-green-500 action-btn-green rounded-md h-12 p-4 space-x-1 justify-center items-center ${*/}
+      {/*            spinClicked ? "opacity-50 cursor-not-allowed" : ""*/}
+      {/*          } ${user ? "" : "hidden"}`}*/}
+      {/*          onClick={() => {*/}
+      {/*            if (!spinClicked && balance >= price * numCases) {*/}
+      {/*              dispatch(togglePaidSpinClicked());*/}
+      {/*              dispatch(addToBalance(-price * numCases));*/}
+      {/*            }*/}
+      {/*          }}*/}
+      {/*          disabled={spinClicked}*/}
+      {/*        >*/}
+      {/*          <span className="text-white font-semibold whitespace-nowrap">*/}
+      {/*            Open {numCases} Case{numCases > 1 ? "s" : ""}*/}
+      {/*          </span>*/}
+      {/*          <span className="hidden sm:block text-white font-semibold text-sm">·</span>*/}
+      {/*          <span className="text-white font-semibold whitespace-nowrap">*/}
+      {/*            ${Math.round(price * numCases * 100) / 100}*/}
+      {/*          </span>*/}
+      {/*        </button>*/}
+      {/*        <button*/}
+      {/*          className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 action-btn-gray ${*/}
+      {/*            spinClicked ? "opacity-50 cursor-not-allowed" : ""*/}
+      {/*          }`}*/}
+      {/*          onClick={() => {*/}
+      {/*            if (!isDemoClicked) {*/}
+      {/*              dispatch(toggleDemoClicked());*/}
+      {/*            }*/}
+      {/*          }}*/}
+      {/*          disabled={spinClicked}*/}
+      {/*        >*/}
+      {/*          <span className="text-white font-semibold">Demo</span>*/}
+      {/*        </button>*/}
+      {/*        <button*/}
+      {/*          className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 space-x-2 action-btn-gray ${*/}
+      {/*            spinClicked ? "opacity-50 cursor-not-allowed" : ""*/}
+      {/*          }`}*/}
+      {/*          onClick={() => {*/}
+      {/*            if (!spinClicked) {*/}
+      {/*              dispatch(toggleFastClicked());*/}
+      {/*            }*/}
+      {/*          }}*/}
+      {/*          disabled={spinClicked}*/}
+      {/*        >*/}
+      {/*          <div*/}
+      {/*            className={`rounded-full w-2 h-2 ${fastClicked ? "bg-green-500" : "bg-red-700"}`}*/}
+      {/*          ></div>*/}
+      {/*          <span className="text-white font-semibold">Quick</span>*/}
+      {/*        </button>*/}
+      {/*      </>*/}
+      {/*    )}*/}
+      {/*  </div>*/}
+      {/*  <div className={"flex space-x-4 justify-end items-center"}>*/}
+      {/*    <SoundToggle />*/}
+      {/*    <span*/}
+      {/*      onClick={() => dispatch(toggleRarityInfoPopup())}*/}
+      {/*      className="text-white hover:cursor-pointer font-semibold"*/}
+      {/*    >*/}
+      {/*      Rarity Info*/}
+      {/*    </span>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
     </div>
   );
 };

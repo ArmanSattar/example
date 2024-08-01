@@ -308,7 +308,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     }, [setMiddleDueToResizedCarousel]);
 
     return (
-      <div className={`relative rounded-md h-full flex-grow w-full example`}>
+      <div className={`relative rounded-md h-full flex-grow w-full`}>
         <div
           className={`w-0 h-0 absolute z-20 ${
             direction === Direction.HORIZONTAL
@@ -326,11 +326,11 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         ></div>
         <div
           className={`mt-md flex overflow-hidden rounded-sm flex-col gap-xs ${
-            direction === Direction.VERTICAL ? "h-[450px]" : "h-[245px]"
+            direction === Direction.VERTICAL ? "max-h-[240px]" : "h-[200px]"
           }`}
         >
           <div
-            className="relative flex h-full overflow-hidden bg-dark-4 w-full items-center justify-center"
+            className="relative flex h-full overflow-hidden w-full items-center justify-center"
             ref={carouselContainerRef}
           >
             <div

@@ -63,30 +63,27 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
           isMiddle && isFinal && animationEnd ? "animate-final" : ""
         } ${isMiddle ? "opacity-100" : "opacity-75"}`}
       >
-        <div
-          ref={imageContainerRef}
-          className={`h-full w-full ${
-            isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000" : ""
-          }`}
-        >
-          <div className={`relative flex justify-center items-center h-full w-full mt-8`}>
+        <div ref={imageContainerRef} className={`h-full w-full`}>
+          <div className={`relative flex justify-center items-center h-full w-full`}>
             <Image
               src={data || "/images/placeholder.png"}
               alt={"Case item"}
-              width={200}
-              height={200}
+              width={192}
+              height={192}
               objectFit="contain"
             />
           </div>
         </div>
-        <div
-          className={`flex flex-col items-center space-y-0.5 w-3/4 opacity-0 -mt-5 ${
-            isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000 opacity-100" : ""
-          }`}
-        >
-          <span className={"text-white text-sm font-semibold whitespace-nowrap"}>{name}</span>
-          <Money amount={item.price} />
-        </div>
+        {isFinal && isMiddle && (
+          <div
+            className={`flex flex-col items-center space-y-0.5 w-3/4 opacity-0 ${
+              isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000 opacity-100" : ""
+            }`}
+          >
+            <span className={"text-white text-sm font-semibold whitespace-nowrap"}>{name}</span>
+            <Money amount={item.price} />
+          </div>
+        )}
       </div>
     </div>
   );

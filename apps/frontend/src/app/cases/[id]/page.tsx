@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import { PreviousDrops } from "./components/PreviousDrops";
 import { CarouselSection } from "./components/CarouselSection";
+import { CarouselButtonsSubSection } from "./components/CarouselButtonsSubSection";
 
 export default function CasePage({ params }: { params: { id: string } }) {
   const caseId = params.id;
@@ -46,6 +47,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
             onLoaded={() => handleChildLoaded("caseDetails")}
           />
           <CarouselSection caseData={caseData} />
+          <CarouselButtonsSubSection price={caseData.price} />
           <CaseItems items={caseData.items} />
           <PreviousDrops />
         </>
