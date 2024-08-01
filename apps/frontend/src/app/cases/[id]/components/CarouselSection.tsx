@@ -11,6 +11,9 @@ import { SpinResponse } from "@solspin/orchestration-types";
 import { toast } from "sonner";
 import { useWebSocket } from "../../../context/WebSocketContext";
 import { useAuth } from "../../../context/AuthContext";
+import { ProvablyFair } from "./ProvablyFair";
+import { CarouselButtonsSubSection } from "./CarouselButtonsSubSection";
+import { SoundToggle } from "./SoundToggle";
 
 interface CarouselSectionProps {
   caseData: BaseCase;
@@ -179,15 +182,6 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
 
   return (
     <div className={"flex flex-col space-y-4 justify-between w-full items-center rounded-lg"}>
-      {/*<ProvablyFair*/}
-      {/*  serverSeedHash={serverSeedHash || "Please Login"}*/}
-      {/*  clientSeed={clientSeed || "Generating..."}*/}
-      {/*  onClientSeedChange={handleClientSeedChange}*/}
-      {/*  rollValues={rollValues}*/}
-      {/*  serverSeed={serverSeed || ""}*/}
-      {/*  previousServerSeedHash={previousServerSeedHash}*/}
-      {/*  hasRolled={hasBeenRolled}*/}
-      {/*/>*/}
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-1 xl:space-y-0 space-y-4">
         {Array.from({ length: numCases }).map((_, i) =>
           cases[i] ? (
@@ -205,6 +199,21 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
             <div key={i} className="w-full h-[310px] bg-gray-800 animate-pulse rounded-md"></div>
           )
         )}
+      </div>
+      <div className={"flex flex-col sm:flex-row justify-between items-center w-full"}>
+        <div className={"flex justify-between items-center gap-4"}>
+          <ProvablyFair
+            serverSeedHash={serverSeedHash || "Please Login"}
+            clientSeed={clientSeed || "Generating..."}
+            onClientSeedChange={handleClientSeedChange}
+            rollValues={rollValues}
+            serverSeed={serverSeed || ""}
+            previousServerSeedHash={previousServerSeedHash}
+            hasRolled={hasBeenRolled}
+          />
+          <SoundToggle />
+        </div>
+        <CarouselButtonsSubSection price={caseData.price} />
       </div>
       {/*<div className={`relative flex justify-between items-center gap-2 w-full`}>*/}
       {/*<div className={`hidden space-x-2 justify-start items-center lg:flex`}>*/}

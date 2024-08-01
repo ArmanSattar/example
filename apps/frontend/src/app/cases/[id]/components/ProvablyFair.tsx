@@ -61,9 +61,14 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
 
   return (
     <>
-      <div className="flex items-center gap-2 cursor-pointer" onClick={handleProvablyFairClick}>
+      <div
+        className="flex items-center gap-2 cursor-pointer group"
+        onClick={handleProvablyFairClick}
+      >
         <Scales />
-        <span className="text-white cursor-pointer text-lg">Provably Fair</span>
+        <span className="text-gray-400 cursor-pointer text-lg group-hover:text-gray-300">
+          Provably Fair
+        </span>
       </div>
       {isPopupOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">

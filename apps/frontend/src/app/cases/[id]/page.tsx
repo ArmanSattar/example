@@ -9,7 +9,6 @@ import { toast } from "sonner";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import { PreviousDrops } from "./components/PreviousDrops";
 import { CarouselSection } from "./components/CarouselSection";
-import { CarouselButtonsSubSection } from "./components/CarouselButtonsSubSection";
 
 export default function CasePage({ params }: { params: { id: string } }) {
   const caseId = params.id;
@@ -37,7 +36,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="w-full h-full flex flex-col justify-between py-2 px-2">
+    <div className="w-full h-full flex flex-col justify-between p-2 gap-y-10">
       <LoadingOverlay isLoading={isLoading} />
       {caseData && (
         <>
@@ -47,7 +46,6 @@ export default function CasePage({ params }: { params: { id: string } }) {
             onLoaded={() => handleChildLoaded("caseDetails")}
           />
           <CarouselSection caseData={caseData} />
-          <CarouselButtonsSubSection price={caseData.price} />
           <CaseItems items={caseData.items} />
           <PreviousDrops />
         </>

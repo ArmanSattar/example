@@ -85,7 +85,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
         {isFinal && isMiddle && (
           <div
             className={`flex flex-col items-center space-y-0.5 w-3/4 ${
-              isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000" : ""
+              isFinal && isMiddle && animationEnd ? "-translate-y-5 duration-1000" : ""
             }`}
           >
             <span className={"text-white text-sm font-semibold whitespace-nowrap"}>{name}</span>

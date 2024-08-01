@@ -13,7 +13,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ onlineCount, title }) =>
   return (
     <div
       className={
-        "mt-2 sticky w-[95%] z-50 flex items-center justify-between p-2 bg-navbar_bg rounded-md"
+        "mt-2 sticky shadow-2xl w-[95%] z-50 flex items-center justify-between p-2 bg-navbar_bg rounded-md"
       }
     >
       <span className={"text-color_chat_text font-semibold"}>{title}</span>

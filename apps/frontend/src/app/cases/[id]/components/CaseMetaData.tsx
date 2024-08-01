@@ -38,8 +38,8 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
       >
         <div className={`flex items-center gap-2`}>
           <div className={"flex gap-1"}>
-            <span className="text-gray-300 text-sm">Highest Item</span>
-            <span className="text-gray-300 text-sm">${highestPrice}</span>
+            <span className="text-gray-400 text-sm">Highest Item</span>
+            <span className="text-gray-400 text-sm">${highestPrice}</span>
           </div>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -51,8 +51,8 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             <circle cx="2" cy="2" r="2" fill="#d1d5db" />
           </svg>
           <div className={"flex gap-1"}>
-            <span className="text-gray-300 text-sm">Lowest Item</span>
-            <span className="text-gray-300 text-sm">${lowestPrice}</span>
+            <span className="text-gray-400 text-sm">Lowest Item</span>
+            <span className="text-gray-400 text-sm">${lowestPrice}</span>
           </div>
         </div>
       </div>

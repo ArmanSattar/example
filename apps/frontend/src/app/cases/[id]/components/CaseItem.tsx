@@ -34,7 +34,7 @@ export const CaseItem: React.FC<CaseItemProps> = ({ item }) => {
 
   return (
     <div
-      className={`flex flex-row md:flex-col items-start p-4 overflow-hidden group min-w-[200px] max-w-[220px] rounded-lg border-2 border-white/30 bg-gradient-to-b from-[#3A3C3E] to-[#232527]`}
+      className={`flex flex-row md:flex-col items-start p-4 overflow-hidden group min-w-[200px] max-w-[220px] bg-navbar_bg rounded-lg shadow-lg`}
     >
       <div className="relative flex flex-col items-center justify-center rounded-lg min-w-[125px] md:w-full min-h-[125px]">
         <div className="relative flex justify-center items-center h-full w-full z-10">
@@ -48,23 +48,21 @@ export const CaseItem: React.FC<CaseItemProps> = ({ item }) => {
             />
           </div>
         </div>
-        <div className={`absolute mx-auto inset-x-0 h-32 w-32 ${gradientText}`}></div>
+        <div className={`absolute mx-auto inset-x-0 h-32 w-32 ${gradientText} opacity-40`}></div>
       </div>
-      <div className="flex flex-col justify-center items-start space-y-0.5 flex-grow px-2 w-full">
-        <span className="text-white text-sm whitespace-nowrap font-">{name}</span>
-        <span className="text-gray-400 text-2xs whitespace-nowrap">{type}</span>
+      <div className={`flex flex-col justify-center items-start space-y-0.5 flex-grow px-2 w-full`}>
+        <span className="font-bold text-white text-sm whitespace-nowrap">{name}</span>
+        <span className="text-2xs whitespace-nowrap text-[#98A0C3]">{type}</span>
         <span className={`${wearColor} text-2xs whitespace-nowrap`}>{item.wear}</span>
         <div className={"flex justify-between items-center w-full"}>
-          <div className="rounded-2xl bg-dark py-0.5 px-2 border-[1px] border-black h-8 flex justify-center items-center whitespace-nowrap">
+          <div className="rounded-2xl py-0.5 px-2 bg-[#181B1D] h-8 flex justify-center items-center whitespace-nowrap">
             <Money amount={item.price} textSize={"sm"} />
           </div>
-          <div className="h-8 flex justify-center items-center whitespace-nowrap">
-            <div className="relative w-full h-full">
-              <span className="absolute inset-0 flex items-center justify-center text-white text-xs duration-300 group-hover:opacity-0">
-                {item.chance}%
-              </span>
-              <span className="absolute inset-0 flex items-center justify-center text-white text-2xs opacity-0 duration-300 group-hover:opacity-100">
-                {item.rollNumbers[0]}-{item.rollNumbers[1]}
+          <div>
+            <div className="relative w-full h-full flex justify-between items-center space-x-1">
+              <Image src={"/icons/dice.svg"} alt={"Dice"} width={16} height={16} />
+              <span className="text-[#98A0C3] text-sm whitespace-nowrap text-right">
+                {item.chance}
               </span>
             </div>
           </div>

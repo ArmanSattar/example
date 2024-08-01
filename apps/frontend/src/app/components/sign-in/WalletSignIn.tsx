@@ -22,7 +22,7 @@ const CustomWalletMultiButton = () => {
       <button
         onClick={openModal}
         disabled={connecting || isAuthenticating}
-        className={`bg-color_primary text-black font-semibold uppercase h-10 md:h-12 px-4 rounded-md border-none cursor-pointer transition-opacity duration-300 ${
+        className={`bg-color_primary text-white font-bold uppercase h-10 md:h-12 px-4 rounded-md border-none cursor-pointer transition-opacity duration-300 ${
           connecting || isAuthenticating ? "cursor-not-allowed opacity-70" : "hover:bg-red-600"
         }`}
       >
