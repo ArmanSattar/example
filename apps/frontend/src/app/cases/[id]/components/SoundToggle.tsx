@@ -21,9 +21,6 @@ export const SoundToggle = () => {
       ) : (
         <SoundOff className={"w-6 h-6 text-gray-400 group-hover:text-gray-300"} />
       )}
-      <span className="text-gray-400 group-hover:text-gray-300">
-        {!isSoundOn ? "Sound Off" : "Sound On"}
-      </span>
     </div>
   );
 };

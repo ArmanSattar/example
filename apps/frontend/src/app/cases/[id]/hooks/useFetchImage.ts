@@ -8,7 +8,7 @@ export const useFetchImage = (url: string) => {
         cache: "force-cache",
       });
       if (!response.ok) {
-        throw new Error("Failed to fetch image");
+        // throw new Error("Failed to fetch image");
       }
       const blob = await response.blob();
       return URL.createObjectURL(blob);
