@@ -18,7 +18,7 @@ const generateClientSeed = async (): Promise<string> => {
 const binarySearch = (items: BaseCaseItem[], target: number): BaseCaseItem => {
   let left = 0;
   let right = items.length - 1;
-  console.log(target);
+
   while (left <= right) {
     const mid = Math.floor((left + right) / 2);
     if (target < items[mid].rollNumbers[0]) {

@@ -30,7 +30,6 @@ export const MainSection = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="flex flex-1 overflow-hidden relative w-full max-w-full">
-      <div className="starry-background"></div>
       {isDepositOpen && <DepositPopUp handleClose={toggleDepositOpen} />}
       {isWithdrawOpen && <WithdrawPopUp handleClose={toggleWithdrawOpen} />}
       {isRarityInfoOpen && <RarityInfoPopup />}

@@ -94,6 +94,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     const [carouselDimensions, setCarouselDimensions] = useState<{ width: number; height: number }>(
       { width: 0, height: 0 }
     );
+    const middleIndexUpdatingRef = useRef(0);
 
     const calculateDirection = useCallback(() => {
       if (windowSize.width && windowSize.width <= 640) {
@@ -118,18 +119,42 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       }
     }, [windowSize, numCases, calculateDirection, direction, items]);
 
-    const updatePosition = useCallback((position: number) => {
-      currentPositionRef.current = position;
-      calculateMiddleItem();
+    const playSound = useCallback((src: string) => {
+      const audio = new Audio(src);
+      audio.play().catch((error) => console.error("Audio playback failed:", error));
     }, []);
+
+    useEffect(() => {
+      if (middleItem !== startMiddleItem && middleItem !== 0) {
+        playSound("/sounds/tick.wav");
+      }
+    }, [middleItem, startMiddleItem]);
+
+    const calculateMiddleItem = useCallback(() => {
+      if (!carouselContainerRef.current || !carouselRef.current) return;
+
+      // Calculate the index of the middle item based on the current position
+      const middleIndex = Math.floor(Math.abs(currentPositionRef.current) / ITEM_WIDTH);
+
+      if (middleIndex !== middleIndexUpdatingRef.current) {
+        setMiddleItem(middleIndex);
+        middleIndexUpdatingRef.current = middleIndex;
+      }
+    }, [direction]);
+
+    const updatePosition = useCallback(
+      (position: number) => {
+        currentPositionRef.current = position;
+        calculateMiddleItem();
+      },
+      [calculateMiddleItem]
+    );
 
     useLayoutEffect(() => {
       if ((state.animationStage === 3 || state.animationStage === 0) && isSpinClicked) {
         if (carouselRef.current) {
           dispatch({ type: "RESET" });
           currentPositionRef.current = 0;
-
-          void carouselRef.current.offsetHeight;
 
           requestAnimationFrame(() => {
             const currentPosition =
@@ -153,6 +178,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       const handleTransitionEnd = () => {
         if (state.animationStage === 1) {
           dispatch({ type: "FIRST_STAGE_END" });
+          playSound("/sounds/cashier-cha-ching.mp3");
         } else if (state.animationStage === 2 && !animationCompletedRef.current) {
           animationCompletedRef.current = true;
           onAnimationComplete();
@@ -192,7 +218,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         animationFrameId = requestAnimationFrame(animate);
       };
 
-      if (state.animationStage === 1 || state.animationStage === 2) {
+      if (state.animationStage === 1) {
         animationFrameId = requestAnimationFrame(animate);
       }
 
@@ -243,19 +269,6 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         transition,
       };
     }, [state.animationStage, state.offset, isFastAnimationClicked, direction]);
-
-    const calculateMiddleItem = useCallback(() => {
-      if (!carouselContainerRef.current || !carouselRef.current) return;
-
-      const itemSize = direction === Direction.HORIZONTAL ? ITEM_WIDTH : ITEM_HEIGHT;
-
-      // Calculate the index of the middle item based on the current position
-      const middleIndex = Math.floor(Math.abs(currentPositionRef.current) / itemSize);
-
-      if (middleIndex !== middleItem) {
-        setMiddleItem(middleIndex);
-      }
-    }, [direction, middleItem]);
 
     const setMiddleDueToResizedCarousel = useCallback(
       (width: number, height: number) => {
@@ -322,7 +335,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           >
             <div
               ref={carouselRef}
-              className={`flex absolute carousel-animation ${
+              className={`flex absolute will-change-transform transform-gpu ${
                 direction === Direction.VERTICAL ? "flex-col top-0" : "flex-row left-0"
               } h-max`}
               style={carouselStyle}

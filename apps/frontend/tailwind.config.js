@@ -11,12 +11,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "#1A1C24",
+        background: "var(--color-bg)",
         main_background: "#252833",
         custom_gray: "#23303A",
         search_bar_gray: "#0e151a",
         blue_one: "#0A182D",
         gray_action_btn: "var(--gray-action-btn)",
+        chatbar_bg: "var(--color-chatbar-bg)",
+        navbar_bg: "var(--color-navbar-bg)",
+        gray_1: "var(--gray-1)",
+        color_primary: "var(--color-primary)",
+        color_chat_text: "var(--color-chat-text)",
+        color_gray_2: "var(--color-gray-2)",
+        color_light_gray_1: "var(--color-light-gray-1)",
       },
       fontSize: {
         "md-1": "1.0625rem",

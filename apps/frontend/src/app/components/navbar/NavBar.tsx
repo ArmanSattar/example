@@ -44,8 +44,9 @@ export const NavBar = () => {
     dispatch(toggleWithdrawClicked());
   };
 
+  console.log(navActiveLink, navLinks);
   return (
-    <header className="text-white top-0 left-0 bg-background w-full shadow-2xl sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0">
+    <header className="text-white top-0 left-0 bg-navbar_bg w-full sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0">
       <div className="flex justify-between items-center w-full h-full z-10">
         <div className="flex items-center justify-between h-full">
           <div className="flex items-center w-[60px] sm:w-[80px] lg:w-[320px] justify-center">
@@ -67,21 +68,19 @@ export const NavBar = () => {
               >
                 <li className="relative flex flex-col items-center justify-center space-y-1 group hover:cursor-pointer px-2 h-full">
                   <div
-                    className={`absolute inset-x-0 bottom-0 h-1 rounded-t-md bg-red-500 origin-center ${
+                    className={`absolute inset-x-0 bottom-0 h-1 rounded-t-md bg-color_primary origin-center ${
                       navLink.href === navActiveLink
                         ? ""
                         : "transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"
                     }`}
                   ></div>
                   <navLink.icon
-                    className={`h-4 w-4 md:h-6 md:w-6 text-gray-400 group-hover:text-red-500 duration-75 ${
-                      navActiveLink === navLink.href ? "text-red-500" : ""
+                    className={`h-4 w-4 md:h-6 md:w-6 group-hover:text-color_primary duration-75 ${
+                      navActiveLink === navLink.href ? "text-color_primary" : "text-white"
                     }`}
                   />
                   <span
-                    className={`text-xs md:text-sm text-gray-400 group-hover:text-white duration-75 ${
-                      navActiveLink === navLink.href ? "text-white" : ""
-                    }`}
+                    className={`text-xs md:text-sm text-white group-hover:color_primary duration-75 uppercase`}
                   >
                     {navLink.name}
                   </span>

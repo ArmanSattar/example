@@ -4,11 +4,11 @@ import React, { useEffect, useState } from "react";
 import { ChatBody } from "./ChatBody";
 import { ChatInput } from "./ChatInput";
 import { ExpandButton } from "./ExpandButton";
-import { DismissButton } from "./DismissButton";
 import { useWebSocket } from "../../context/WebSocketContext";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { toggleChatBarClicked } from "../../../store/slices/chatBarSlice";
+import { ChatHeader } from "./ChatHeader";
 
 interface ChatbarProps {
   chatOpenCallback: () => void;
@@ -49,24 +49,22 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
     fetchMessages();
   }, []);
   useEffect(() => {
-    console.log('in here')
+    console.log("in here");
     if (connectionStatus === "connected") {
-      sendMessage(JSON.stringify({"action": "player-count"}))
+      sendMessage(JSON.stringify({ action: "player-count" }));
     }
-  }, [connectionStatus, sendMessage])
+  }, [connectionStatus, sendMessage]);
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
         if ("type" in data && data["type"] === "chat") {
-          const message = data["message"]
-          console.log(message)
-          if (message && "player-count" in message){
-            const playersCount = message["player-count"]["count"]
-            setPlayerCount(playersCount)
-
+          const message = data["message"];
+          console.log(message);
+          if (message && "player-count" in message) {
+            const playersCount = message["player-count"]["count"];
+            setPlayerCount(playersCount);
           } else if (message && "chat-message" in message) {
-
             const newMessage: Message = message["chat-message"];
             setMessages((prevMessages) => {
               const updatedMessages = [...prevMessages, newMessage];
@@ -76,7 +74,6 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
               return updatedMessages;
             });
           }
-         
         }
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
@@ -103,16 +100,17 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
     <div
       className={`absolute lg:relative inset-0 md:h-[calc(100vh-5rem)] ${
         isChatOpen ? "w-screen md:w-[320px]" : "w-0"
-      } z-40 transition-all duration-500 ease-in-out flex-shrink-0 bg-background shadow-2xl`}
+      } z-40 transition-all duration-500 ease-in-out flex-shrink-0 bg-chatbar_bg`}
     >
       <div
-        className={`h-full flex flex-col justify-between shadow-2xl transition-transform duration-500 w-full ${
+        className={`h-full flex flex-col items-center justify-between shadow-2xl transition-transform duration-500 w-full ${
           !isChatOpen ? "-translate-x-full hidden" : "translate-x-0"
         }`}
       >
+        <ChatHeader onlineCount={1234} title={"General Chat"} />
         <ChatBody messages={messages} />
         <div className="w-full">
-          <ChatInput playersOnline={playerCount}/>
+          <ChatInput playersOnline={playerCount} />
         </div>
       </div>
       <div
@@ -122,13 +120,13 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
       >
         <ExpandButton toggleChatOpen={toggleChatOpen} />
       </div>
-      <div
-        className={`absolute top-6 right-12 transform translate-x-full -translate-y-1/2 transition-transform duration-500 ${
-          !isChatOpen ? "hidden" : ""
-        }`}
-      >
-        <DismissButton toggleChatClose={toggleChatOpen} />
-      </div>
+      {/*<div*/}
+      {/*  className={`absolute top-6 right-12 transform translate-x-full -translate-y-1/2 transition-transform duration-500 ${*/}
+      {/*    !isChatOpen ? "hidden" : ""*/}
+      {/*  }`}*/}
+      {/*>*/}
+      {/*  <DismissButton toggleChatClose={toggleChatOpen} />*/}
+      {/*</div>*/}
     </div>
   );
 };

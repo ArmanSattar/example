@@ -1,5 +1,5 @@
-import Image from "next/image";
 import React from "react";
+import { ProfileComponent } from "./ProfileComponent";
 
 interface ChatInputElementProps {
   message: string;
@@ -23,20 +23,22 @@ export const ChatInputElement: React.FC<ChatInputElementProps> = ({
   const truncatedUsername = truncateUsername(username);
 
   return (
-    <div className="relative py-4 px-2 gradient-border-bottom">
+    <div className="relative py-4 px-2">
       <div className="flex items-start space-x-2">
-        <Image
-          src={"/cases/dota_3.svg"}
-          alt="Profile picture"
-          width={48}
-          height={48}
-          className="flex-shrink-0"
-        />
+        <ProfileComponent level={85} profilePic={profilePicture} />
         <div className="flex flex-col space-y-1.5 flex-grow min-w-0">
-          <span className="flex text-emerald-500 text-sm font-bold" title={username}>
+          <span className="flex text-color_chat_text text-sm" title={username}>
             {truncatedUsername}
           </span>
-          <p className="text-gray-300 text-xs break-words overflow-hidden">{message}</p>
+          <div
+            className={
+              "relative flex items-center justify-center p-2.5 pb-3 bg-color_gray_2 rounded-[1px_8px_8px_8px]"
+            }
+          >
+            <p className="text-gray-300 text-xs break-words overflow-hidden w-full h-full">
+              {message}
+            </p>
+          </div>
         </div>
       </div>
     </div>
