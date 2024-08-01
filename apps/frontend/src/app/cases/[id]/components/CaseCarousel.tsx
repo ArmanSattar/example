@@ -308,25 +308,142 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     }, [setMiddleDueToResizedCarousel]);
 
     return (
-      <div className={`relative rounded-md h-full flex-grow w-full`}>
+      <div className={`relative rounded-md h-full flex-grow w-full bg-navbar_bg`}>
         <div
           className={`w-0 h-0 absolute z-20 ${
             direction === Direction.HORIZONTAL
-              ? "top-0 inset-x-0 mx-auto border-l-[16px] border-r-[16px] border-t-[27.71px] border-l-transparent border-r-transparent border-t-yellow-400"
-              : "left-0 inset-y-0 my-auto border-t-[16px] border-b-[16px] border-l-[27.71px] border-t-transparent border-b-transparent border-l-yellow-400"
+              ? "-top-2 inset-x-0 mx-auto "
+              : "left-0 inset-y-0 my-auto"
           }`}
-        ></div>
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="36"
+            height="31"
+            viewBox="0 0 36 31"
+            fill="none"
+          >
+            <g filter="url(#filter0_d_121_502)">
+              <path
+                d="M21.1206 23.1083C19.5194 25.1052 16.4806 25.1052 14.8794 23.1083L1.56344 6.50234C-0.536127 3.88403 1.32791 -3.64309e-06 4.68406 -3.34969e-06L31.3159 -1.02145e-06C34.6721 -7.28048e-07 36.5361 3.88403 34.4366 6.50235L21.1206 23.1083Z"
+                fill="url(#paint0_linear_121_502)"
+              />
+            </g>
+            <defs>
+              <filter
+                id="filter0_d_121_502"
+                x="0.676514"
+                y="0"
+                width="34.647"
+                height="30.606"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="6" />
+                <feComposite in2="hardAlpha" operator="out" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                <feBlend
+                  mode="normal"
+                  in2="BackgroundImageFix"
+                  result="effect1_dropShadow_121_502"
+                />
+                <feBlend
+                  mode="normal"
+                  in="SourceGraphic"
+                  in2="effect1_dropShadow_121_502"
+                  result="shape"
+                />
+              </filter>
+              <linearGradient
+                id="paint0_linear_121_502"
+                x1="18"
+                y1="-9"
+                x2="18"
+                y2="27"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stop-color="#FFE500" />
+                <stop offset="1" stop-color="#FFEDBE" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <div
           className={`w-0 h-0 absolute z-20 ${
             direction === Direction.HORIZONTAL
-              ? // ? "bottom-0 inset-x-0 mx-auto border-l-[16px] border-r-[16px] border-b-[27.71px] border-l-transparent border-r-transparent border-b-yellow-400"
-                "hidden"
-              : "right-0 inset-y-0 my-auto border-t-[16px] border-b-[16px] border-r-[27.71px] border-t-transparent border-b-transparent border-r-yellow-400"
+              ? "bottom-[23px] inset-x-0 mx-auto"
+              : "right-0 inset-y-0 my-auto"
           }`}
-        ></div>
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="36"
+            height="31"
+            viewBox="0 0 36 31"
+            fill="none"
+          >
+            <g filter="url(#filter0_d_121_503)">
+              <path
+                d="M21.1206 7.89165C19.5194 5.89478 16.4806 5.89478 14.8794 7.89165L1.56344 24.4977C-0.536127 27.116 1.32791 31 4.68406 31L31.3159 31C34.6721 31 36.5361 27.116 34.4366 24.4977L21.1206 7.89165Z"
+                fill="url(#paint0_linear_121_503)"
+              />
+            </g>
+            <defs>
+              <filter
+                id="filter0_d_121_503"
+                x="0.676514"
+                y="0.393982"
+                width="34.647"
+                height="30.606"
+                filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feColorMatrix
+                  in="SourceAlpha"
+                  type="matrix"
+                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                  result="hardAlpha"
+                />
+                <feOffset dy="-6" />
+                <feComposite in2="hardAlpha" operator="out" />
+                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+                <feBlend
+                  mode="normal"
+                  in2="BackgroundImageFix"
+                  result="effect1_dropShadow_121_503"
+                />
+                <feBlend
+                  mode="normal"
+                  in="SourceGraphic"
+                  in2="effect1_dropShadow_121_503"
+                  result="shape"
+                />
+              </filter>
+              <linearGradient
+                id="paint0_linear_121_503"
+                x1="18"
+                y1="40"
+                x2="18"
+                y2="4"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stop-color="#FFE500" />
+                <stop offset="1" stop-color="#FFEDBE" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
         <div
           className={`mt-md flex overflow-hidden rounded-sm flex-col gap-xs ${
-            direction === Direction.VERTICAL ? "max-h-[240px]" : "h-[200px]"
+            direction === Direction.VERTICAL ? "h-[200px]" : "h-[200px]"
           }`}
         >
           <div

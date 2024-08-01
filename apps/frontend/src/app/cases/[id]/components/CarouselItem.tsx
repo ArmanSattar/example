@@ -30,6 +30,10 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${item.imagePath}`);
   const [type, name] = useMemo(() => item.name.split(" | "), [item.name]);
   const isVertical = direction === Direction.VERTICAL;
+  const gradientText = useMemo(
+    () => `case-${item.rarity.toLowerCase().replace(" ", "-")}-gradient`,
+    [item]
+  );
 
   useEffect(() => {
     if (isMiddle && !shouldScaleDown) {
@@ -59,11 +63,14 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
       }`}
     >
       <div
-        className={`relative flex flex-col items-center justify-center w-full h-full rounded-xl overflow-clip will-change-transform ${
-          isMiddle && isFinal && animationEnd ? "animate-final" : ""
-        } ${isMiddle ? "opacity-100" : "opacity-75"}`}
+        className={`relative flex flex-col items-center justify-center w-full h-full rounded-xl overflow-clip ${
+          isMiddle ? "opacity-100" : "opacity-30"
+        }`}
       >
-        <div ref={imageContainerRef} className={`h-full w-full`}>
+        <div
+          ref={imageContainerRef}
+          className={`relative h-full w-full flex justify-center items-center`}
+        >
           <div className={`relative flex justify-center items-center h-full w-full`}>
             <Image
               src={data || "/images/placeholder.png"}
@@ -73,11 +80,12 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
               objectFit="contain"
             />
           </div>
+          <div className={`h-4/5 w-4/5 absolute ${gradientText} -z-10`}></div>
         </div>
         {isFinal && isMiddle && (
           <div
-            className={`flex flex-col items-center space-y-0.5 w-3/4 opacity-0 ${
-              isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000 opacity-100" : ""
+            className={`flex flex-col items-center space-y-0.5 w-3/4 ${
+              isFinal && isMiddle && animationEnd ? "-translate-y-10 duration-1000" : ""
             }`}
           >
             <span className={"text-white text-sm font-semibold whitespace-nowrap"}>{name}</span>

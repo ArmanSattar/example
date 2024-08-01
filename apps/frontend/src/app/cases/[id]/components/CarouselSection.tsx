@@ -178,11 +178,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
   }, [socket, isFirstServerSeedHash, serverSeedHash, caseData, numCases]);
 
   return (
-    <div
-      className={
-        "flex flex-col space-y-4 justify-between w-full items-center rounded-lg bg-navbar_bg"
-      }
-    >
+    <div className={"flex flex-col space-y-4 justify-between w-full items-center rounded-lg"}>
       {/*<ProvablyFair*/}
       {/*  serverSeedHash={serverSeedHash || "Please Login"}*/}
       {/*  clientSeed={clientSeed || "Generating..."}*/}
@@ -192,7 +188,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
       {/*  previousServerSeedHash={previousServerSeedHash}*/}
       {/*  hasRolled={hasBeenRolled}*/}
       {/*/>*/}
-      <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-2 xl:space-y-0 space-y-4">
+      <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-1 xl:space-y-0 space-y-4">
         {Array.from({ length: numCases }).map((_, i) =>
           cases[i] ? (
             <CaseCarousel

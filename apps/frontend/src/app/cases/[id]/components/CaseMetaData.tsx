@@ -1,6 +1,7 @@
 import React from "react";
 import { Tag } from "../../components/Tag";
 import { Back } from "../../../components/Back";
+import { Money } from "../../../components/Money";
 
 interface CaseMetaDataProps {
   name: string;
@@ -54,6 +55,9 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
             <span className="text-gray-300 text-sm">${lowestPrice}</span>
           </div>
         </div>
+      </div>
+      <div className={"flex gap-1"}>
+        <Money amount={price} />
       </div>
     </div>
   );

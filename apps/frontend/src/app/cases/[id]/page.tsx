@@ -37,7 +37,7 @@ export default function CasePage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="w-full h-full flex flex-col justify-between py-2">
+    <div className="w-full h-full flex flex-col justify-between py-2 px-2">
       <LoadingOverlay isLoading={isLoading} />
       {caseData && (
         <>

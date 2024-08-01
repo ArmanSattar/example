@@ -100,7 +100,7 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
     <div
       className={`absolute lg:relative inset-0 md:h-[calc(100vh-5rem)] ${
         isChatOpen ? "w-screen md:w-[320px]" : "w-0"
-      } z-40 transition-all duration-500 ease-in-out flex-shrink-0 bg-chatbar_bg`}
+      } z-40 transition-all duration-500 ease-in-out flex-shrink-0 bg-chatbar_bg shadow-2xl`}
     >
       <div
         className={`h-full flex flex-col items-center justify-between shadow-2xl transition-transform duration-500 w-full ${
