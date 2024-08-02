@@ -102,7 +102,7 @@ export const ChatBody: React.FC<ChatBodyProps> = ({ messages }) => {
 
   return (
     <div className="relative flex-grow overflow-hidden">
-      <div className="overflow-y-auto h-full pb-4" ref={chatBodyRef}>
+      <div className="overflow-y-auto h-full" ref={chatBodyRef}>
         {visibleMessages.map((message, index) => (
           <div
             key={index}

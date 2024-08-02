@@ -21,8 +21,10 @@ module.exports = {
         navbar_bg: "var(--color-navbar-bg)",
         gray_1: "var(--gray-1)",
         color_primary: "var(--color-primary)",
+        color_secondary: "var(--color-secondary)",
         color_chat_text: "var(--color-chat-text)",
         color_gray_2: "var(--color-gray-2)",
+        color_gray_3: "var(--color-gray-3)",
         color_light_gray_1: "var(--color-light-gray-1)",
       },
       fontSize: {
@@ -46,7 +48,7 @@ module.exports = {
           "grid-template-columns": "repeat(auto-fit, minmax(272px, 272px))",
         },
         ".grid-cols-dynamic-2": {
-          "grid-template-columns": "repeat(auto-fit, minmax(260px, 300px))",
+          "grid-template-columns": "repeat(auto-fit, minmax(200px, 220px))",
         },
       });
     }),

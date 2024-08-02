@@ -46,10 +46,10 @@ export const NavBar = () => {
 
   console.log(navActiveLink, navLinks);
   return (
-    <header className="text-white top-0 left-0 bg-navbar_bg w-full sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0">
+    <header className="text-white top-0 left-0 bg-navbar_bg w-full sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0 border-b-[1px] border-color_gray_3">
       <div className="flex justify-between items-center w-full h-full z-10">
         <div className="flex items-center justify-between h-full">
-          <div className="flex items-center w-[60px] sm:w-[80px] lg:w-[320px] justify-center">
+          <div className="flex items-center w-[60px] sm:w-[80px] lg:w-[320px] justify-center border-r-[1px] border-color_gray_3">
             <Image
               src="/icons/logo.webp"
               alt="logo"

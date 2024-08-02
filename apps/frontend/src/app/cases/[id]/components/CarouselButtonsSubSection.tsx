@@ -36,13 +36,13 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
           <button
             key={index}
             className={`bg- group hover:${
-              spinClicked ? "" : "bg-gray-700"
-            } rounded-md min-w-[48px] sm:flex-grow-0 flex-grow  h-12 p-2 ${
-              index + 1 === numCases ? "bg-gray-700" : ""
+              spinClicked ? "" : "bg-color_gray_3"
+            } rounded-md min-w-[48px] sm:flex-grow-0 flex-grow h-12 p-2 disabled:opacity-30 ${
+              index + 1 === numCases ? "bg-color_gray_3" : ""
             } ${
               spinClicked
                 ? `opacity-50 cursor-not-allowed ${
-                    index + 1 === numCases ? "" : "hover:bg-custom_gray"
+                    index + 1 === numCases ? "" : "hover:bg-color_gray_3"
                   }`
                 : ""
             }`}
@@ -50,7 +50,7 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
             disabled={spinClicked}
           >
             <span
-              className={`text-gray-300 group-hover:text-white ${
+              className={`text-gray-400 group-hover:text-white ${
                 index + 1 === numCases ? "text-white" : ""
               }`}
             >
@@ -61,7 +61,7 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
       </div>
       <div className={`flex justify-center items-center gap-2 w-full sm:w-max`}>
         <button
-          className={`flex flex-[2] sm:flex-grow-0 bg-green-500 rounded-md h-12 p-4 space-x-1 justify-center items-center ${
+          className={`flex flex-[2] sm:flex-grow-0 bg-green-500 rounded-md h-12 p-4 space-x-1 justify-center items-center action-btn-green ${
             spinClicked ? "opacity-50 cursor-not-allowed" : ""
           } ${true ? "" : "hidden"}`}
           onClick={() => {
@@ -81,7 +81,7 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
           </span>
         </button>
         <button
-          className={`flex flex-1 sm:flex-grow-0 justify-center items-center bg-custom_gray rounded-md h-12 p-3 ${
+          className={`flex flex-1 sm:flex-grow-0 justify-center items-center action-btn-gray rounded-md h-12 p-3 ${
             spinClicked ? "opacity-50 cursor-not-allowed" : ""
           }`}
           onClick={() => {
@@ -91,10 +91,10 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
           }}
           disabled={spinClicked}
         >
-          <span className="text-white">Demo</span>
+          <span className="text-white uppercase font-semibold">DEMO</span>
         </button>
         <button
-          className={`flex justify-center items-center bg-custom_gray rounded-md h-12 w-12 space-x-2 ${
+          className={`flex justify-center items-center rounded-md hover:bg-color_gray_3 h-12 w-12 space-x-2 ${
             spinClicked ? "opacity-50 cursor-not-allowed" : ""
           }`}
           onClick={() => {
