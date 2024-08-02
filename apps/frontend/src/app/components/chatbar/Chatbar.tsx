@@ -3,16 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { ChatBody } from "./ChatBody";
 import { ChatInput } from "./ChatInput";
-import { ExpandButton } from "./ExpandButton";
 import { useWebSocket } from "../../context/WebSocketContext";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
-import { toggleChatBarClicked } from "../../../store/slices/chatBarSlice";
 import { ChatHeader } from "./ChatHeader";
-
-interface ChatbarProps {
-  chatOpenCallback: () => void;
-}
 
 interface Message {
   message: string;
@@ -21,16 +15,11 @@ interface Message {
   profilePicture?: string;
 }
 
-export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
-  const dispatch = useDispatch();
+export const Chatbar = () => {
   const isChatOpen = useSelector((state: RootState) => state.chatBar.chatBarOpen);
   const [messages, setMessages] = useState<Message[]>([]);
   const { socket, sendMessage, connectionStatus } = useWebSocket();
   const [playerCount, setPlayerCount] = useState<number>(0);
-  const toggleChatOpen = () => {
-    dispatch(toggleChatBarClicked());
-    chatOpenCallback();
-  };
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -96,29 +85,23 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
   const handleOldestMessageVisible = (isVisible: boolean) => {
     setIsOldestMessageVisible(isVisible);
   };
+
   return (
     <div
-      className={`absolute lg:relative inset-0 md:h-[calc(100vh-5rem)] ${
-        isChatOpen ? "w-screen md:w-[320px] border-r-[1px] border-color_gray_3" : "w-0"
-      } z-40 transition-all duration-250 ease-in-out flex-shrink-0 bg-chatbar_bg shadow-2xl`}
+      className={`
+      absolute lg:relative inset-0 md:h-[calc(100vh-5rem)]
+      ${
+        isChatOpen
+          ? "w-screen md:w-[320px] border-r border-color_gray_3 translate-x-0"
+          : "-left-[320px] w-0"
+      }
+      z-40 transition-all duration-300 ease-in-out flex-shrink-0 bg-chatbar_bg shadow-2xl
+    `}
     >
-      <div
-        className={`h-full flex flex-col items-center justify-between shadow-2xl transition-transform duration-500 w-full ${
-          !isChatOpen ? "-translate-x-full hidden" : "translate-x-0"
-        }`}
-      >
-        <ChatHeader onlineCount={1234} title={"General Chat"} />
+      <div className="h-full flex flex-col items-center justify-between shadow-2xl w-full overflow-x-hidden">
+        <ChatHeader onlineCount={1234} title="General Chat" />
         <ChatBody messages={messages} />
-        <div className="w-full">
-          <ChatInput playersOnline={playerCount} />
-        </div>
-      </div>
-      <div
-        className={`absolute hidden md:block bottom-4 -right-10 transform translate-x-full -translate-y-1/2 ${
-          isChatOpen ? "!hidden" : ""
-        }`}
-      >
-        <ExpandButton toggleChatOpen={toggleChatOpen} />
+        <ChatInput playersOnline={playerCount} />
       </div>
     </div>
   );
