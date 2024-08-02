@@ -9,7 +9,7 @@ import { CasesIcon, GamesIcon, LeaderboardsIcon, RewardsIcon } from "./NavIcon";
 import CustomWalletMultiButton from "../sign-in/WalletSignIn";
 import { Balance } from "./Balance";
 import { useDispatch } from "react-redux";
-import { toggleWithdrawClicked } from "../../../store/slices/navbarSlice";
+import { toggleDepositClicked, toggleWithdrawClicked } from "../../../store/slices/navbarSlice";
 import Image from "next/image";
 
 const navLinks = [
@@ -39,12 +39,14 @@ export const NavBar = () => {
   const [navActiveLink, setNavActiveLink] = useState("/cases");
   const { user, logout } = useAuth();
   const dispatch = useDispatch();
-
   const handleWithdrawClick = () => {
     dispatch(toggleWithdrawClicked());
   };
 
-  console.log(navActiveLink, navLinks);
+  const handleDepositClick = () => {
+    dispatch(toggleDepositClicked());
+  };
+
   return (
     <header className="text-white top-0 left-0 bg-navbar_bg w-full sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0 border-b-[1px] border-color_gray_3">
       <div className="flex justify-between items-center w-full h-full z-10">
@@ -80,7 +82,9 @@ export const NavBar = () => {
                     }`}
                   />
                   <span
-                    className={`text-xs md:text-sm text-white group-hover:color_primary duration-75 uppercase`}
+                    className={`text-xs md:text-sm group-hover:color_primary duration-75 uppercase ${
+                      navActiveLink === navLink.href ? "text-white" : "text-gray-400"
+                    }`}
                   >
                     {navLink.name}
                   </span>
@@ -89,15 +93,23 @@ export const NavBar = () => {
             ))}
           </ul>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-center gap-x-4">
           {user && <Balance />}
           {user && (
-            <button
-              className="hidden sm:block bg-custom_gray text-white py-2 px-2 sm:px-3 md:px-4 rounded text-xs sm:text-sm md:text-base h-12"
-              onClick={handleWithdrawClick}
-            >
-              Withdraw
-            </button>
+            <>
+              <button
+                className="hidden sm:block text-white py-2 px-2 sm:px-3 uppercase md:px-4 cursor-pointer hover:bg-color_gray_3 duration-250 ease-in-out transition rounded-md text-xs sm:text-sm md:text-base h-12 "
+                onClick={handleWithdrawClick}
+              >
+                Withdraw
+              </button>
+              <button
+                className="rounded-md px-6 h-12 action-btn-green bg-color_secondary"
+                onClick={handleDepositClick}
+              >
+                <span className="text-white font-semibold uppercase">Deposit</span>
+              </button>
+            </>
           )}
           {user ? <UserProfile /> : <CustomWalletMultiButton />}
           <Hamburger className="xl:hidden" />

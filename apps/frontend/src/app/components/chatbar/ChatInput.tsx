@@ -39,10 +39,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({ playersOnline }) => {
         ></textarea>
         <div className="ml-2 flex flex-col items-center ">
           <button
-            className="hover:scale-105 ease-in-out duration-150 shadow-xl absolute inset-y-0 right-4 z-10 my-auto mr-md"
+            className="shadow-xl absolute inset-y-0 right-4 z-10 my-auto mr-md"
             onClick={handleSendMessage}
           >
-            <Send className={"text-color_secondary"} />
+            <Send className={"text-gray-400"} />
           </button>
         </div>
       </div>

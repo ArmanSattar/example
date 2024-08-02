@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useAuth } from "../../context/AuthContext";
-import Image from "next/image";
 import Link from "next/link";
+import { ProfileComponent } from "../chatbar/ProfileComponent";
 
 export const UserProfile: React.FC = () => {
   const { connected } = useWallet();
@@ -16,7 +16,6 @@ export const UserProfile: React.FC = () => {
         setIsDropdownOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -43,14 +42,12 @@ export const UserProfile: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center relative" ref={dropdownRef}>
+    <div className="flex items-center justify-center relative" ref={dropdownRef}>
       <div
-        className="flex items-center space-x-4 p-2 rounded-lg cursor-pointer hover:opacity-90"
+        className="flex items-center justify-center mt-1 space-x-4 p-2 rounded-lg cursor-pointer hover:scale-[102%] transition-transform duration-200 ease-in-out"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
-        <div className="relative w-12 h-12 rounded-full overflow-hidden shadow-lg">
-          <Image src={"/header-image.png"} alt="" layout="fill" objectFit="cover" />
-        </div>
+        <ProfileComponent level={45} />
       </div>
 
       {isDropdownOpen && (

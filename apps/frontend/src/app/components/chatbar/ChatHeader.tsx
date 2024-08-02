@@ -1,6 +1,7 @@
-import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { toggleChatBarClicked } from "../../../store/slices/chatBarSlice";
+import BackArrow from "../../../../public/icons/back-arrow.svg";
+import React from "react";
 
 interface ChatHeaderProps {
   onlineCount: number;
@@ -22,15 +23,11 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ onlineCount, title }) =>
           <div className={"rounded-full w-2 h-2 bg-green-500"}></div>
           <span className={"text-color_light_gray_1 text-xs"}>{onlineCount}</span>
         </div>
-        <Image
-          width={24}
-          height={24}
-          src={"/icons/close-left.svg"}
-          alt={"close"}
-          onClick={() => {
-            dispatch(toggleChatBarClicked());
-          }}
-          className={"cursor-pointer"}
+        <BackArrow
+          className={
+            "w-5 h-5 cursor-pointer text-gray-400 hover:text-gray-300 transition-colors duration-200"
+          }
+          onClick={() => dispatch(toggleChatBarClicked())}
         />
       </div>
     </div>

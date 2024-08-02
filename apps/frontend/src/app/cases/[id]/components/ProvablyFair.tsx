@@ -65,8 +65,10 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
         className="flex items-center gap-2 cursor-pointer group"
         onClick={handleProvablyFairClick}
       >
-        <Scales />
-        <span className="text-gray-400 cursor-pointer text-lg group-hover:text-gray-300">
+        <Scales
+          className={"text-gray-400 group-hover:text-gray-300 transition ease-in-out duration-200"}
+        />
+        <span className="text-gray-400 cursor-pointer text-md group-hover:text-gray-300 transition ease-in-out duration-200">
           Provably Fair
         </span>
       </div>

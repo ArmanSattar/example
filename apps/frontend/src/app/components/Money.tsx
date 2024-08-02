@@ -5,13 +5,20 @@ interface MoneyProps {
   amount: number;
   className?: string;
   textSize?: string;
+  space?: string;
+  imagePath?: string;
 }
 
-export const Money: React.FC<MoneyProps> = ({ amount, className, textSize }) => {
+export const Money: React.FC<MoneyProps> = ({
+  amount,
+  className,
+  textSize = "lg",
+  space = "8px",
+}) => {
   return (
-    <div className={`flex space-x-2 items-center ${className}`}>
+    <div className={`flex ${className} space-x-[${space}] items-center`}>
       <Dollar className="text-yellow-400" />
-      <span className={`text-lg text-white text-${textSize}`}>{amount.toFixed(2)}</span>
+      <span className={`text-white whitespace-nowrap text-${textSize}`}>{amount.toFixed(2)}</span>
     </div>
   );
 };

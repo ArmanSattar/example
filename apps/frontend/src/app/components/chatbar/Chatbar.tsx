@@ -120,13 +120,6 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
       >
         <ExpandButton toggleChatOpen={toggleChatOpen} />
       </div>
-      {/*<div*/}
-      {/*  className={`absolute top-6 right-12 transform translate-x-full -translate-y-1/2 transition-transform duration-500 ${*/}
-      {/*    !isChatOpen ? "hidden" : ""*/}
-      {/*  }`}*/}
-      {/*>*/}
-      {/*  <DismissButton toggleChatClose={toggleChatOpen} />*/}
-      {/*</div>*/}
     </div>
   );
 };

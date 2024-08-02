@@ -3,7 +3,7 @@ import BackArrow from "../../../public/icons/back-arrow.svg";
 import { useRouter } from "next/navigation";
 
 interface BackProps {
-  text: string;
+  text?: string;
   to: string;
 }
 
@@ -20,9 +20,11 @@ export const Back: React.FC<BackProps> = ({ text, to }) => {
       <BackArrow
         className={"w-5 h-5 text-gray-400 group-hover:text-gray-300 transition-colors duration-200"}
       />
-      <span className="text-gray-400 text-sm group-hover:text-gray-300 transition-colors duration-200 whitespace-nowrap">
-        {text}
-      </span>
+      {text && (
+        <span className="text-gray-400 text-sm group-hover:text-gray-300 transition-colors duration-200 whitespace-nowrap">
+          {text}
+        </span>
+      )}
     </div>
   );
 };

@@ -11,7 +11,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postData } from "./utils/requests";
 import { WithdrawRequest, WithdrawResponse } from "@solspin/types";
 import { WALLETS_API_URL } from "../../types";
-import Dollar from "../../../../public/icons/dollar.svg";
 
 interface WithdrawPopUpProps {
   handleClose: () => void;

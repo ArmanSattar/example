@@ -9,6 +9,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../store";
 import { useAuth } from "../../../context/AuthContext";
+import { Money } from "../../../components/Money";
 
 interface CarouselButtonsSubSectionProps {
   price: number;
@@ -76,9 +77,7 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
             Open {numCases} Case{numCases > 1 ? "s" : ""}
           </span>
           <span className="hidden sm:block text-white font-semibold text-sm">·</span>
-          <span className="text-white font-semibold whitespace-nowrap">
-            ${Math.round(price * numCases * 100) / 100}
-          </span>
+          <Money amount={Math.round(price * numCases * 100) / 100} textSize={"md"} space={"4px"} />
         </button>
         <button
           className={`flex flex-1 sm:flex-grow-0 justify-center items-center action-btn-gray rounded-md h-12 p-3 ${
