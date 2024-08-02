@@ -92,6 +92,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     const carouselContainerRef = useRef<HTMLDivElement | null>(null);
     const [middleItem, setMiddleItem] = useState<number>(0);
     const startMiddleItem = useSelector((state: RootState) => state.caseCarousel.startMiddleItem);
+    const isSoundOn = useSelector((state: RootState) => state.demo.soundOn);
     const reduxDispatch = useDispatch();
     const [direction, setDirection] = useState<Direction>(Direction.HORIZONTAL);
     const [carouselDimensions, setCarouselDimensions] = useState<{ width: number; height: number }>(
@@ -128,10 +129,10 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     }, []);
 
     useEffect(() => {
-      if (middleItem !== startMiddleItem && middleItem !== 0) {
+      if (middleItem !== startMiddleItem && middleItem !== 0 && isSoundOn) {
         playSound("/sounds/tick.wav");
       }
-    }, [middleItem, startMiddleItem]);
+    }, [middleItem, startMiddleItem, isSoundOn]);
 
     const calculateMiddleItem = useCallback(() => {
       if (!carouselContainerRef.current || !carouselRef.current) return;

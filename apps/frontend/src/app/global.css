@@ -381,7 +381,7 @@ html {
 
 @keyframes middle-item {
   0% {
-    transform: scale(1.1);
+    transform: scale(1);
   }
 
   100% {
@@ -395,7 +395,7 @@ html {
   }
 
   100% {
-    transform: scale(1.1);
+    transform: scale(1);
   }
 }
 
@@ -411,7 +411,7 @@ html {
 
 
 .animate-middle-item {
-  animation: middle-item 700ms linear forwards;
+  animation: middle-item 400ms ease-out forwards;
 }
 
 .animate-final {

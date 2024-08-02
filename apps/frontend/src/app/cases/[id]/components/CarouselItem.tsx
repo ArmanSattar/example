@@ -29,7 +29,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${item.imagePath}`);
   const [type, name] = useMemo(() => item.name.split(" | "), [item.name]);
-  const isVertical = direction === Direction.VERTICAL;
+  const isVertical = useMemo(() => direction === Direction.VERTICAL, [direction]);
   const gradientText = useMemo(
     () => `case-${item.rarity.toLowerCase().replace(" ", "-")}-gradient`,
     [item]
@@ -57,7 +57,11 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   }
 
   return (
-    <div className={`w-[150px] h-[150px]`}>
+    <div
+      className={`w-[150px] h-[150px] ${
+        isMiddle ? "animate-middle-item" : shouldScaleDown ? "animate-scale-down" : ""
+      }`}
+    >
       <div
         className={`relative flex flex-col items-center justify-center w-full h-full rounded-xl ${
           isMiddle ? "opacity-100" : "opacity-30"
@@ -65,11 +69,13 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
       >
         <div
           ref={imageContainerRef}
-          className="relative h-full w-full flex justify-center items-center overflow-visible"
+          className="relative min-h-full min-w-full flex justify-center items-center overflow-visible"
         >
           <div
-            className={`absolute flex justify-center items-center overflow-visible`}
-            style={{ height: `${ITEM_HEIGHT + 25}px`, width: `${ITEM_WIDTH + 25}px` }}
+            className={`absolute flex justify-center items-center overflow-visible  ${
+              isFinal && isMiddle && animationEnd ? "-translate-y-5 duration-1000" : ""
+            }`}
+            style={{ minHeight: `${ITEM_HEIGHT + 25}px`, minWidth: `${ITEM_WIDTH + 25}px` }}
           >
             <Image
               src={data || "/images/placeholder.png"}
@@ -78,14 +84,10 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
               height={ITEM_HEIGHT + 25}
             />
           </div>
-          <div className={`h-full w-full absolute ${gradientText} -z-10`}></div>
+          <div className={`min-h-full min-w-full absolute ${gradientText} -z-10`}></div>
         </div>
-        {isFinal && isMiddle && (
-          <div
-            className={`flex flex-col items-center space-y-0.5 w-3/4 ${
-              isFinal && isMiddle && animationEnd ? "-translate-y-5 duration-1000" : ""
-            }`}
-          >
+        {isFinal && isMiddle && animationEnd && (
+          <div className={`absolute bottom-0 flex flex-col items-center space-y-0.5 w-3/4 mb-2`}>
             <span className={"text-white text-sm font-semibold whitespace-nowrap"}>{name}</span>
             <Money amount={item.price} />
           </div>

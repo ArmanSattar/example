@@ -78,7 +78,7 @@ export const NavBar = () => {
                   ></div>
                   <navLink.icon
                     className={`h-4 w-4 md:h-6 md:w-6 group-hover:text-color_primary duration-75 ${
-                      navActiveLink === navLink.href ? "text-color_primary" : "text-white"
+                      navActiveLink === navLink.href ? "text-color_primary" : "text-gray-400"
                     }`}
                   />
                   <span

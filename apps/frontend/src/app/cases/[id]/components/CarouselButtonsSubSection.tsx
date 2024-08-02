@@ -77,7 +77,11 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
             Open {numCases} Case{numCases > 1 ? "s" : ""}
           </span>
           <span className="hidden sm:block text-white font-semibold text-sm">·</span>
-          <Money amount={Math.round(price * numCases * 100) / 100} textSize={"md"} space={"4px"} />
+          <Money
+            amount={Math.round(price * numCases * 100) / 100}
+            textSize={"md"}
+            className={"space-x-1"}
+          />
         </button>
         <button
           className={`flex flex-1 sm:flex-grow-0 justify-center items-center action-btn-gray rounded-md h-12 p-3 ${
