@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { Money } from "../../../components/Money";
 import { BaseCaseItem } from "@solspin/game-engine-types";
 import { useFetchImage } from "../hooks/useFetchImage";
@@ -11,7 +11,7 @@ interface CaseItemProps {
   item: BaseCaseItem;
 }
 
-export const CaseItem: React.FC<CaseItemProps> = ({ item }) => {
+export const CaseItem: React.FC<CaseItemProps> = memo(({ item }) => {
   const [wearAbbrev, wearColor] = wearToColorAndAbbrev.get(item.wear) || ["", "text-gray-400"];
   const typeAndName = item.name.split(" | ");
   const type = typeAndName[0];
@@ -70,4 +70,6 @@ export const CaseItem: React.FC<CaseItemProps> = ({ item }) => {
       </div>
     </div>
   );
-};
+});
+
+CaseItem.displayName = "CaseItem";

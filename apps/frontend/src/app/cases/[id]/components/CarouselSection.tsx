@@ -187,6 +187,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
           cases[i] ? (
             <CaseCarousel
               key={i}
+              index={i}
               items={cases[i]}
               isSpinClicked={isDemoClicked || isPaidSpinClicked}
               isFastAnimationClicked={fastClicked}

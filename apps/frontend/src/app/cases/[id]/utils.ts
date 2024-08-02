@@ -1,4 +1,6 @@
 import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 const DISTANCE_IN_ITEMS = 30;
 const ITEM_WIDTH = 150;
@@ -7,6 +9,10 @@ const NUMBER_OF_ITEMS = 40;
 export enum Direction {
   HORIZONTAL,
   VERTICAL,
+}
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
 
 const generateClientSeed = async (): Promise<string> => {
