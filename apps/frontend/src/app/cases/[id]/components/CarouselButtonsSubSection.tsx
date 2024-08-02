@@ -91,7 +91,7 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
           }}
           disabled={spinClicked}
         >
-          <span className="text-white uppercase font-semibold">DEMO</span>
+          <span className="text-white font-semibold">Demo</span>
         </button>
         <button
           className={`flex justify-center items-center rounded-md hover:bg-color_gray_3 h-12 w-12 space-x-2 ${
@@ -106,8 +106,8 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
+            width="24"
+            height="24"
             viewBox="0 0 16 16"
             fill="none"
           >

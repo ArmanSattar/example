@@ -442,19 +442,19 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           </svg>
         </div>
         <div
-          className={`mt-md flex overflow-hidden rounded-sm flex-col gap-xs ${
+          className={`mt-md flex rounded-sm flex-col overflow-visible gap-xs ${
             direction === Direction.VERTICAL ? "h-[200px]" : "h-[200px]"
           }`}
         >
           <div
-            className="relative flex h-full overflow-hidden w-full items-center justify-center"
+            className="relative flex h-full w-full overflow-visible items-center justify-center"
             ref={carouselContainerRef}
           >
             <div
               ref={carouselRef}
-              className={`flex absolute will-change-transform transform-gpu ${
+              className={`flex absolute will-change-transform overflow-visible transform-gpu ${
                 direction === Direction.VERTICAL ? "flex-col top-0" : "flex-row left-0"
-              } h-max`}
+              }`}
               style={carouselStyle}
             >
               {items.map((item, index) => (

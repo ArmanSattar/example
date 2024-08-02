@@ -1,8 +1,8 @@
 import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
 
 const DISTANCE_IN_ITEMS = 30;
-const ITEM_WIDTH = 192;
-const ITEM_HEIGHT = 192;
+const ITEM_WIDTH = 150;
+const ITEM_HEIGHT = 150;
 const NUMBER_OF_ITEMS = 40;
 export enum Direction {
   HORIZONTAL,
@@ -69,7 +69,6 @@ const animationCalculation = (
   currentPosition: number,
   isHorizontal: boolean
 ): AnimationCalculation => {
-  console.log(currentPosition, "currentPosition");
   const dimension = isHorizontal ? ITEM_WIDTH : ITEM_HEIGHT;
   const distanceInsideCenterItem = currentPosition % dimension;
   const lowerBound = DISTANCE_IN_ITEMS * dimension - distanceInsideCenterItem + 1;

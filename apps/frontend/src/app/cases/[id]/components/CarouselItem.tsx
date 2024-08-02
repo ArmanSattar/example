@@ -57,13 +57,9 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   }
 
   return (
-    <div
-      className={`w-[${ITEM_WIDTH}px] h-[${ITEM_HEIGHT}px] ${
-        direction === Direction.VERTICAL ? "p-1" : "p-0.5"
-      }`}
-    >
+    <div className={`w-[${ITEM_WIDTH}px] h-[${ITEM_HEIGHT}px]`}>
       <div
-        className={`relative flex flex-col items-center justify-center w-full h-full rounded-xl overflow-clip ${
+        className={`relative flex flex-col items-center justify-center w-full h-full rounded-xl ${
           isMiddle ? "opacity-100" : "opacity-30"
         }`}
       >
@@ -71,16 +67,17 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
           ref={imageContainerRef}
           className={`relative h-full w-full flex justify-center items-center`}
         >
-          <div className={`relative flex justify-center items-center h-full w-full`}>
+          <div
+            className={`relative flex justify-center items-center h-[${ITEM_HEIGHT}px] w-[${ITEM_WIDTH}px]`}
+          >
             <Image
               src={data || "/images/placeholder.png"}
               alt={"Case item"}
-              width={192}
-              height={192}
-              objectFit="contain"
+              width={ITEM_WIDTH}
+              height={ITEM_HEIGHT}
             />
           </div>
-          <div className={`h-4/5 w-4/5 absolute ${gradientText} -z-10`}></div>
+          <div className={`h-full w-full absolute ${gradientText} -z-10`}></div>
         </div>
         {isFinal && isMiddle && (
           <div
