@@ -25,7 +25,7 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
       <div className={"w-full flex items-start justify-between"}>
         <div className="flex gap-6 justify-between items-center">
           <span className="text-white font-bold text-3xl">{name}</span>
-          {label !== "" && <Tag name={label} customStyle={"!text-lg !px-3"} />}
+          {label !== "" && <Tag name={label} customStyle={"text-md py-0.5 px-2"} />}
         </div>
         <div className={"flex gap-2 items-center justify-center"}>
           <Back text="Back to Cases" to={""} />

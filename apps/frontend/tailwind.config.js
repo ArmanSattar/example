@@ -28,6 +28,7 @@ module.exports = {
         color_light_gray_1: "var(--color-light-gray-1)",
         color_tertiary: "var(--color-tertiary)",
         color_tertiary_2: "var(--color-tertiary-2)",
+        color_stroke_1: "var(--color-stroke-1)",
       },
       fontSize: {
         "md-1": "1.0625rem",

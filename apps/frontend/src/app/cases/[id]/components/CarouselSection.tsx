@@ -201,8 +201,10 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
           )
         )}
       </div>
-      <div className={"flex flex-col sm:flex-row justify-between items-center w-full"}>
-        <div className={"flex justify-between items-center gap-4"}>
+      <div
+        className={"flex flex-col sm:flex-row justify-end xl:justify-between items-center w-full"}
+      >
+        <div className={"hidden xl:flex justify-between items-center gap-x-1 xl:gap-x-4"}>
           <ProvablyFair
             serverSeedHash={serverSeedHash || "Please Login"}
             clientSeed={clientSeed || "Generating..."}

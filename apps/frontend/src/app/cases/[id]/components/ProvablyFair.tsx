@@ -68,7 +68,7 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
         <Scales
           className={"text-gray-400 group-hover:text-gray-300 transition ease-in-out duration-200"}
         />
-        <span className="text-gray-400 cursor-pointer text-md group-hover:text-gray-300 transition ease-in-out duration-200">
+        <span className="text-gray-400 cursor-pointer text-md group-hover:text-gray-300 transition ease-in-out duration-200 whitespace-nowrap">
           Provably Fair
         </span>
       </div>

@@ -87,9 +87,9 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
           <div className={`min-h-full min-w-full absolute ${gradientText} -z-10`}></div>
         </div>
         {isFinal && isMiddle && animationEnd && (
-          <div className={`absolute bottom-0 flex flex-col items-center space-y-0.5 w-3/4 mb-2`}>
+          <div className={`absolute bottom-0 flex flex-col items-center space-y-0.5 w-3/4 mb-4`}>
             <span className={"text-white text-sm font-semibold whitespace-nowrap"}>{name}</span>
-            <Money amount={item.price} />
+            <Money amount={item.price} textSize={"sm"} className={"space-x-1 font-semibold"} />
           </div>
         )}
       </div>

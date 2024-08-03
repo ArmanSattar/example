@@ -21,7 +21,7 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
   const [newUsername, setNewUsername] = useState("");
   const [excludeDuration, setExcludeDuration] = useState("1 week");
   const [isMuted, setIsMuted] = useState(false);
-  const [profilePicture, setProfilePicture] = useState("/header-image.png");
+  const [profilePicture, setProfilePicture] = useState("");
   const dispatch = useDispatch();
   const isSoundOn = useSelector((state: RootState) => state.demo.soundOn);
 

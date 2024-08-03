@@ -4,9 +4,11 @@ import React, { useEffect, useState } from "react";
 import { ChatBody } from "./ChatBody";
 import { ChatInput } from "./ChatInput";
 import { useWebSocket } from "../../context/WebSocketContext";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { ChatHeader } from "./ChatHeader";
+import { ExpandButton } from "./ExpandButton";
+import { toggleChatBarClicked } from "../../../store/slices/chatBarSlice";
 
 interface Message {
   message: string;
@@ -20,6 +22,7 @@ export const Chatbar = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const { socket, sendMessage, connectionStatus } = useWebSocket();
   const [playerCount, setPlayerCount] = useState<number>(0);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -87,21 +90,36 @@ export const Chatbar = () => {
   };
 
   return (
-    <div
-      className={`
-      absolute lg:relative inset-0 md:h-[calc(100vh-5rem)]
-      ${
-        isChatOpen
-          ? "w-screen md:w-[320px] border-r border-color_gray_3 translate-x-0"
-          : "-left-[320px] w-0"
-      }
-      z-40 transition-all duration-300 ease-in-out flex-shrink-0 bg-chatbar_bg shadow-2xl
-    `}
-    >
-      <div className="h-full flex flex-col items-center justify-between shadow-2xl w-full overflow-x-hidden">
-        <ChatHeader onlineCount={1234} title="General Chat" />
-        <ChatBody messages={messages} />
-        <ChatInput playersOnline={playerCount} />
+    <div className="relative">
+      <div
+        className={`
+        absolute lg:relative inset-0 md:h-[calc(100vh-5rem)]
+        ${
+          isChatOpen
+            ? "w-[320px] border-r border-color_gray_3 translate-x-0"
+            : "w-0 -translate-x-full"
+        }
+        z-40 transition-all duration-300 ease-in-out flex-shrink-0 bg-chatbar_bg shadow-2xl
+      `}
+      >
+        <div className="h-full flex flex-col items-center justify-between shadow-2xl w-full overflow-x-hidden">
+          <ChatHeader onlineCount={1234} title="General Chat" />
+          <ChatBody messages={messages} />
+          <ChatInput playersOnline={playerCount} />
+        </div>
+      </div>
+      <div
+        className={`
+          absolute bottom-12
+          ${isChatOpen ? "left-[320px]" : "left-0"}
+          transition-all duration-300 ease-in-out z-50
+        `}
+      >
+        <ExpandButton
+          toggleChatOpen={() => {
+            dispatch(toggleChatBarClicked());
+          }}
+        />
       </div>
     </div>
   );

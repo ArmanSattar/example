@@ -312,7 +312,9 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     }, [setMiddleDueToResizedCarousel]);
 
     return (
-      <div className={`relative rounded-md h-full flex-grow w-full bg-navbar_bg`}>
+      <div
+        className={`relative rounded-md h-full flex-grow w-full bg-navbar_bg border-2 border-color_stroke_1`}
+      >
         {index === 0 && (
           <div
             className={`h-full absolute flex z-20 ${
@@ -337,7 +339,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         )}
         <div
           className={`mt-md flex rounded-sm flex-col gap-xs ${
-            direction === Direction.VERTICAL ? "h-[200px]" : "h-[200px]"
+            direction === Direction.VERTICAL ? "h-[250px]" : "h-[200px]"
           }`}
         >
           <div

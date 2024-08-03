@@ -3,67 +3,80 @@
 import { usePathname } from "next/navigation";
 import React from "react";
 import Link from "next/link";
-import { CasesIcon, ChatIcon, IconProps } from "../navbar/NavIcon";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleChatBarClicked } from "../../../store/slices/chatBarSlice";
-import { RootState } from "../../../store";
+import GamePad from "../../../../public/icons/Gamepad.svg";
+import Medal from "../../../../public/icons/Medal.svg";
+import Podium from "../../../../public/icons/Podium.svg";
+import Wallet from "../../../../public/icons/Wallet.svg";
+import Case from "../../../../public/icons/Case.svg";
 
 interface BottomNavbarItems {
   name: string;
-  icon: React.FC<IconProps>;
-  href?: string;
+  icon: React.FC<React.SVGProps<SVGSVGElement>>;
+  href: string;
 }
 
 const bottomNavItems: BottomNavbarItems[] = [
   {
     name: "Chat",
-    icon: ChatIcon,
+    icon: GamePad,
+    href: "/chat",
   },
   {
     name: "Cases",
-    icon: CasesIcon,
+    icon: Case,
     href: "/cases",
+  },
+  {
+    name: "Cases",
+    icon: Podium,
+    href: "/casec",
+  },
+  {
+    name: "Cases",
+    icon: Medal,
+    href: "/cased",
+  },
+  {
+    name: "Profile",
+    icon: Wallet,
+    href: "/profile",
   },
 ];
 
 export const BottomNavbar = () => {
-  const dispatch = useDispatch();
-  const isChatbarOpen = useSelector((state: RootState) => state.chatBar.chatBarOpen);
   const pathname = usePathname();
 
   return (
-    <div className="sticky md:hidden flex bottom-0 inset-x-0 z-50 bg-background w-full h-16 justify-between items-center">
-      <div className="flex justify-between items-center w-full px-4 h-full">
-        <ul className="flex justify-between w-full h-full">
-          {bottomNavItems.map((item, index) => (
-            <li key={index} className="flex flex-col items-center justify-center flex-1 group">
-              {item.href ? (
-                <Link href={item.href} className="flex flex-col items-center">
-                  <item.icon
-                    className={`h-10 w-10  text-gray-400 hover:text-red-500 duration-75 ${
-                      pathname.startsWith(item.href) && !isChatbarOpen ? "text-red-500" : ""
-                    }`}
-                  />
-                </Link>
-              ) : (
-                <div
-                  onClick={() => {
-                    if (!isChatbarOpen) {
-                      dispatch(toggleChatBarClicked());
-                    }
-                  }}
-                >
-                  <item.icon
-                    className={`h-10 w-10 text-gray-400 hover:text-red-500 duration-75 cursor-pointer ${
-                      isChatbarOpen ? "text-red-500" : ""
-                    }`}
-                  />
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div className="sticky md:hidden flex bottom-0 inset-x-0 z-50 bg-background w-full h-14 justify-between items-center border-t-color_gray_3 border-t-[1px]">
+      <ul className="flex justify-center items-center w-full h-full">
+        {bottomNavItems.map((item, index) => (
+          <li
+            key={index}
+            className={`flex relative flex-col items-center flex-1 h-full justify-center group transition-colors duration-250 ease-in-out ${
+              pathname.startsWith(item.href) ? "bg-chatbar_bg" : ""
+            }`}
+          >
+            <Link href={item.href} className="flex flex-col items-center">
+              <div
+                className={`h-7 w-7 flex items-center justify-center text-white hover:text-red-500 duration-75`}
+              >
+                <item.icon
+                  className={`scale-[115%] ${
+                    pathname.startsWith(item.href) ? "text-color_primary" : "text-white"
+                  }`}
+                />
+              </div>
+              <div
+                className={`absolute inset-x-0 bottom-0 h-1 bg-color_primary origin-center ${
+                  pathname.startsWith(item.href)
+                    ? ""
+                    : "transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"
+                }`}
+              ></div>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

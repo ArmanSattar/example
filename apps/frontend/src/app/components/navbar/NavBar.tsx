@@ -5,8 +5,11 @@ import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { UserProfile } from "./UserProfile";
 import Hamburger from "./Hamburger";
-import { CasesIcon, GamesIcon, LeaderboardsIcon, RewardsIcon } from "./NavIcon";
 import CustomWalletMultiButton from "../sign-in/WalletSignIn";
+import GamePad from "../../../../public/icons/Gamepad.svg";
+import Medal from "../../../../public/icons/Medal.svg";
+import Podium from "../../../../public/icons/Podium.svg";
+import Case from "../../../../public/icons/Case.svg";
 import { Balance } from "./Balance";
 import { useDispatch } from "react-redux";
 import { toggleDepositClicked, toggleWithdrawClicked } from "../../../store/slices/navbarSlice";
@@ -15,22 +18,22 @@ import Image from "next/image";
 const navLinks = [
   {
     name: "Games",
-    icon: GamesIcon,
+    icon: GamePad,
     href: "/games",
   },
   {
     name: "Rewards",
-    icon: RewardsIcon,
+    icon: Medal,
     href: "/rewards",
   },
   {
     name: "Leaderboards",
-    icon: LeaderboardsIcon,
+    icon: Podium,
     href: "/leaderboards",
   },
   {
     name: "Cases",
-    icon: CasesIcon,
+    icon: Case,
     href: "/cases",
   },
 ];
@@ -48,17 +51,11 @@ export const NavBar = () => {
   };
 
   return (
-    <header className="text-white top-0 left-0 bg-navbar_bg w-full sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0 border-b-[1px] border-color_gray_3">
+    <header className="text-white top-0 left-0 bg-navbar_bg w-full sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0 border-b-[1px] border-color_gray_3 overflow-clip">
       <div className="flex justify-between items-center w-full h-full z-10">
         <div className="flex items-center justify-between h-full">
-          <div className="flex items-center w-[60px] sm:w-[80px] lg:w-[320px] justify-center border-r-[1px] border-color_gray_3">
-            <Image
-              src="/icons/logo.webp"
-              alt="logo"
-              width={48}
-              height={48}
-              className="sm:w-[60px] sm:h-[60px] md:w-[80px] md:h-[80px]"
-            />
+          <div className="flex relative items-center w-[60px] sm:w-[80px] lg:w-[320px] h-full justify-center border-r-[0px] lg:border-r-[1px] border-color_gray_3">
+            <Image src="/icons/logo.webp" alt="logo" fill className="object-contain" />
           </div>
           <ul className="hidden xl:flex xl:space-x-10 h-full pl-4">
             {navLinks.map((navLink, index) => (
@@ -76,11 +73,13 @@ export const NavBar = () => {
                         : "transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"
                     }`}
                   ></div>
-                  <navLink.icon
-                    className={`h-4 w-4 md:h-6 md:w-6 group-hover:text-color_primary duration-75 ${
+                  <div
+                    className={`group-hover:text-color_primary duration-75 ${
                       navActiveLink === navLink.href ? "text-color_primary" : "text-gray-400"
                     }`}
-                  />
+                  >
+                    <navLink.icon />
+                  </div>
                   <span
                     className={`text-xs md:text-sm group-hover:color_primary duration-75 uppercase ${
                       navActiveLink === navLink.href ? "text-white" : "text-gray-400"
