@@ -89,7 +89,7 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
           <span className="hidden sm:block text-white font-semibold text-sm">·</span>
           <Money
             amount={Math.round(price * numCases * 100) / 100}
-            textSize={"md"}
+            textStyle={"text-md font-semibold"}
             className={"space-x-1"}
           />
         </button>

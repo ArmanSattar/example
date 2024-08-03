@@ -182,6 +182,18 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
 
   return (
     <div className={"flex flex-col space-y-4 justify-between w-full items-center rounded-lg -mt-5"}>
+      <div className={"flex xl:hidden justify-between items-center w-full"}>
+        <ProvablyFair
+          serverSeedHash={serverSeedHash || "Please Login"}
+          clientSeed={clientSeed || "Generating..."}
+          onClientSeedChange={handleClientSeedChange}
+          rollValues={rollValues}
+          serverSeed={serverSeed || ""}
+          previousServerSeedHash={previousServerSeedHash}
+          hasRolled={hasBeenRolled}
+        />
+        <SoundToggle />
+      </div>
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-1 xl:space-y-0 space-y-4">
         {Array.from({ length: numCases }).map((_, i) =>
           cases[i] ? (

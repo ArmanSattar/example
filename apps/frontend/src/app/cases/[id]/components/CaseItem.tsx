@@ -34,9 +34,9 @@ export const CaseItem: React.FC<CaseItemProps> = memo(({ item }) => {
 
   return (
     <div
-      className={`flex flex-row md:flex-col items-start p-4 overflow-hidden group min-w-[200px] max-w-[220px] bg-navbar_bg element-with-stroke shadow-lg`}
+      className={`flex flex-col items-start p-4 overflow-hidden group min-w-[200px] max-w-[220px] bg-navbar_bg element-with-stroke shadow-lg`}
     >
-      <div className="relative flex flex-col items-center justify-center rounded-lg min-w-[125px] md:w-full min-h-[125px]">
+      <div className="relative flex flex-col items-center justify-center rounded-lg min-w-[125px] w-full min-h-[125px]">
         <div className="relative flex justify-center items-center h-full w-full z-10">
           <div className={"absolute scale-125"}>
             <Image
@@ -56,7 +56,7 @@ export const CaseItem: React.FC<CaseItemProps> = memo(({ item }) => {
         <span className={`${wearColor} text-2xs whitespace-nowrap`}>{item.wear}</span>
         <div className={"flex justify-between items-center w-full"}>
           <div className="rounded-2xl py-0.5 px-2 bg-[#181B1D] h-8 flex justify-center items-center whitespace-nowrap">
-            <Money amount={item.price} textSize={"sm"} />
+            <Money amount={item.price} textStyle={"text-sm"} />
           </div>
           <div>
             <div className="relative w-full h-full flex justify-between items-center space-x-1">

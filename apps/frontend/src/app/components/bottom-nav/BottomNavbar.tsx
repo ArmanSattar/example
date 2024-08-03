@@ -29,12 +29,12 @@ const bottomNavItems: BottomNavbarItems[] = [
   {
     name: "Cases",
     icon: Podium,
-    href: "/casec",
+    href: "/leaderboards",
   },
   {
     name: "Cases",
     icon: Medal,
-    href: "/cased",
+    href: "/rewards",
   },
   {
     name: "Profile",

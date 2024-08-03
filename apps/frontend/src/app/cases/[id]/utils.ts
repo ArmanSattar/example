@@ -5,7 +5,7 @@ import { twMerge } from "tailwind-merge";
 const DISTANCE_IN_ITEMS = 30;
 const ITEM_WIDTH = 150;
 const ITEM_HEIGHT = 150;
-const NUMBER_OF_ITEMS = 40;
+const NUMBER_OF_ITEMS = 45;
 export enum Direction {
   HORIZONTAL,
   VERTICAL,

@@ -1,18 +1,23 @@
 import React from "react";
 import BackArrow from "../../../public/icons/back-arrow.svg";
 import { useRouter } from "next/navigation";
+import { cn } from "../cases/[id]/utils";
 
 interface BackProps {
   text?: string;
   to: string;
+  customStyle?: string;
 }
 
-export const Back: React.FC<BackProps> = ({ text, to }) => {
+export const Back: React.FC<BackProps> = ({ text, to, customStyle }) => {
   const router = useRouter();
 
   return (
     <div
-      className={`flex items-center space-x-2 cursor-pointer group px-2 py-1 rounded-md hover:bg-white-800 transition-colors duration-200`}
+      className={cn(
+        `flex items-center space-x-2 cursor-pointer group hover:bg-white-800 hover:bg-color_gray_3 duration-250 ease-in-out rounded-md px-2 py-3 transition-colors duration-200`,
+        customStyle
+      )}
       onClick={() => {
         router.push("/cases");
       }}

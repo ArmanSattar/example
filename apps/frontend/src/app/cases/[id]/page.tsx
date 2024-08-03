@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import { PreviousDrops } from "./components/PreviousDrops";
 import { CarouselSection } from "./components/CarouselSection";
+import { Back } from "../../components/Back";
 
 export default function CasePage({ params }: { params: { id: string } }) {
   const caseId = params.id;
@@ -36,10 +37,15 @@ export default function CasePage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="w-full h-full flex flex-col justify-between p-2 gap-y-10">
+    <div className="relative w-full h-full flex flex-col justify-between px-2 gap-y-[8vh]">
       <LoadingOverlay isLoading={isLoading} />
       {caseData && (
         <>
+          <Back
+            text="Back to Cases"
+            to={""}
+            customStyle={"absolute top-4 left-4 xl:hidden z-20 -mt-2"}
+          />
           <CaseDetails
             {...caseData}
             numberOfItems={caseData.items.length}

@@ -24,25 +24,26 @@ export const ProfileComponent: React.FC<ProfileComponentProps> = ({ level, profi
   const levelColor = useMemo(() => levelToColor(level), [level]);
 
   return (
-    <div className="relative flex-shrink-0 w-[50px] h-[64px]">
+    <div className="relative flex-shrink-0 w-[40px] h-[51.2px] sm:w-[50px] sm:h-[64px]">
       <div
-        className="relative rounded-full border-2 flex justify-center items-center w-[50px] h-[50px] p-1"
+        className="relative rounded-full border-2 flex justify-center items-center w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] p-1"
         style={{ borderColor: levelColor }}
       >
-        <div className="absolute bg-black rounded-full flex justify-center items-center overflow-clip">
+        <div className="absolute bg-black rounded-full flex justify-center items-center overflow-clip w-[32px] h-[32px] sm:w-[40px] sm:h-[40px]">
           <Image
             src={profilePic ? profilePic : "/icons/portrait-09.png"}
             alt="profile"
-            width={40}
-            height={40}
+            width={32}
+            height={32}
+            className="sm:w-[40px] sm:h-[40px]"
           />
         </div>
       </div>
       <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full border-2 border-chatbar_bg inline-flex justify-center items-center z-30 px-[5px] py-[4px]"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full border-2 border-chatbar_bg inline-flex justify-center items-center z-30 px-[4px] py-[3.2px] sm:px-[5px] sm:py-[4px]"
         style={{ backgroundColor: levelColor }}
       >
-        <span className="text-black text-3xs font-bold text-center">{level}</span>
+        <span className="text-black text-[8px] sm:text-3xs font-bold text-center">{level}</span>
       </div>
     </div>
   );

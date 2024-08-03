@@ -51,7 +51,7 @@ export const NavBar = () => {
   };
 
   return (
-    <header className="text-white top-0 left-0 bg-navbar_bg w-full sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0 border-b-[1px] border-color_gray_3 overflow-clip">
+    <header className="text-white top-0 left-0 bg-navbar_bg w-full sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0 border-b-[1px] border-color_gray_3">
       <div className="flex justify-between items-center w-full h-full z-10">
         <div className="flex items-center justify-between h-full">
           <div className="flex relative items-center w-[60px] sm:w-[80px] lg:w-[320px] h-full justify-center border-r-[0px] lg:border-r-[1px] border-color_gray_3">
@@ -93,17 +93,17 @@ export const NavBar = () => {
           </ul>
         </div>
         <div className="flex items-center justify-center gap-x-4">
-          {user && <Balance />}
           {user && (
             <>
+              <Balance />
               <button
-                className="hidden sm:block text-white py-2 px-2 sm:px-3 uppercase md:px-4 cursor-pointer hover:bg-color_gray_3 duration-250 ease-in-out transition rounded-md text-xs sm:text-sm md:text-base h-12 "
+                className="hidden sm:block text-white py-2 px-2 sm:px-3 uppercase md:px-4 cursor-pointer hover:bg-color_gray_3 duration-250 ease-in-out transition rounded-md text-xs sm:text-sm md:text-base h-10 sm:h-12 "
                 onClick={handleWithdrawClick}
               >
                 Withdraw
               </button>
               <button
-                className="rounded-md px-6 h-12 action-btn-green bg-color_secondary"
+                className="hidden sm:block rounded-md px-6 h-10 sm:h-12 action-btn-green bg-color_secondary"
                 onClick={handleDepositClick}
               >
                 <span className="text-white font-semibold uppercase">Deposit</span>

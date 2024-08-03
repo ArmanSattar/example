@@ -42,7 +42,7 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
   // }
 
   return (
-    <div className="relative flex flex-col sm:flex-row justify-start sm:items-center items-start w-full gap-10 sm:gap-4 -mt-10">
+    <div className="relative flex flex-col sm:flex-row justify-start sm:items-center items-start w-full sm:gap-4 xl:-mt-10">
       <div className="relative flex justify-center sm:justify-start items-center w-full sm:w-max">
         <div className="flex justify-center items-center min-w-[225px] sm:min-w-[320px] min-h-[100px] -mt-10">
           <Image
@@ -60,7 +60,6 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
         name={name}
         highestPrice={highestPrice}
         lowestPrice={lowestPrice}
-        totalItems={numberOfItems}
         price={price}
         label={tag}
       />

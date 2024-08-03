@@ -5,16 +5,14 @@ import { cn } from "../cases/[id]/utils";
 interface MoneyProps {
   amount: number;
   className?: string;
-  textSize?: string;
+  textStyle?: string;
 }
 
-export const Money: React.FC<MoneyProps> = ({ amount, className, textSize = "lg" }) => {
+export const Money: React.FC<MoneyProps> = ({ amount, className, textStyle = "lg" }) => {
   return (
     <div className={cn(`flex space-x-2 items-center`, className)}>
       <Dollar className="text-yellow-400" />
-      <span className={cn(`text-white whitespace-nowrap`, `text-${textSize}`)}>
-        {amount.toFixed(2)}
-      </span>
+      <span className={cn(`text-white whitespace-nowrap`, textStyle)}>{amount.toFixed(2)}</span>
     </div>
   );
 };

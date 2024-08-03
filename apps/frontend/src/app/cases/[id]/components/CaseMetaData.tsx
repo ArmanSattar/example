@@ -7,7 +7,6 @@ interface CaseMetaDataProps {
   name: string;
   highestPrice: number;
   lowestPrice: number;
-  totalItems: number;
   price: number;
   label: string;
 }
@@ -16,22 +15,17 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
   name,
   highestPrice,
   lowestPrice,
-  totalItems,
   price,
   label,
 }) => {
   return (
-    <div className="flex flex-col justify-between items-start w-full space-y-4">
+    <div className="flex flex-col justify-between items-start w-full space-y-4 -mt-8 sm:mt-0">
       <div className={"w-full flex items-start justify-between"}>
         <div className="flex gap-6 justify-between items-center">
           <span className="text-white font-bold text-3xl">{name}</span>
           {label !== "" && <Tag name={label} customStyle={"text-md py-0.5 px-2"} />}
         </div>
-        <div className={"flex gap-2 items-center justify-center"}>
-          <Back text="Back to Cases" to={""} />
-          {/*<SoundToggle />*/}
-          {/*<ProvablyFair />*/}
-        </div>
+        <Back text="Back to Cases" to={""} customStyle={"hidden xl:flex"} />
       </div>
       <div
         className={`flex flex-col space-y-1 lg:flex-row lg:space-x-1 lg:space-y-0 justify-between items-center`}
@@ -39,7 +33,7 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
         <div className={`flex items-center gap-2`}>
           <div className={"flex gap-x-1 justify-center items-center"}>
             <span className="text-gray-400 text-sm">Lowest Item</span>
-            <Money amount={lowestPrice} textSize={"sm"} className={"space-x-1"} />
+            <Money amount={lowestPrice} textStyle={"text-sm"} className={"space-x-1"} />
           </div>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -52,12 +46,9 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
           </svg>
           <div className={"flex gap-x-1 justify-center items-center"}>
             <span className="text-gray-400 text-sm">Highest Item</span>
-            <Money amount={highestPrice} textSize={"sm"} className={"space-x-1"} />
+            <Money amount={highestPrice} textStyle={"text-sm"} className={"space-x-1"} />
           </div>
         </div>
-      </div>
-      <div className={"flex gap-1"}>
-        <Money amount={price} className={"space-x-1"} />
       </div>
     </div>
   );

@@ -28,7 +28,7 @@ export const Balance = () => {
   }, [isError]);
 
   return (
-    <fieldset className="flex rounded-lg items-center justify-center -mt-1 border-2 border-color_tertiary h-14 bg-color_tertiary_2 ">
+    <fieldset className="flex rounded-lg items-center justify-center border-2 border-color_tertiary h-12 -mt-2 sm:-mt-1 sm:h-14 bg-color_tertiary_2 ">
       <legend className={"text-xs ml-1"}>BALANCE</legend>
       <div className={`flex space-x-2 items-center justify-between px-4 -mt-1`}>
         <Coins className="text-yellow-400 mt-0.5" />

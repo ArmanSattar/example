@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { cn } from "../../cases/[id]/utils";
+import { useDispatch } from "react-redux";
+import { toggleDepositClicked, toggleWithdrawClicked } from "../../../store/slices/navbarSlice";
 
 interface HamburgerButtonProps {
   className: string;
@@ -14,6 +17,7 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
 
   const toggleOpen = () => {
     setOpen(!open);
@@ -36,13 +40,17 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
     { label: "Cases", onClick: () => router.push("/cases") },
     { label: "Rewards", onClick: () => router.push("/rewards") },
     { label: "Leaderboards", onClick: () => router.push("/leaderboards") },
-    { label: "Withdraw", onClick: () => console.log("Contact clicked") },
+    { label: "Withdraw", onClick: () => dispatch(toggleWithdrawClicked()) },
+    { label: "Deposit", onClick: () => dispatch(toggleDepositClicked()) },
   ];
 
   return (
     <div className="flex items-center relative" ref={dropdownRef}>
       <button
-        className={`text-white w-10 h-10 md:h-12 md:w-12 relative focus:outline-none bg-custom_gray rounded-md ${className}`}
+        className={cn(
+          `text-white w-10 h-10 md:h-12 md:w-12 relative focus:outline-none hover:bg-color_gray_3 transition-colors duration-200 ease-in-out rounded-md`,
+          className
+        )}
         onClick={toggleOpen}
       >
         <span className="sr-only">Open main menu</span>
@@ -68,32 +76,25 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
         </div>
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-36 bg-custom_gray shadow-lg xl:hidden rounded-md z-50">
-          {menuOptions.map((option, index) =>
-            index !== 3 ? (
-              <button
-                key={index}
-                onClick={() => {
-                  option.onClick();
-                  setOpen(false);
-                }}
-                className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 first:rounded-t-md last:rounded-b-md"
-              >
-                {option.label}
-              </button>
-            ) : (
-              <button
-                key={index}
-                onClick={() => {
-                  option.onClick();
-                  setOpen(false);
-                }}
-                className="block sm:hidden w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700 first:rounded-t-md last:rounded-b-md"
-              >
-                {option.label}
-              </button>
-            )
-          )}
+        <div className="absolute right-0 top-full mt-1 w-36 bg-color_gray_2 shadow-lg xl:hidden rounded-md z-50">
+          {menuOptions.map((option, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                option.onClick();
+                setOpen(false);
+              }}
+              className={`block w-full text-left px-4 py-2 text-sm text-white hover:bg-color_gray_3 ${
+                index === 0
+                  ? "rounded-t-md"
+                  : index === menuOptions.length - 1
+                  ? "rounded-b-md"
+                  : ""
+              } `}
+            >
+              {option.label}
+            </button>
+          ))}
         </div>
       )}
     </div>
