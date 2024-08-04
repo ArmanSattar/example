@@ -68,13 +68,13 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({ updateFilters, handleS
         </div>
         <div
           className={
-            "flex flex-col sm:flex-row space-y-0 sm:space-y-0 sm:space-x-2 w-full min-h-max"
+            "flex flex-col justify-center items-center xl:justify-end sm:flex-row space-y-2 sm:space-y-0 lg:space-y-2 sm:space-x-2 w-full"
           }
         >
-          <button className="lg:hidden flex-1 h-10 bg-custom_gray text-white rounded text-xs font-semibold min-h-10">
+          <button className="lg:hidden w-full sm:flex-1 h-10 bg-color_gray_3 text-white rounded text-xs font-semibold min-h-12">
             Filters
           </button>
-          <div className="lg:flex-grow-0 lg:flex-shrink lg:basis-auto flex-1 h-10 overflow-clip min-w-0">
+          <div className="w-full lg:basis-auto lg:max-w-sm sm:flex-1 min-h-12 overflow-clip min-w-0">
             <Search handleSearch={handleSearch} />
           </div>
         </div>
