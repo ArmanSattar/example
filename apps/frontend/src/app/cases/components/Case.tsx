@@ -20,11 +20,17 @@ const Case: React.FC<CaseProps> = ({
   lowestPrice,
   disableClick = false,
 }) => {
+  console.log(`case-${rarity.toLowerCase().replace(" ", "-")}`);
   const CaseContent = () => (
     <div
       className={`relative rounded-md ${
         disableClick ? "" : "hover:cursor-pointer"
-      } shadow-lg case cases-${rarity.toLowerCase().replace(" ", "-")} p-2 group overflow-hidden`}
+      } shadow-lg case cases-${rarity
+        .toLowerCase()
+        .replace(
+          " ",
+          "-"
+        )} p-2 group overflow-hidden hover:!bg-hover_primary_color hover:shadow-md hover:shadow-hover_primary_color_50 transition-all duration-300 ease-in-out hover:scale-[101%]`}
     >
       <Tag name={tag} customStyle={"absolute top-4 left-4"} />
       <div className="relative -top-4">
@@ -39,9 +45,14 @@ const Case: React.FC<CaseProps> = ({
       </div>
       <div className="absolute bottom-6 inset-x-0 flex justify-between items-end">
         <div className="absolute left-4">
-          <span className="text-white font-bold text-sm absolute bottom-0 left-0 group-hover:opacity-0 transition-opacity duration-300">
-            {name}
-          </span>
+          <div className={"w-full h-full"}>
+            <span className="text-gray-400 font-bold text-3xs uppercase absolute bottom-5 left-0 group-hover:opacity-0 transition-opacity duration-300">
+              {rarity}
+            </span>
+            <span className="text-white font-bold text-sm absolute bottom-0 left-0 group-hover:opacity-0 transition-opacity duration-300">
+              {name}
+            </span>
+          </div>
           <div className="flex-col items-start justify-start w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
             <span className="text-white font-bold text-xs opacity-50 block mb-1 whitespace-nowrap overflow-hidden text-ellipsis w-full">
               Least expensive item · ${lowestPrice}

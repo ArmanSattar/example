@@ -29,12 +29,15 @@ module.exports = {
         color_tertiary: "var(--color-tertiary)",
         color_tertiary_2: "var(--color-tertiary-2)",
         color_stroke_1: "var(--color-stroke-1)",
+        hover_primary_color: "var(--hover-primary-color)",
+        hover_primary_color_50: "var(--hover-primary-color-50)",
       },
       fontSize: {
         "md-1": "1.0625rem",
         "2xs": ".75rem",
-        "3xs": ".5rem",
-        "4xs": ".4rem",
+        "3xs": ".625rem",
+        "4xs": ".5rem",
+        "5xs": ".4rem",
       },
       boxShadow: {
         circle: "0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f",

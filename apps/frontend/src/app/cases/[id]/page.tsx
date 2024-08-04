@@ -2,7 +2,7 @@
 
 import { CaseDetails } from "./components/CaseDetails";
 import { CaseItems } from "./components/CaseItems";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { BaseCase } from "@solspin/game-engine-types";
 import { useFetchCase } from "./hooks/useFetchCase";
 import { toast } from "sonner";
@@ -12,16 +12,14 @@ import { CarouselSection } from "./components/CarouselSection";
 import { Back } from "../../components/Back";
 
 export default function CasePage({ params }: { params: { id: string } }) {
-  const caseId = params.id;
   const [isLoading, setIsLoading] = useState(true);
-  const { data: caseInfo, isLoading: isCaseInfoLoading, isError, error } = useFetchCase(caseId);
-  const caseData = caseInfo as BaseCase;
+  const { data: caseInfo, isLoading: isCaseInfoLoading, isError, error } = useFetchCase(params.id);
+  const caseData = useMemo(() => caseInfo as BaseCase, [caseInfo]);
   const [childComponentsLoaded, setChildComponentsLoaded] = useState({
     caseDetails: false,
   });
 
   const handleChildLoaded = useCallback((componentName: string) => {
-    console.log("Component loaded:", componentName);
     setChildComponentsLoaded((prev) => ({ ...prev, [componentName]: true }));
   }, []);
 
@@ -33,7 +31,13 @@ export default function CasePage({ params }: { params: { id: string } }) {
 
   if (isError || error) {
     toast.error(`Failed to fetch case data`);
-    return null;
+    return (
+      <div className={"w-full h-full flex justify-center items-center"}>
+        <span className={"text-3xl text-center whitespace-nowrap"}>
+          Oops! Something went wrong.
+        </span>
+      </div>
+    );
   }
 
   return (

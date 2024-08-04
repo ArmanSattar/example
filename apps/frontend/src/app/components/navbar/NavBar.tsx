@@ -38,6 +38,8 @@ const navLinks = [
   },
 ];
 
+const HOME = "/cases";
+
 export const NavBar = () => {
   const [navActiveLink, setNavActiveLink] = useState("/cases");
   const { user, logout } = useAuth();
@@ -54,8 +56,16 @@ export const NavBar = () => {
     <header className="text-white top-0 left-0 bg-navbar_bg w-full sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0 border-b-[1px] border-color_gray_3">
       <div className="flex justify-between items-center w-full h-full z-10">
         <div className="flex items-center justify-between h-full">
-          <div className="flex relative items-center w-[60px] sm:w-[80px] lg:w-[320px] h-full justify-center border-r-[0px] lg:border-r-[1px] border-color_gray_3">
-            <Image src="/icons/logo.webp" alt="logo" fill className="object-contain" />
+          <div className="flex relative items-center w-[60px] sm:w-[80px] lg:w-[320px] h-full justify-center border-r-[0px] lg:border-r-[1px] border-color_gray_3 cursor-pointer">
+            <Link onClick={() => setNavActiveLink(HOME)} href={HOME}>
+              <Image
+                src="/icons/logo.webp"
+                alt="logo"
+                fill
+                className="object-contain"
+                sizes="(max-width: 640px) 60px, (max-width: 1024px) 80px, 320px"
+              />
+            </Link>
           </div>
           <ul className="hidden xl:flex xl:space-x-10 h-full pl-4">
             {navLinks.map((navLink, index) => (

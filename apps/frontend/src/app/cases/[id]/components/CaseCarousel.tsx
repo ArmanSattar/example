@@ -12,18 +12,14 @@ import React, {
 import dynamic from "next/dynamic";
 import { WindowSize } from "../hooks/useWindowResize";
 import { BaseCaseItem } from "@solspin/game-engine-types";
-import {
-  animationCalculation,
-  AnimationCalculation,
-  Direction,
-  DISTANCE_IN_ITEMS,
-  ITEM_HEIGHT,
-  ITEM_WIDTH,
-} from "../utils";
+import { animationCalculation } from "../utils";
+import { DISTANCE_IN_ITEMS, ITEM_HEIGHT, ITEM_WIDTH } from "../../../libs/constants";
+import { AnimationCalculation, Direction } from "../../../libs/types";
 import { RootState } from "../../../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { setStartMiddleItem } from "../../../../store/slices/caseCarouselSlice";
 import TriangleIcon from "./TriangleIcon";
+import { Howl } from "howler";
 
 const CarouselItem = dynamic(() => import("./CarouselItem"), { ssr: false });
 
@@ -123,10 +119,41 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       }
     }, [windowSize, numCases, calculateDirection, direction, items]);
 
-    const playSound = useCallback((src: string) => {
-      const audio = new Audio(src);
-      audio.play().catch((error) => console.error("Audio playback failed:", error));
-    }, []);
+    const useDebouncedCallback = <T extends (...args: any[]) => any>(func: T, wait: number): T => {
+      const timeout = useRef<NodeJS.Timeout | undefined>();
+
+      return useCallback(
+        ((...args: Parameters<T>) => {
+          const later = () => {
+            clearTimeout(timeout.current);
+            func(...args);
+          };
+
+          clearTimeout(timeout.current);
+          timeout.current = setTimeout(later, wait);
+        }) as T,
+        [func, wait]
+      );
+    };
+
+    const playSound = useDebouncedCallback((src: string) => {
+      let sound: Howl;
+
+      if (src === "/sounds/tick.wav") {
+        sound = new Howl({
+          src: ["/sounds/tick.wav"],
+          volume: 0.4,
+          preload: true,
+        });
+      } else {
+        sound = new Howl({
+          src: ["/sounds/cashier-cha-ching.mp3"],
+          volume: 0.4,
+          preload: true,
+        });
+      }
+      sound.play();
+    }, 20);
 
     useEffect(() => {
       if (middleItem !== startMiddleItem && middleItem !== 0 && isSoundOn) {

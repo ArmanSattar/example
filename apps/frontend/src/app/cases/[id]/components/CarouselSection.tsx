@@ -45,9 +45,9 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
   const price = caseData.price;
   const spinClicked = isDemoClicked || isPaidSpinClicked;
 
-  const handleClientSeedChange = (newClientSeed: string) => {
+  const handleClientSeedChange = useCallback((newClientSeed: string) => {
     setClientSeed(newClientSeed);
-  };
+  }, []);
 
   useEffect(() => {
     if (caseData && cases.length < numCases) {
@@ -125,7 +125,6 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
         if (caseData && "type" in data && data["type"] == "case") {
           const message = data["message"];
           if ("server-seed-hash" in message) {
-            console.log("serverseedhash", isFirstServerSeedHash);
             if (isFirstServerSeedHash) {
               setServerSeedHash(message["server-seed-hash"]);
               setIsFirstServerSeedHash(false);

@@ -6,7 +6,8 @@ import { GET_CASES_URL } from "../../../types";
 import { useFetchImage } from "../hooks/useFetchImage";
 import { toast } from "sonner";
 import { CarouselItemSkeleton } from "./CarouselItemSkeleton";
-import { Direction, ITEM_HEIGHT, ITEM_WIDTH } from "../utils";
+import { ITEM_HEIGHT, ITEM_WIDTH } from "../../../libs/constants";
+import { Direction } from "../../../libs/types";
 
 interface CarouselItemProps {
   isMiddle: boolean;

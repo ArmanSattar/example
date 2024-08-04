@@ -1,15 +1,8 @@
 import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-
-const DISTANCE_IN_ITEMS = 30;
-const ITEM_WIDTH = 150;
-const ITEM_HEIGHT = 150;
-const NUMBER_OF_ITEMS = 45;
-export enum Direction {
-  HORIZONTAL,
-  VERTICAL,
-}
+import { DISTANCE_IN_ITEMS, ITEM_HEIGHT, ITEM_WIDTH, NUMBER_OF_ITEMS } from "../../libs/constants";
+import { AnimationCalculation } from "../../libs/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -66,11 +59,6 @@ function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export type AnimationCalculation = {
-  distance: number;
-  tickerOffset: number;
-};
-
 const animationCalculation = (
   currentPosition: number,
   isHorizontal: boolean
@@ -96,12 +84,4 @@ export const wearToColorAndAbbrev = new Map<string, [string, string]>([
   ["Battle Scarred", ["BS", "text-red-400"]],
 ]);
 
-export {
-  generateClientSeed,
-  generateCases,
-  animationCalculation,
-  DISTANCE_IN_ITEMS,
-  ITEM_WIDTH,
-  ITEM_HEIGHT,
-  NUMBER_OF_ITEMS,
-};
+export { generateClientSeed, generateCases, animationCalculation };
