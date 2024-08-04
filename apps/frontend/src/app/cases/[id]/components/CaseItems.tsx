@@ -20,3 +20,5 @@ export const CaseItems: React.FC<CaseItemsProps> = React.memo(({ items }) => {
     </section>
   );
 });
+
+CaseItems.displayName = "CaseItems";

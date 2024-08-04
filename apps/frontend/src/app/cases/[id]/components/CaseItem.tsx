@@ -34,7 +34,7 @@ export const CaseItem: React.FC<CaseItemProps> = memo(({ item }) => {
 
   return (
     <div
-      className={`flex flex-col items-start p-4 overflow-hidden group min-w-[200px] max-w-[220px] bg-navbar_bg element-with-stroke shadow-lg`}
+      className={`flex flex-col items-start p-4 overflow-hidden group min-w-[200px] max-w-[220px] bg-navbar_bg element-with-stroke`}
     >
       <div className="relative flex flex-col items-center justify-center rounded-lg min-w-[125px] w-full min-h-[125px]">
         <div className="relative flex justify-center items-center h-full w-full z-10">
@@ -50,7 +50,9 @@ export const CaseItem: React.FC<CaseItemProps> = memo(({ item }) => {
         </div>
         <div className={`absolute mx-auto inset-x-0 h-32 w-32 ${gradientText} opacity-40`}></div>
       </div>
-      <div className={`flex flex-col justify-center items-start space-y-0.5 flex-grow px-2 w-full`}>
+      <div
+        className={`flex flex-col justify-center items-start space-y-0.5 flex-grow px-0 lg:px-2 w-full`}
+      >
         <span className="font-bold text-white text-sm whitespace-nowrap">{name}</span>
         <span className="text-2xs whitespace-nowrap text-[#98A0C3]">{type}</span>
         <span className={`${wearColor} text-2xs whitespace-nowrap`}>{item.wear}</span>

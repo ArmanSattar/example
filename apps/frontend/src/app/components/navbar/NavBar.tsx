@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
 import { UserProfile } from "./UserProfile";
 import Hamburger from "./Hamburger";
 import CustomWalletMultiButton from "../sign-in/WalletSignIn";
@@ -42,7 +41,7 @@ const HOME = "/cases";
 
 export const NavBar = () => {
   const [navActiveLink, setNavActiveLink] = useState("/cases");
-  const { user, logout } = useAuth();
+  // const { user, logout } = useAuth();
   const dispatch = useDispatch();
   const handleWithdrawClick = () => {
     dispatch(toggleWithdrawClicked());
@@ -51,6 +50,7 @@ export const NavBar = () => {
   const handleDepositClick = () => {
     dispatch(toggleDepositClicked());
   };
+  const user = true;
 
   return (
     <header className="text-white top-0 left-0 bg-navbar_bg w-full sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0 border-b-[1px] border-color_gray_3">

@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import Image from "next/image";
 import { PublicKey } from "@solana/web3.js";
 import { toast } from "sonner";
 import { useSolPrice } from "./hooks/useSolPrice";
@@ -11,6 +10,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postData } from "./utils/requests";
 import { WithdrawRequest, WithdrawResponse } from "@solspin/types";
 import { WALLETS_API_URL } from "../../types";
+import Close from "../../../../public/icons/close.svg";
+import Wallet from "../../../../public/icons/wallet.svg";
+import Dollar from "../../../../public/icons/dollar.svg";
 
 interface WithdrawPopUpProps {
   handleClose: () => void;
@@ -184,46 +186,38 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
         ref={popupRef}
-        className="bg-background p-8 rounded-lg shadow-lg w-11/12 md:w-1/3 h-auto md:h-1/2 max-w-4xl transform translate-y-0 flex flex-col items-center justify-between relative"
+        className="bg-color_gray_2 py-6 px-8 rounded-lg border-4 border-color_stroke_1 shadow-lg w-11/12 md:w-1/3 h-auto md:h-1/2 max-w-4xl transform translate-y-0 flex flex-col items-center justify-between relative gap-y-2"
       >
-        <button
+        <Close
           onClick={handleClose}
-          className="absolute top-6 right-10 text-white hover:text-gray-300"
-        >
-          X
-        </button>
+          className="absolute top-7 right-7 text-white cursor-pointer hover:opacity-90 w-6 h-6"
+        />
         <span className="text-white text-2xl font-semibold mb-6">Withdraw</span>
-        <div className="flex flex-col items-start justify-start w-2/3">
-          <span className="text-white text-sm mb-1 ml-2">Amount</span>
-          <div className="flex items-center justify-center w-full space-x-2">
-            <div className="rounded-sm bg-gray-700 py-2 px-4 flex space-x-2 h-12 w-full">
-              <Image src="/icons/dollar.svg" alt="Coin" width={20} height={20} />
-              <input
-                className="w-full bg-transparent text-white focus:outline-none"
-                type="text"
-                placeholder={"0"}
-                value={dollarValue}
-                onChange={handleDollarInputChange}
-              />
-            </div>
+        <fieldset className="relative rounded-sm border-2 border-color_stroke_1 bg-color_gray_3 py-2 p-4 flex space-x-2 h-16 w-2/3 items-center justify-center focus-within:border-color_secondary transition-colors">
+          <legend className="text-white text-sm ml-2">Amount</legend>
+          <div className={"w-8"}>
+            <Dollar className={"ml-1 inset-y-0 my-auto scale-125 text-color_tertiary"} />
           </div>
-        </div>
-        <div className="flex flex-col items-start justify-start w-2/3">
-          <span className="text-white text-sm mb-1 ml-2">Wallet Address</span>
-          <div className="flex items-center justify-center w-full space-x-2">
-            <div className="rounded-sm bg-gray-700 py-2 px-4 flex space-x-2 h-12 w-full">
-              <Image src="/icons/wallet.svg" alt="Coin" width={20} height={20} />
-              <input
-                className="w-full bg-transparent text-white focus:outline-none"
-                type="text"
-                placeholder={wallet.publicKey?.toString() ?? undefined}
-                value={walletAddressValue}
-                onChange={handleWalletAddressInputChange}
-              />
-            </div>
-          </div>
-        </div>
-        <p className="text-white text-sm mt-2 text-center">
+          <input
+            className="w-full placeholder:transition-opacity placeholder:font-light placeholder-gray-400 focus:placeholder:opacity-50 bg-transparent text-white focus:outline-none"
+            type="text"
+            placeholder={"0"}
+            value={dollarValue}
+            onChange={handleDollarInputChange}
+          />
+        </fieldset>
+        <fieldset className="relative rounded-sm border-2 border-color_stroke_1 bg-color_gray_3 py-2 p-4 flex space-x-2 h-16 w-2/3 items-center justify-center focus-within:border-color_secondary transition-colors">
+          <legend className="text-white text-sm ml-2">Wallet Address</legend>
+          <Wallet className={"w-8 h-6 -mt-1 text-color_secondary"} />
+          <input
+            className="w-full placeholder:transition-opacity placeholder:font-light placeholder-gray-400 focus:placeholder:opacity-50 bg-transparent text-white focus:outline-none text-left"
+            type="text"
+            placeholder={wallet.publicKey?.toString() ?? undefined}
+            value={walletAddressValue}
+            onChange={handleWalletAddressInputChange}
+          />
+        </fieldset>
+        <p className="text-white text-sm mt-2 text-center italic">
           {`Current SOL price: ${
             isPriceSolLoading
               ? "Loading..."
@@ -235,7 +229,7 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
           }`}
         </p>
         <button
-          className="bg-green-500 text-white py-2 px-5 rounded-md"
+          className="action-btn-green bg-color_secondary text-white py-2 px-5 rounded-md"
           onClick={handleWithdrawClick}
         >
           Withdraw
