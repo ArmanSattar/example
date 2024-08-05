@@ -64,6 +64,7 @@ export const NavBar = () => {
                 fill
                 className="object-contain"
                 sizes="(max-width: 640px) 60px, (max-width: 1024px) 80px, 320px"
+                priority={true}
               />
             </Link>
           </div>

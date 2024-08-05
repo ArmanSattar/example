@@ -13,6 +13,7 @@ import { useWebSocket } from "../../../context/WebSocketContext";
 import { ProvablyFair } from "./ProvablyFair";
 import { CarouselButtonsSubSection } from "./CarouselButtonsSubSection";
 import { SoundToggle } from "./SoundToggle";
+import { CaseCarouselSkeleton } from "./CaseCarouselSkeleton";
 
 interface CarouselSectionProps {
   caseData: BaseCase;
@@ -208,7 +209,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
               skipAnimation={isSkipAnimationClicked}
             />
           ) : (
-            <div key={i} className="w-full h-[310px] bg-gray-800 animate-pulse rounded-md"></div>
+            <CaseCarouselSkeleton key={i} />
           )
         )}
       </div>

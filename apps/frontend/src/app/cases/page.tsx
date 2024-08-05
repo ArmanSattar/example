@@ -1,13 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { CasesHeader } from "./components/CasesHeader";
 import { Cases } from "./components/Cases";
 import { useCases } from "./hooks/useCases";
 import { toast } from "sonner";
+import { useLoading } from "../context/LoadingContext";
 
 export default function CasesPage() {
   const { filteredCases, updateFilters, handleSearch, isLoading, isError, error } = useCases();
+  const { startLoading, finishLoading } = useLoading();
+  const loadingFlag = useRef(false);
+
+  useEffect(() => {
+    if (isLoading && !loadingFlag.current) {
+      startLoading();
+      loadingFlag.current = true;
+    }
+
+    if (!isLoading && loadingFlag.current) {
+      finishLoading();
+    }
+  }, [isLoading]);
 
   if (isError || error) {
     toast.error("Failed to fetch cases");

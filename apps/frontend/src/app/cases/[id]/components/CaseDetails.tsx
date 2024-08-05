@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import { CaseMetaData } from "./CaseMetaData";
 
@@ -10,7 +10,6 @@ interface CaseDetailsProps {
   highestPrice: number;
   lowestPrice: number;
   numberOfItems: number;
-  onLoaded: () => void;
 }
 
 export const CaseDetails: React.FC<CaseDetailsProps> = ({
@@ -21,16 +20,9 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
   highestPrice,
   lowestPrice,
   numberOfItems,
-  onLoaded,
 }) => {
   // const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${imagePath}`);
   const isLoading = false;
-
-  useEffect(() => {
-    if (!isLoading) {
-      onLoaded();
-    }
-  }, [isLoading]);
 
   // if (isError) {
   //   toast.error("Error fetching image");

@@ -5,6 +5,7 @@ import { Providers } from "./providers";
 import { MainSection } from "./components/MainSection";
 import { BottomNavbar } from "./components/bottom-nav/BottomNavbar";
 import { Inter } from "next/font/google";
+import { LoadingWrapper } from "./components/LoadingWrapper";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,9 +24,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`w-full h-full overflow-x-hidden overscroll-none ${inter.variable}`}>
       <body className="flex flex-col w-full h-full overflow-x-hidden bg-background">
         <Providers>
-          <NavBar />
-          <MainSection>{children}</MainSection>
-          <BottomNavbar />
+          <LoadingWrapper>
+            <NavBar />
+            <MainSection>{children}</MainSection>
+            <BottomNavbar />
+          </LoadingWrapper>
         </Providers>
       </body>
     </html>
