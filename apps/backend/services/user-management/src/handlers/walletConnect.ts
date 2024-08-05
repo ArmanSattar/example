@@ -1,16 +1,17 @@
 import { ApiHandler } from "sst/node/api";
 import { createUser, getUserByWalletAddress } from "../data-access/userRepository";
-import { nonceExists, deleteNonce } from "../data-access/nonceRepository"; // Import necessary functions
+import { deleteNonce, nonceExists } from "../data-access/nonceRepository"; // Import necessary functions
 import { UserSchema } from "@solspin/user-management-types";
 import { PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import jwt from "jsonwebtoken";
 import { Config } from "sst/node/config";
-import { randomUUID } from "crypto";
 import { getLogger } from "@solspin/logger";
 import { ZodError } from "zod";
 import bs58 from "bs58";
-import { callCreateWallet } from "../helpers/createWallet";
+import { randomUUID } from "crypto";
+import { CreateWallet, publishEvent } from "@solspin/events";
+import { Service } from "@solspin/types";
 
 const logger = getLogger("wallet-auth-handler");
 
@@ -97,7 +98,21 @@ export const handler = ApiHandler(async (event) => {
       };
 
       validateUser(user);
-      await callCreateWallet(user.userId, walletAddress);
+
+      publishEvent(
+        CreateWallet.event,
+        {
+          userId: user.userId,
+          walletAddress: walletAddress,
+        } as CreateWallet.type,
+        Service.USER
+      );
+
+      logger.info("Event published with data: ", {
+        userId: user.userId,
+        walletAddress: walletAddress,
+      });
+
       await createUser(user);
     }
 

@@ -21,7 +21,7 @@ export function ApiStack({ stack }: StackContext) {
 
   const createWalletFunction = new Function(stack, "CreateWalletFunction", {
     functionName: `${stack.stackName}-createWallet`,
-    handler: "../wallet/src/service/api/handler/create-wallet.handler",
+    handler: "../wallet/src/service/event/handler/create-wallet.handler",
     environment: {
       WALLETS_TABLE_ARN: walletsTableName,
     },
@@ -62,6 +62,15 @@ export function ApiStack({ stack }: StackContext) {
       detailType: ["event"],
     },
     targets: [new cdk.aws_events_targets.LambdaFunction(betTransactionHandler)],
+  });
+
+  new cdk.aws_events.Rule(stack, "CreateWalletRule", {
+    eventBus: existingEventBus,
+    eventPattern: {
+      source: ["user_service.CreateWallet"],
+      detailType: ["event"],
+    },
+    targets: [new cdk.aws_events_targets.LambdaFunction(createWalletFunction)],
   });
 
   const api = new Api(stack, "api", {

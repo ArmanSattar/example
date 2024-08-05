@@ -1,9 +1,17 @@
 import { Api, Config, Function, StackContext, Table } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { RemovalPolicy } from "aws-cdk-lib/core";
+import * as cdk from "aws-cdk-lib";
 
 export function UserManagementHandlerAPI({ stack }: StackContext) {
   const removeOnDelete = true;
+  const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
+  const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
+    stack,
+    "solspin-event-bus",
+    eventBusArn
+  );
+
   const userTable = new Table(stack, "users", {
     fields: {
       userId: "string",
@@ -160,12 +168,17 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
               actions: ["dyamodb:PutItem", "lambda:InvokeFunction"],
               resources: [createWalletFunction.functionArn],
             }),
+            new PolicyStatement({
+              actions: ["events:PutEvents"],
+              resources: [eventBusArn],
+            }),
           ],
           bind: [userTable, nonceTable, TEST_SECRET],
           environment: {
             USERS_TABLE_NAME: userTable.tableName,
             NONCE_TABLE_NAME: nonceTable.tableName,
             CREATE_WALLET_FUNCTION_NAME: createWalletFunction.functionName,
+            EVENT_BUS_ARN: existingEventBus.eventBusArn,
           },
         },
       },

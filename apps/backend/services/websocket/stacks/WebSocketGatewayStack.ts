@@ -7,18 +7,6 @@ export function WebSocketGateway({ stack }: StackContext) {
   const { websocketConnectionsTable, websocketChatMessagesTable, websocketStatsTable } =
     use(WebSocketHandlerAPI);
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
-  const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
-    stack,
-    "solspin-event-bus",
-    eventBusArn
-  );
-  new cdk.aws_events.Rule(stack, "GameOutcomeRule", {
-    eventBus: existingEventBus,
-    eventPattern: {
-      source: ["orchestration_service.GameOutcome"],
-      detailType: ["event"],
-    },
-  });
 
   const TEST_SECRET = new Config.Secret(stack, "TEST_SECRET");
 
@@ -51,11 +39,6 @@ export function WebSocketGateway({ stack }: StackContext) {
     "GetUserFunction",
     "dev-user-management-UserManagementHandlerAPI-getUser"
   );
-
-  const eventBusPolicy = new PolicyStatement({
-    actions: ["events:PutEvents"],
-    resources: [eventBusArn],
-  });
 
   const api = new WebSocketApi(stack, "WebSocketGatewayApi", {
     defaults: {

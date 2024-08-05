@@ -146,7 +146,7 @@ export const handler = WebSocketApiHandler(async (event) => {
           outcomeAmount,
           timestamp: new Date().toISOString(),
         } as GameResult.GameResultType,
-        Service.ORCHESTRATION as EventConfig
+        Service.ORCHESTRATION
       );
       logger.info("Event published with data: ", {
         userId,
