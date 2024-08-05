@@ -77,17 +77,19 @@ interface ChatBodyProps {
 
 export const ChatBody: React.FC<ChatBodyProps> = ({ messages }) => {
   const chatBodyRef = useRef<HTMLDivElement>(null);
+  const scrolledToBottom = useRef<boolean>(false);
   const [visibleMessages, setVisibleMessages] = useState<Message[]>([]);
 
   useEffect(() => {
-    if (!chatBodyRef.current) return;
+    if (!chatBodyRef.current || visibleMessages.length === 0) return;
 
     const scrollToBottom = () => {
-      if (chatBodyRef.current) {
+      if (chatBodyRef.current && !scrolledToBottom.current) {
         chatBodyRef.current.scrollTo({
           top: chatBodyRef.current.scrollHeight,
           behavior: "smooth",
         });
+        scrolledToBottom.current = true;
       }
     };
 
@@ -95,21 +97,15 @@ export const ChatBody: React.FC<ChatBodyProps> = ({ messages }) => {
   }, [visibleMessages]);
 
   useEffect(() => {
-    // const latestMessages = messages.slice(-50);
-    // setVisibleMessages(latestMessages);
-    setVisibleMessages(mockMessages);
-  }, []);
+    const latestMessages = messages.slice(-50);
+    setVisibleMessages(latestMessages.concat(mockMessages));
+  }, [messages]);
 
   return (
-    <div className="relative flex-grow overflow-hidden">
-      <div className="overflow-y-auto h-full" ref={chatBodyRef}>
+    <div className="relative flex-grow overflow-hidden w-full">
+      <div className="overflow-y-auto overflow-x-hidden h-full" ref={chatBodyRef}>
         {visibleMessages.map((message, index) => (
-          <div
-            key={index}
-            className={`transition-opacity duration-300 ${
-              index === 0 ? "opacity-25" : index === 1 ? "opacity-50" : "opacity-100"
-            }`}
-          >
+          <div key={index} className={`transition-opacity relative py-4 px-2 duration-300`}>
             <ChatInputElement
               message={message.message}
               username={message.username}

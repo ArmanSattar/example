@@ -1,13 +1,8 @@
 import React, { KeyboardEvent, useState } from "react";
 import { useWebSocket } from "../../context/WebSocketContext";
-// import UsersIcon from "../../../../public/icons/users-svgrepo-com.svg"; // Import your local SVG file
 import Send from "./../../../../public/icons/send.svg";
 
-type ChatInputProps = {
-  playersOnline: number;
-};
-
-export const ChatInput: React.FC<ChatInputProps> = ({ playersOnline }) => {
+export const ChatInput = () => {
   const [message, setMessage] = useState("");
   const { sendMessage } = useWebSocket();
 

@@ -41,7 +41,6 @@ export const Chatbar = () => {
     fetchMessages();
   }, []);
   useEffect(() => {
-    console.log("in here");
     if (connectionStatus === "connected") {
       sendMessage(JSON.stringify({ action: "player-count" }));
     }
@@ -52,7 +51,6 @@ export const Chatbar = () => {
         const data = JSON.parse(event.data);
         if ("type" in data && data["type"] === "chat") {
           const message = data["message"];
-          console.log(message);
           if (message && "player-count" in message) {
             const playersCount = message["player-count"]["count"];
             setPlayerCount(playersCount);
@@ -103,9 +101,9 @@ export const Chatbar = () => {
       `}
       >
         <div className="h-full flex flex-col items-center justify-between shadow-2xl w-full overflow-x-hidden">
-          <ChatHeader onlineCount={1234} title="General Chat" />
+          <ChatHeader onlineCount={playerCount} title="General Chat" />
           <ChatBody messages={messages} />
-          <ChatInput playersOnline={playerCount} />
+          <ChatInput />
         </div>
       </div>
       <div

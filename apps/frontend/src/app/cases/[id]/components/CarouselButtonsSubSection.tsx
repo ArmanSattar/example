@@ -4,7 +4,7 @@ import {
   togglePaidSpinClicked,
 } from "../../../../store/slices/demoSlice";
 import { addToBalance } from "../../../../store/slices/userSlice";
-import React from "react";
+import React, { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../store";
 import { useAuth } from "../../../context/AuthContext";
@@ -21,10 +21,10 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
   const paidSpinClicked = useSelector((state: RootState) => state.demo.paidSpinClicked);
   const dispatch = useDispatch();
   const numCases = useSelector((state: RootState) => state.demo.numCases);
-  const spinClicked = paidSpinClicked || demoClicked;
+  const spinClicked = useMemo(() => paidSpinClicked || demoClicked, [paidSpinClicked, demoClicked]);
   const balance = useSelector((state: RootState) => state.user.balance);
   const { user } = useAuth();
-  console.log(balance);
+
   return (
     <div
       className={`flex flex-col w-full md:w-max md:flex-row space-y-4 md:space-y-0 md:gap-4 justify-start items-center sm:items-start bg-navbar_bg p-2 rounded-md`}

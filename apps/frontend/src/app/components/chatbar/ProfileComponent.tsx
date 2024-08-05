@@ -40,7 +40,7 @@ export const ProfileComponent: React.FC<ProfileComponentProps> = ({ level, profi
         </div>
       </div>
       <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full border-2 border-chatbar_bg inline-flex justify-center items-center z-30 px-[4px] py-[3.2px] sm:px-[5px] sm:py-[4px]"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 min-w-[1.75rem] rounded-full border-2 border-chatbar_bg inline-flex justify-center items-center z-30 px-[4px] py-[3.2px] sm:px-[5px] sm:py-[4px]"
         style={{ backgroundColor: levelColor }}
       >
         <span className="text-black text-[8px] sm:text-3xs font-bold text-center">{level}</span>
