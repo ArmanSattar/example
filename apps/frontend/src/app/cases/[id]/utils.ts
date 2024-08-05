@@ -44,7 +44,6 @@ const generateCases = (
       if (index === DISTANCE_IN_ITEMS + startItemIndex && itemsWon) {
         return itemsWon[rootIndex];
       }
-
       const roll = Math.floor(Math.random() * 100000);
       return { ...binarySearch(baseCase.items, roll) };
     })

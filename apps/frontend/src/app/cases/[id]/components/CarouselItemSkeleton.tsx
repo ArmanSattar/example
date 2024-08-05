@@ -1,4 +1,4 @@
-import { ITEM_HEIGHT, ITEM_WIDTH } from "../utils";
+import { ITEM_HEIGHT, ITEM_WIDTH } from "../../../libs/constants";
 
 export const CarouselItemSkeleton = () => {
   return (

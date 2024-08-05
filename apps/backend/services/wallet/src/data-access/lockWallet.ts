@@ -13,11 +13,9 @@ export const lockWallet = async (userId: string): Promise<WalletsDBObject> => {
 
   try {
     /*
-
       Attempt to lock the wallet by setting lockedAt to the current time.
       The wallet will be locked for the specified duration.
       If the wallet is already locked, the lock will only be acquired if the lock has expired.
-
       */
     const result = await docClient.send(
       new UpdateCommand({

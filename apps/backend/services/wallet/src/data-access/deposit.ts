@@ -13,11 +13,12 @@ export const deposit = async (
 ): Promise<void> => {
   // Check if the signature is valid for a deposit
   try {
-    if (isDeposit && !signature) {
+    if (isDeposit && signature === null) {
       throw new InvalidResourceError("Invalid signature");
     }
 
     // Update the balance
+    console.log("wallet.balance", wallet.balance, "depositAmount", depositAmount);
     wallet.balance += depositAmount;
 
     await updateUser(wallet);

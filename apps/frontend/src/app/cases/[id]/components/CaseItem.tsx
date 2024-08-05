@@ -6,6 +6,7 @@ import { useFetchImage } from "../hooks/useFetchImage";
 import { GET_CASES_URL } from "../../../types";
 import { toast } from "sonner";
 import { wearToColorAndAbbrev } from "../utils";
+import Tooltip from "../../../components/ToolTip";
 
 interface CaseItemProps {
   item: BaseCaseItem;
@@ -34,7 +35,7 @@ export const CaseItem: React.FC<CaseItemProps> = memo(({ item }) => {
 
   return (
     <div
-      className={`flex flex-col items-start p-4 overflow-hidden group min-w-[200px] max-w-[220px] bg-navbar_bg element-with-stroke`}
+      className={`flex flex-col items-start p-4 group min-w-[200px] max-w-[220px] bg-navbar_bg element-with-stroke`}
     >
       <div className="relative flex flex-col items-center justify-center rounded-lg min-w-[125px] w-full min-h-[125px]">
         <div className="relative flex justify-center items-center h-full w-full z-10">
@@ -61,12 +62,14 @@ export const CaseItem: React.FC<CaseItemProps> = memo(({ item }) => {
             <Money amount={item.price} textStyle={"text-sm"} />
           </div>
           <div>
-            <div className="relative w-full h-full flex justify-between items-center space-x-1">
-              <Image src={"/icons/dice.svg"} alt={"Dice"} width={16} height={16} />
-              <span className="text-[#98A0C3] text-sm whitespace-nowrap text-right">
-                {item.chance}
-              </span>
-            </div>
+            <Tooltip text={`Roll numbers: ${item.rollNumbers[0]} - ${item.rollNumbers[1]}`}>
+              <div className="relative w-full h-full flex justify-between items-center space-x-1">
+                <Image src={"/icons/dice.svg"} alt={"Dice"} width={16} height={16} />
+                <span className="text-[#98A0C3] text-sm whitespace-nowrap text-right">
+                  {item.chance}
+                </span>
+              </div>
+            </Tooltip>
           </div>
         </div>
       </div>

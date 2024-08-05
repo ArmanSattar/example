@@ -10,18 +10,7 @@ import { RootState } from "../../../../store";
 import { useAuth } from "../../../context/AuthContext";
 import { Money } from "../../../components/Money";
 import { FastButton } from "./FastButton";
-
-const isVertical = (chatOpen: boolean, windowWidth: number) => {
-  if (windowWidth < 768) {
-    return true;
-  }
-
-  if (chatOpen) {
-    if (windowWidth < 1024) {
-      return false;
-    }
-  }
-};
+import { toast } from "sonner";
 
 interface CarouselButtonsSubSectionProps {
   price: number;
@@ -31,12 +20,11 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
   const demoClicked = useSelector((state: RootState) => state.demo.demoClicked);
   const paidSpinClicked = useSelector((state: RootState) => state.demo.paidSpinClicked);
   const dispatch = useDispatch();
-  const fastClicked = useSelector((state: RootState) => state.demo.fastClicked);
   const numCases = useSelector((state: RootState) => state.demo.numCases);
   const spinClicked = paidSpinClicked || demoClicked;
   const balance = useSelector((state: RootState) => state.user.balance);
   const { user } = useAuth();
-
+  console.log(balance);
   return (
     <div
       className={`flex flex-col w-full md:w-max md:flex-row space-y-4 md:space-y-0 md:gap-4 justify-start items-center sm:items-start bg-navbar_bg p-2 rounded-md`}
@@ -74,11 +62,13 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
         <button
           className={`flex flex-[4] bg-green-500 rounded-md h-12 p-4 space-x-1 justify-center items-center action-btn-green ${
             spinClicked ? "opacity-50 cursor-not-allowed" : ""
-          } ${true ? "" : "hidden"}`}
+          } ${user ? "" : "hidden"}`}
           onClick={() => {
-            if (!spinClicked && balance >= price * numCases) {
+            if (!spinClicked && balance / 100 >= price * numCases) {
               dispatch(togglePaidSpinClicked());
               dispatch(addToBalance(-price * numCases));
+            } else if (!spinClicked) {
+              toast.error("You do not have enough balance");
             }
           }}
           disabled={spinClicked}

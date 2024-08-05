@@ -67,7 +67,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
       logger.info("Deposit request processed", { depositAmountInCrypto, transactionId });
 
-      // Dollars are converted into FPN (floating point number) to avoid floating point arithmetic issues (i.e x100)
+      // Dollars are converted into minor amounts to avoid floating point arithmetic issues (i.e x100)
       const currentPriceSolFpn = (await getCurrentPrice()) * 100;
       const depositAmountInUsdFpn = Math.round(depositAmountInCrypto * currentPriceSolFpn);
 

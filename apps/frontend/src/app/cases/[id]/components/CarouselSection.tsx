@@ -1,5 +1,5 @@
 import { CaseCarousel } from "./CaseCarousel";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
 import useWindowSize from "../hooks/useWindowResize";
 import { toggleDemoClicked, togglePaidSpinClicked } from "../../../../store/slices/demoSlice";
@@ -10,7 +10,6 @@ import { generateCases, generateClientSeed } from "../utils";
 import { SpinResponse } from "@solspin/orchestration-types";
 import { toast } from "sonner";
 import { useWebSocket } from "../../../context/WebSocketContext";
-import { useAuth } from "../../../context/AuthContext";
 import { ProvablyFair } from "./ProvablyFair";
 import { CarouselButtonsSubSection } from "./CarouselButtonsSubSection";
 import { SoundToggle } from "./SoundToggle";
@@ -40,10 +39,10 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
   const startMiddleItem = useSelector((state: RootState) => state.caseCarousel.startMiddleItem);
   const [isSkipAnimationClicked, setisSkipAnimationClicked] = useState(false);
   const [hasBeenRolled, setHasBeenRolled] = useState<boolean>(false);
-  const { user } = useAuth();
-  const balance = useSelector((state: RootState) => state.user.balance);
-  const price = caseData.price;
-  const spinClicked = isDemoClicked || isPaidSpinClicked;
+  const spinClicked = useMemo(
+    () => isDemoClicked || isPaidSpinClicked,
+    [isDemoClicked, isPaidSpinClicked]
+  );
 
   const handleClientSeedChange = useCallback((newClientSeed: string) => {
     setClientSeed(newClientSeed);
@@ -81,7 +80,8 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
         );
       }
     } else if (isDemoClicked && animationComplete == 0) {
-      setCases(generateCases(numCases, null, caseData, startMiddleItem));
+      const cases = generateCases(numCases, null, caseData, startMiddleItem);
+      setCases(cases);
     }
   }, [
     isPaidSpinClicked,
@@ -154,7 +154,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
               return;
             }
 
-            const newCases = generateCases(numCases, caseItemsWon, caseData);
+            const newCases = generateCases(numCases, caseItemsWon, caseData, startMiddleItem);
             const generatedRollValues = caseItems.map((item) => item.rollValue.toString());
             setCases(newCases);
             setItemsWon(caseItemsWon);
@@ -177,7 +177,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
         socket.removeEventListener("message", handleMessage);
       }
     };
-  }, [socket, isFirstServerSeedHash, serverSeedHash, caseData, numCases]);
+  }, [socket, isFirstServerSeedHash, serverSeedHash, caseData, numCases, startMiddleItem]);
 
   return (
     <div className={"flex flex-col space-y-4 justify-between w-full items-center rounded-lg -mt-5"}>
@@ -200,7 +200,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
               key={i}
               index={i}
               items={cases[i]}
-              isSpinClicked={isDemoClicked || isPaidSpinClicked}
+              isSpinClicked={spinClicked}
               isFastAnimationClicked={fastClicked}
               numCases={numCases}
               onAnimationComplete={handleAnimationComplete}
