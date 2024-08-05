@@ -18,7 +18,7 @@ export const Balance = () => {
   const [prevBalance, setPrevBalance] = useState(balance);
   const [difference, setDifference] = useState(0);
   const isFirstBalanceUpdate = useRef(true);
-
+  console.log(balance);
   useEffect(() => {
     if (wallet?.balance) {
       dispatch(setBalance(wallet.balance));

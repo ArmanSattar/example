@@ -1,14 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useAuth } from "../../context/AuthContext";
 import Link from "next/link";
 import { ProfileComponent } from "../chatbar/ProfileComponent";
+import { useDispatch } from "react-redux";
+import { resetBalance } from "../../../store/slices/userSlice";
+import { resetCaseCarouselState } from "../../../store/slices/caseCarouselSlice";
+import { resetDemoState } from "../../../store/slices/demoSlice";
 
 export const UserProfile: React.FC = () => {
   const { connected } = useWallet();
   const { user, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -22,6 +27,13 @@ export const UserProfile: React.FC = () => {
     };
   }, []);
 
+  const cleanupState = useCallback(() => {
+    dispatch(resetBalance());
+    dispatch(resetCaseCarouselState());
+    dispatch(resetDemoState());
+    console.log("State cleaned up");
+  }, [dispatch]);
+
   if (!user) {
     return null;
   }
@@ -34,6 +46,7 @@ export const UserProfile: React.FC = () => {
 
   const handleLogout = async () => {
     try {
+      cleanupState();
       await logout();
     } catch (error) {
       console.error("Error during logout:", error);

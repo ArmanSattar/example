@@ -41,6 +41,14 @@ const demoSlice = createSlice({
     togglePaidSpinClicked(state) {
       state.paidSpinClicked = !state.paidSpinClicked;
     },
+    resetDemoState(state) {
+      state.demoClicked = false;
+      state.numCases = 1;
+      state.fastClicked = false;
+      state.soundOn = true;
+      state.rarityInfoPopup = false;
+      state.paidSpinClicked = false;
+    },
   },
 });
 
@@ -51,5 +59,6 @@ export const {
   toggleRarityInfoPopup,
   toggleSoundOn,
   togglePaidSpinClicked,
+  resetDemoState,
 } = demoSlice.actions;
 export default demoSlice.reducer;
