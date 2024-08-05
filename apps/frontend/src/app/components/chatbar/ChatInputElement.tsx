@@ -14,28 +14,12 @@ const truncateUsername = (username: string, maxLength = 20) => {
   return `${username.slice(0, maxLength)}...`;
 };
 
-function formatTimestamp(timestamp: string | number | Date) {
-  const date = new Date(timestamp);
-
-  const options = {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  };
-
-  // @ts-ignore
-  return date.toLocaleString("en-US", options);
-}
-
 export const ChatInputElement: React.FC<ChatInputElementProps> = ({
   message,
   username,
   timestamp,
   profilePicture,
 }) => {
-  const formattedTimestamp = useMemo(() => formatTimestamp(timestamp), [timestamp]);
   const truncatedUsername = useMemo(() => truncateUsername(username), [username]);
   console.log(timestamp);
 
@@ -53,9 +37,6 @@ export const ChatInputElement: React.FC<ChatInputElementProps> = ({
         >
           <p className="text-gray-300 text-xs break-words overflow-hidden h-full">{message}</p>
         </div>
-        <span className={"text-white text-3xs text-color_light_gray_1 whitespace-nowrap"}>
-          Sent {formattedTimestamp}
-        </span>
       </div>
     </div>
   );
