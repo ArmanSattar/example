@@ -8,7 +8,7 @@ interface Message {
   profilePicture?: string;
 }
 
-const mockMessages = [
+const mockMessages: Message[] = [
   {
     message: "What are you up to? It feels like it's been a while since we last talked. 😄!",
     username: "JohnDoe",
@@ -98,14 +98,17 @@ export const ChatBody: React.FC<ChatBodyProps> = ({ messages }) => {
 
   useEffect(() => {
     const latestMessages = messages.slice(-50);
-    setVisibleMessages(latestMessages.concat(mockMessages));
+    setVisibleMessages(latestMessages.reverse());
   }, [messages]);
 
   return (
     <div className="relative flex-grow overflow-hidden w-full">
-      <div className="overflow-y-auto overflow-x-hidden h-full" ref={chatBodyRef}>
+      <div
+        className="overflow-y-auto overflow-x-hidden h-full flex flex-col-reverse"
+        ref={chatBodyRef}
+      >
         {visibleMessages.map((message, index) => (
-          <div key={index} className={`transition-opacity relative py-4 px-2 duration-300`}>
+          <div key={index} className={`transition-opacity relative pt-4 px-2 duration-300`}>
             <ChatInputElement
               message={message.message}
               username={message.username}
