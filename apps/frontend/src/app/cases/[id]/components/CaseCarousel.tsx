@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setStartMiddleItem } from "../../../../store/slices/caseCarouselSlice";
 import TriangleIcon from "./TriangleIcon";
 import { Howl } from "howler";
+import { setDimensions } from "../../../../store/slices/demoSlice";
 
 const CarouselItem = dynamic(() => import("./CarouselItem"), { ssr: false });
 
@@ -32,6 +33,7 @@ interface CaseCarouselProps {
   onAnimationComplete: () => void;
   windowSize: WindowSize;
   skipAnimation: boolean;
+  attachObserver: boolean;
 }
 
 type Action =
@@ -77,6 +79,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     windowSize,
     isSpinClicked,
     skipAnimation,
+    attachObserver,
   }) => {
     const [state, dispatch] = useReducer(carouselReducer, {
       animationStage: 0,
@@ -91,9 +94,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     const isSoundOn = useSelector((state: RootState) => state.demo.soundOn);
     const reduxDispatch = useDispatch();
     const [direction, setDirection] = useState<Direction>(Direction.HORIZONTAL);
-    const [carouselDimensions, setCarouselDimensions] = useState<{ width: number; height: number }>(
-      { width: 0, height: 0 }
-    );
+    const carouselDimensions = useSelector((state: RootState) => state.demo.dimensions);
     const middleIndexUpdatingRef = useRef(0);
 
     const calculateDirection = useCallback(() => {
@@ -316,15 +317,19 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     );
 
     useEffect(() => {
-      if (!carouselContainerRef.current) return;
+      setMiddleDueToResizedCarousel(carouselDimensions.width, carouselDimensions.height);
+    }, [carouselDimensions, setMiddleDueToResizedCarousel]);
+
+    useEffect(() => {
+      if (!carouselContainerRef.current || !attachObserver) return;
 
       const carouselRefTemp = carouselContainerRef.current;
 
       const resizeObserver = new ResizeObserver((entries) => {
         for (const entry of entries) {
           const { width, height } = entry.contentRect;
-          setMiddleDueToResizedCarousel(width, height);
-          setCarouselDimensions({ width: width, height: height });
+          reduxDispatch(setDimensions({ width, height }));
+          break;
         }
       });
 
@@ -336,7 +341,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           resizeObserver.unobserve(carouselRefTemp);
         }
       };
-    }, [setMiddleDueToResizedCarousel]);
+    }, [attachObserver, reduxDispatch, setMiddleDueToResizedCarousel]);
 
     return (
       <div

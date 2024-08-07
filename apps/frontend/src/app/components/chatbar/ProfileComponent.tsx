@@ -1,9 +1,11 @@
 import Image from "next/image";
 import React, { useMemo } from "react";
+import { cn } from "../../cases/[id]/utils";
 
 interface ProfileComponentProps {
   level: number;
   profilePic?: string;
+  size?: "small" | "medium" | "large" | "xlarge";
 }
 
 const levelToColor = (level: number) => {
@@ -20,11 +22,27 @@ const levelToColor = (level: number) => {
   }
 };
 
-export const ProfileComponent: React.FC<ProfileComponentProps> = ({ level, profilePic }) => {
+const sizeClasses = {
+  small: "scale-80",
+  medium: "scale-100",
+  large: "scale-[200%]",
+  xlarge: "scale-[350%]",
+};
+
+export const ProfileComponent: React.FC<ProfileComponentProps> = ({
+  level,
+  profilePic,
+  size = "medium",
+}) => {
   const levelColor = useMemo(() => levelToColor(level), [level]);
 
   return (
-    <div className="relative flex-shrink-0 w-[40px] h-[51.2px] sm:w-[50px] sm:h-[64px]">
+    <div
+      className={cn(
+        "relative flex-shrink-0 w-[40px] h-[51.2px] sm:w-[50px] sm:h-[64px]",
+        sizeClasses[size]
+      )}
+    >
       <div
         className="relative rounded-full border-2 flex justify-center items-center w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] p-1"
         style={{ borderColor: levelColor }}

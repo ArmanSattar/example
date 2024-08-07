@@ -207,6 +207,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
               onAnimationComplete={handleAnimationComplete}
               windowSize={windowSize}
               skipAnimation={isSkipAnimationClicked}
+              attachObserver={i === 0}
             />
           ) : (
             <CaseCarouselSkeleton key={i} />
