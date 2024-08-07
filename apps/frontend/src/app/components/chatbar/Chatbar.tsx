@@ -108,7 +108,7 @@ export const Chatbar = () => {
       </div>
       <div
         className={`
-          absolute bottom-12
+          absolute bottom-8
           ${isChatOpen ? "left-[320px]" : "left-0"}
           transition-all duration-300 ease-in-out z-50
         `}

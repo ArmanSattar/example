@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "../../cases/[id]/utils";
 import { useDispatch } from "react-redux";
 import { toggleDepositClicked, toggleWithdrawClicked } from "../../../store/slices/navbarSlice";
+import { useAuth } from "../../context/AuthContext";
 
 interface HamburgerButtonProps {
   className: string;
@@ -18,6 +19,7 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
+  const { user } = useAuth();
 
   const toggleOpen = () => {
     setOpen(!open);
@@ -77,24 +79,26 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
       </button>
       {open && (
         <div className="absolute right-0 top-full mt-1 w-36 bg-color_gray_2 shadow-lg xl:hidden rounded-md z-50">
-          {menuOptions.map((option, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                option.onClick();
-                setOpen(false);
-              }}
-              className={`block w-full text-left px-4 py-2 text-sm text-white hover:bg-color_gray_3 ${
-                index === 0
-                  ? "rounded-t-md"
-                  : index === menuOptions.length - 1
-                  ? "rounded-b-md"
-                  : ""
-              } `}
-            >
-              {option.label}
-            </button>
-          ))}
+          {menuOptions.map((option, index) =>
+            option.label === "Deposit" || (option.label === "Withdraw" && !user) ? null : (
+              <button
+                key={index}
+                onClick={() => {
+                  option.onClick();
+                  setOpen(false);
+                }}
+                className={`block w-full text-left px-4 py-2 text-sm text-white hover:bg-color_gray_3 ${
+                  index === 0
+                    ? "rounded-t-md"
+                    : index === menuOptions.length - 1
+                    ? "rounded-b-md"
+                    : ""
+                } `}
+              >
+                {option.label}
+              </button>
+            )
+          )}
         </div>
       )}
     </div>
