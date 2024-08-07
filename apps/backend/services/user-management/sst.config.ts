@@ -19,8 +19,7 @@ export default {
         },
       },
     });
-
-    app.stack(UserManagementHandlerAPI);
     app.stack(S3Stack);
+    app.stack(UserManagementHandlerAPI);
   },
 } satisfies SSTConfig;

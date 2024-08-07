@@ -5,18 +5,19 @@ import { useAuth } from "../../context/AuthContext";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSoundOn } from "../../../store/slices/demoSlice";
 import { RootState } from "../../../store";
+
 const Profile: React.FC = () => {
   const { user, updateUser } = useAuth();
 
   const [isLoading, setIsLoading] = useState(true);
   const [showSelfExcludePopup, setShowSelfExcludePopup] = useState(false);
   const [showChangeUsernamePopup, setShowChangeUsernamePopup] = useState(false);
-  const [showChangeProfilePicturePopup, setShowChangeProfilePicturePopup] = useState(false);
+  const [showChangeprofileImageUrlPopup, setShowChangeprofileImageUrlPopup] = useState(false);
   const [currentUsername, setCurrentUsername] = useState("");
   const [newUsername, setNewUsername] = useState("");
   const [excludeDuration, setExcludeDuration] = useState("1 week");
   const [isMuted, setIsMuted] = useState(false);
-  const [profilePicture, setProfilePicture] = useState("");
+  const [profileImageUrl, setprofileImageUrl] = useState("");
   const dispatch = useDispatch();
   const isSoundOn = useSelector((state: RootState) => state.demo.soundOn);
 
@@ -110,12 +111,70 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleprofileImageUrlChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      const newProfilePicture = URL.createObjectURL(event.target.files[0]);
-      setProfilePicture(newProfilePicture);
-      setShowChangeProfilePicturePopup(false);
-      console.log("Profile picture changed");
+      const file = event.target.files[0];
+
+      try {
+        // Step 1: Get a pre-signed URL from the API
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_USER_MANAGEMENT_API_URL}/user/upload-image`,
+          {
+            contentType: file.type,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (response.status !== 200) {
+          toast.error("Failed to get upload URL.");
+          return;
+        }
+
+        const { uploadUrl, imageUrl } = response.data;
+        console.log(uploadUrl)
+        // Step 2: Upload the file to S3 using the pre-signed URL
+        const uploadResponse = await axios.put(uploadUrl, file, {
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+
+        if (uploadResponse.status !== 200) {
+          toast.error("Failed to upload image.");
+          return;
+        }
+
+        // Step 3: Update user profile with the new profile picture URL
+        const updateResponse = await axios.put(
+          `${process.env.NEXT_PUBLIC_USER_MANAGEMENT_API_URL}/user`,
+          {
+            updateFields: {
+              profileImageUrl: imageUrl,
+            },
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (updateResponse.status === 200) {
+          updateUser({ profileImageUrl: imageUrl });
+          setprofileImageUrl(imageUrl);
+          toast.success("Profile picture updated successfully!");
+        } else {
+          toast.error("Failed to update profile picture.");
+        }
+      } catch (error) {
+        toast.error("Error updating profile picture.");
+      }
+
+      setShowChangeprofileImageUrlPopup(false);
     }
   };
 
@@ -124,7 +183,7 @@ const Profile: React.FC = () => {
       <div className="mb-4">
         <button
           className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-300 ease-in-out"
-          onClick={() => setShowChangeProfilePicturePopup(true)}
+          onClick={() => setShowChangeprofileImageUrlPopup(true)}
         >
           Change Profile Picture
         </button>
@@ -262,7 +321,7 @@ const Profile: React.FC = () => {
       )}
 
       {/* Change Profile Picture popup */}
-      {showChangeProfilePicturePopup && (
+      {showChangeprofileImageUrlPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-gray-800 p-6 rounded-lg shadow-xl">
             <h2 className="text-xl font-bold text-white mb-4">Change Profile Picture</h2>
@@ -270,19 +329,19 @@ const Profile: React.FC = () => {
               className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
               type="file"
               accept="image/*"
-              onChange={handleProfilePictureChange}
+              onChange={handleprofileImageUrlChange}
             />
             <div className="flex justify-end space-x-2">
               <button
                 className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition duration-300 ease-in-out"
-                onClick={() => setShowChangeProfilePicturePopup(false)}
+                onClick={() => setShowChangeprofileImageUrlPopup(false)}
               >
                 Cancel
               </button>
               <button
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300 ease-in-out"
                 onClick={() => {
-                  setShowChangeProfilePicturePopup(false);
+                  setShowChangeprofileImageUrlPopup(false);
                   console.log("Profile picture upload confirmed");
                 }}
               >
