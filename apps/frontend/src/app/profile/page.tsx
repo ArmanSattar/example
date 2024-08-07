@@ -13,7 +13,7 @@ export default function Page() {
   return (
     <div className="min-h-screen p-4">
       <UserHeading {...userProfileData} />
-      <UserInfoSection username={"wadwadawdaw"} />
+      <UserInfoSection username={userProfileData.username}/>
     </div>
   );
 }

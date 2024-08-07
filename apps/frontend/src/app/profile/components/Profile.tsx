@@ -5,12 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleSoundOn } from "../../../store/slices/demoSlice";
 import { RootState } from "../../../store";
-
-interface UserInfoProps {
-  username: string;
-}
-
-const Profile: React.FC<UserInfoProps> = ({ username }) => {
+const Profile: React.FC = () => {
   const { user, updateUser } = useAuth();
 
   const [isLoading, setIsLoading] = useState(true);
