@@ -94,26 +94,6 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
       },
     },
     routes: {
-      "POST /authorize": {
-        function: {
-          handler: "src/handlers/authorize.handler",
-          bind: [TEST_SECRET],
-          environment: { USERS_TABLE_NAME: userTable.tableName },
-        },
-      },
-      "POST /user": {
-        function: {
-          handler: "../user-management/src/handlers/createUser.handler",
-          permissions: [
-            new PolicyStatement({
-              actions: ["dynamodb:PutItem"],
-              resources: [userTable.tableArn],
-            }),
-          ],
-          bind: [userTable, TEST_SECRET],
-          environment: { USERS_TABLE_NAME: userTable.tableName },
-        },
-      },
       "GET /user": {
         function: {
           handler: "../user-management/src/handlers/getUser.handler",

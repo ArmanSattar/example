@@ -98,7 +98,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     }
 
     const spinResults: SpinResult[] = JSON.parse(spinResultPayload.body);
-    console.log(spinResults);
+
     // Invalidate server seed now to prevent malicious attacks on unhashed server seed
     await removeServerSeed(connectionId);
 
