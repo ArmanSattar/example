@@ -35,7 +35,9 @@ export const ChatInputElement: React.FC<ChatInputElementProps> = ({
             "relative flex items-center justify-start max-w-full w-max p-2.5 pb-3 bg-color_gray_2 rounded-[1px_8px_8px_8px]"
           }
         >
-          <p className="text-gray-300 text-xs break-words overflow-hidden h-full">{message}</p>
+          <p className="text-gray-300 text-xs break-words overflow-hidden h-full whitespace-nowrap">
+            {message}
+          </p>
         </div>
       </div>
     </div>

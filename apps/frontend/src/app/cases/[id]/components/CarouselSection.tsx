@@ -182,7 +182,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
 
   return (
     <div className={"flex flex-col space-y-4 justify-between w-full items-center rounded-lg -mt-5"}>
-      <div className={"flex xl:hidden justify-between items-center w-full"}>
+      <div className={"hidden md:flex xl:hidden justify-between items-center w-full"}>
         <ProvablyFair
           serverSeedHash={serverSeedHash || "Please Login"}
           clientSeed={clientSeed || "Generating..."}
@@ -214,7 +214,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
         )}
       </div>
       <div
-        className={"flex flex-col sm:flex-row justify-end xl:justify-between items-center w-full"}
+        className={"flex flex-col md:flex-row justify-end xl:justify-between items-center w-full"}
       >
         <div className={"hidden xl:flex justify-between items-center gap-x-1 xl:gap-x-4"}>
           <ProvablyFair
@@ -229,6 +229,18 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
           <SoundToggle />
         </div>
         <CarouselButtonsSubSection price={caseData.price} />
+        <div className={"flex md:hidden justify-around items-center w-full"}>
+          <ProvablyFair
+            serverSeedHash={serverSeedHash || "Please Login"}
+            clientSeed={clientSeed || "Generating..."}
+            onClientSeedChange={handleClientSeedChange}
+            rollValues={rollValues}
+            serverSeed={serverSeed || ""}
+            previousServerSeedHash={previousServerSeedHash}
+            hasRolled={hasBeenRolled}
+          />
+          <SoundToggle />
+        </div>
       </div>
     </div>
   );

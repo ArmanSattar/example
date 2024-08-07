@@ -48,8 +48,10 @@ export default function CasePage({ params }: { params: { id: string } }) {
             to={""}
             customStyle={"absolute top-4 left-4 xl:hidden z-20 -mt-2"}
           />
-          <CaseDetails {...caseData} numberOfItems={caseData.items.length} />
-          <CarouselSection caseData={caseData} />
+          <div className={"flex flex-col justify-center items-center gap-y-[4vh] sm:gap-0"}>
+            <CaseDetails {...caseData} numberOfItems={caseData.items.length} />
+            <CarouselSection caseData={caseData} />
+          </div>
           <CaseItems items={caseData.items} />
           <PreviousDrops />
         </>

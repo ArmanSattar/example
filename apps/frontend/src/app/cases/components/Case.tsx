@@ -2,9 +2,9 @@ import React from "react";
 import Image from "next/image";
 import { Tag } from "./Tag";
 import Link from "next/link";
-import Dollar from "../../../../public/icons/dollar.svg";
 import { BaseCase } from "@solspin/game-engine-types";
 import { GET_CASES_URL } from "../../types";
+import { Money } from "../../components/Money";
 
 interface CaseProps extends BaseCase {
   disableClick?: boolean;
@@ -64,10 +64,11 @@ const Case: React.FC<CaseProps> = ({
         </div>
         <div className="absolute right-4">
           <div className="flex items-end justify-end gap-1 group-hover:opacity-0 transition-opacity duration-300">
-            <Dollar className="text-yellow-500" />
-            <div className="h-5 flex items-center justify-center">
-              <span className="text-white">{price}</span>
-            </div>
+            <Money amount={price} textStyle={"text-white font-semibold"} className={"space-x-1"} />
+            {/*<Dollar className="text-yellow-500" />*/}
+            {/*<div className="h-5 flex items-center justify-center">*/}
+            {/*  <span className="text-white">{price}</span>*/}
+            {/*</div>*/}
           </div>
         </div>
       </div>

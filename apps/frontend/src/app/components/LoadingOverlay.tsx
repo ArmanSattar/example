@@ -11,7 +11,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ isLoading }) => {
 
   return (
     <div className="absolute w-screen h-screen flex flex-col inset-0 bg-main_background justify-center items-center z-[999]">
-      <div className="flex relative items-center w-[320px] h-[320px] justify-center border-color_gray_3 cursor-pointer">
+      <div className="flex relative items-center w-[320px] h-[320px] justify-center border-color_gray_3">
         <Image
           src="/icons/logo.webp"
           alt="logo"
@@ -21,7 +21,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ isLoading }) => {
           priority={true}
         />
       </div>
-      <Spinner size="xlarge" color="text-color_primary" />
+      <Spinner size="medium" color="text-color_primary" />
     </div>
   );
 };

@@ -34,14 +34,11 @@ export const CaseItem: React.FC<CaseItemProps> = memo(({ item }) => {
   }
 
   return (
-    <div
-      className="p-0.5 rounded-lg bg-gradient-to-br from-[#3a3b46] via-[#2a2b36] to-[#1f2029] element-with-stroke lg:shadow-[0_4px_#15161d,0_20px_50px_rgba(0,0,0,0.45),inset_0_1px_#3a3b46]
-        lg:bg-[linear-gradient(to_bottom_right,#2a2b36,#1f2029)]"
-    >
+    <div className="p-0.5 rounded-lg bg-gradient-to-br from-[#3a3b46] via-[#2a2b36] to-[#1f2029] element-with-stroke lg:shadow-[0_4px_#15161d,0_20px_50px_rgba(0,0,0,0.45),inset_0_1px_#3a3b46]">
       <div
         className={`flex flex-col items-start p-4 group min-w-[200px] max-w-[220px]
-                    bg-gradient-to-br from-[#2a2b36] via-[#252631] to-[#1f2029]
-                    rounded-lg shadow-inner`}
+
+                    rounded-lg`}
       >
         <div className="relative flex flex-col items-center justify-center rounded-lg min-w-[125px] w-full min-h-[125px]">
           <div className="relative flex justify-center items-center h-full w-full z-10">
@@ -55,7 +52,7 @@ export const CaseItem: React.FC<CaseItemProps> = memo(({ item }) => {
               />
             </div>
           </div>
-          <div className={`absolute mx-auto inset-x-0 h-32 w-32 ${gradientText} opacity-60`}></div>
+          <div className={`absolute mx-auto inset-x-0 h-32 w-32 ${gradientText} opacity-100`}></div>
         </div>
         <div
           className={`flex flex-col justify-center items-start space-y-0.5 flex-grow px-0 lg:px-2 w-full`}

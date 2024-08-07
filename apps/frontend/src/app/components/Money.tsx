@@ -12,7 +12,9 @@ export const Money: React.FC<MoneyProps> = ({ amount, className, textStyle = "lg
   return (
     <div className={cn(`flex space-x-2 items-center`, className)}>
       <Dollar className="text-yellow-400" />
-      <span className={cn(`text-white whitespace-nowrap`, textStyle)}>{amount.toFixed(2)}</span>
+      <span className={cn(`text-white whitespace-nowrap`, textStyle)}>
+        {amount.toLocaleString()}
+      </span>
     </div>
   );
 };

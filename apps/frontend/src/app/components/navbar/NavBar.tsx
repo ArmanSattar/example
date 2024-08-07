@@ -85,15 +85,15 @@ export const NavBar = () => {
                     }`}
                   ></div>
                   <div
-                    className={`group-hover:text-color_primary duration-75 ${
+                    className={`group-hover:text-color_primary duration-200 ease-in-out ${
                       navActiveLink === navLink.href ? "text-color_primary" : "text-gray-400"
                     }`}
                   >
                     <navLink.icon />
                   </div>
                   <span
-                    className={`text-xs md:text-sm group-hover:color_primary duration-75 uppercase ${
-                      navActiveLink === navLink.href ? "text-white" : "text-gray-400"
+                    className={`text-xs md:text-sm text-gray-400 group-hover:text-white duration-200 ease-in-out uppercase ${
+                      navActiveLink === navLink.href ? "text-white" : ""
                     }`}
                   >
                     {navLink.name}
