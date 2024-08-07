@@ -1,9 +1,11 @@
-import { Api, Config, Function, StackContext, Table } from "sst/constructs";
+import { Api, Config, Function, StackContext, Table, use } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { RemovalPolicy } from "aws-cdk-lib/core";
+import { S3Stack } from "./S3Stack";
 import * as cdk from "aws-cdk-lib";
 
 export function UserManagementHandlerAPI({ stack }: StackContext) {
+  const { profileImagesBucket, profileImagesDistribution } = use(S3Stack);
   const removeOnDelete = true;
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
   const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
@@ -94,6 +96,23 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
       },
     },
     routes: {
+      "POST /user/upload-image": {
+        function: {
+          handler: "../user-management/src/handlers/uploadImage.handler",
+          permissions: [
+            new PolicyStatement({
+              actions: ["dynamodb:PutItem", "s3:PutObject"],
+              resources: [userTable.tableArn, profileImagesBucket.bucketArn],
+            }),
+          ],
+          bind: [userTable],
+          environment: {
+            USERS_TABLE_NAME: userTable.tableName,
+            PROFILE_BUCKET_NAME: profileImagesBucket.bucketName,
+          },
+        },
+        authorizer: "CustomAuthorizer",
+      },
       "GET /user": {
         function: {
           handler: "../user-management/src/handlers/getUser.handler",
