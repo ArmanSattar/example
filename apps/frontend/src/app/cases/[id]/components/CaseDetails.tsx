@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { CaseMetaData } from "./CaseMetaData";
+import { GET_CASES_URL } from "../../../types";
 
 interface CaseDetailsProps {
   name: string;
@@ -21,29 +22,15 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
   lowestPrice,
   numberOfItems,
 }) => {
-  // const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${imagePath}`);
-  const isLoading = false;
-
-  // if (isError) {
-  //   toast.error("Error fetching image");
-  //   return <div>Error fetching image</div>;
-  // }
-
-  // if (!isLoading && !data) {
-  //   return <div>No image found</div>;
-  // }
-
   return (
     <div className="relative flex flex-col sm:flex-row justify-start sm:items-center items-start w-full sm:gap-4 xl:-mt-10">
       <div className="relative flex justify-center sm:justify-start items-center w-full sm:w-max">
-        <div className="flex justify-center items-center min-w-[225px] sm:min-w-[320px] min-h-[100px] -mt-10">
+        <div className="flex relative justify-center items-center min-w-[320px] min-h-[320px] -mt-4 xl:-mt-10">
           <Image
-            // src={data || "/cases/cases_blender.png"}
-            src={"/cases/case_blender.png"}
+            src={`${GET_CASES_URL}${imagePath}`}
             alt={name}
-            height={320}
-            width={320}
-            objectFit="contain"
+            fill
+            priority
             className="object-contain"
           />
         </div>

@@ -12,10 +12,12 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
   const [loadingCount, setLoadingCount] = useState(1); // Start with 1 for initial loading
 
   const startLoading = useCallback(() => {
+    console.log(loadingCount, "startLoading");
     setLoadingCount((prev) => prev + 1);
   }, []);
 
   const finishLoading = useCallback(() => {
+    console.log(loadingCount, "finishLoading");
     setLoadingCount((prev) => Math.max(0, prev - 1));
   }, []);
 

@@ -3,6 +3,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletName, WalletReadyState } from "@solana/wallet-adapter-base";
 import { createPortal } from "react-dom";
 import { useAuth } from "../../context/AuthContext";
+import { cn } from "../../cases/[id]/utils";
 
 interface CustomWalletModalProps {
   isOpen: boolean;
@@ -104,7 +105,7 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
 
   return createPortal(
     <div
-      className={`wallet-adapter-modal ${fadeIn ? "wallet-adapter-modal-fade-in" : ""}`}
+      className={cn(`wallet-adapter-modal ${fadeIn ? "wallet-adapter-modal-fade-in" : ""}`, "bg-")}
       ref={ref}
       role="dialog"
     >

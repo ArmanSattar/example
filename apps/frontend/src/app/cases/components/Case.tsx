@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Image from "next/image";
 import { Tag } from "./Tag";
 import Link from "next/link";
@@ -20,27 +20,22 @@ const Case: React.FC<CaseProps> = ({
   lowestPrice,
   disableClick = false,
 }) => {
-  console.log(`case-${rarity.toLowerCase().replace(" ", "-")}`);
+  const caseStyle = useMemo(() => `cases-${rarity.toLowerCase().replace(" ", "-")}`, [rarity]);
+
   const CaseContent = () => (
     <div
       className={`relative rounded-md ${
         disableClick ? "" : "hover:cursor-pointer"
-      } shadow-lg case cases-${rarity
-        .toLowerCase()
-        .replace(
-          " ",
-          "-"
-        )} p-2 group overflow-hidden hover:!bg-hover_primary_color hover:shadow-md hover:shadow-hover_primary_color_50 transition-all duration-300 ease-in-out hover:scale-[101%]`}
+      } shadow-lg case ${caseStyle} p-2 group overflow-hidden hover:!bg-hover_primary_color hover:shadow-md hover:shadow-hover_primary_color_50 transition-all duration-300 ease-in-out hover:scale-[101%]`}
     >
       <Tag name={tag} customStyle={"absolute top-4 left-4"} />
-      <div className="relative -top-4">
+      <div className="absolute inset-0 m-auto w-64 h-64 -mt-2">
         <Image
           src={`${GET_CASES_URL}${imagePath}`}
           alt={name}
-          width={250}
-          height={100}
+          fill
           objectFit="contain"
-          className="group-hover:scale-95 duration-300 ease-in-out"
+          className="group-hover:scale-105 duration-300 ease-in-out scale-110"
         />
       </div>
       <div className="absolute bottom-6 inset-x-0 flex justify-between items-end">
