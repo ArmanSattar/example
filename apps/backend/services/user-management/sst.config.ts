@@ -1,6 +1,6 @@
 import type { SSTConfig } from "sst";
 import { UserManagementHandlerAPI } from "./stacks/UserManagementStack";
-
+import { S3Stack } from "./stacks/S3Stack";
 export default {
   config() {
     return {
@@ -21,5 +21,6 @@ export default {
     });
 
     app.stack(UserManagementHandlerAPI);
+    app.stack(S3Stack);
   },
 } satisfies SSTConfig;
