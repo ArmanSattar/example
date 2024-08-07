@@ -4,7 +4,7 @@ import { cn } from "../../cases/[id]/utils";
 
 interface ProfileComponentProps {
   level: number;
-  profilePic?: string;
+  profileImageUrl?: string;
   size?: "small" | "medium" | "large" | "xlarge";
 }
 
@@ -31,7 +31,7 @@ const sizeClasses = {
 
 export const ProfileComponent: React.FC<ProfileComponentProps> = ({
   level,
-  profilePic,
+  profileImageUrl,
   size = "medium",
 }) => {
   const levelColor = useMemo(() => levelToColor(level), [level]);
@@ -49,7 +49,7 @@ export const ProfileComponent: React.FC<ProfileComponentProps> = ({
       >
         <div className="absolute bg-black rounded-full flex justify-center items-center overflow-clip w-[32px] h-[32px] sm:w-[40px] sm:h-[40px]">
           <Image
-            src={profilePic ? profilePic : "/icons/portrait-09.png"}
+            src={profileImageUrl ? profileImageUrl : "/icons/portrait-09.png"}
             alt="profile"
             width={32}
             height={32}
