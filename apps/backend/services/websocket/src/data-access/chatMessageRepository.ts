@@ -69,7 +69,7 @@ export const getMessageHistory = async (limit: number = 10): Promise<ChatMessage
           sentAt: item.sentAt || 0,
           userId: item.userId || "",
           username: item.username || "",
-          profilePicture: item.profilePicture || "",
+          profileImageUrl: item.profileImageUrl || "",
         }))
       : [];
 

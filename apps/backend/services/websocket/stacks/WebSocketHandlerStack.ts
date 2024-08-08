@@ -27,7 +27,7 @@ export function WebSocketHandlerAPI({ stack }: StackContext) {
       sentAt: "number",
       userId: "string",
       username: "string",
-      profilePicture: "string",
+      profileImageUrl: "string",
       channel: "string",
       expirationTime: "number",
     },

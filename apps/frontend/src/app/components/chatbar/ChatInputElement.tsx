@@ -4,7 +4,7 @@ import { ProfileComponent } from "./ProfileComponent";
 interface ChatInputElementProps {
   message: string;
   username: string;
-  profilePicture: string;
+  profileImageUrl: string;
 }
 
 const truncateUsername = (username: string, maxLength = 20) => {
@@ -16,14 +16,14 @@ const truncateUsername = (username: string, maxLength = 20) => {
 export const ChatInputElement: React.FC<ChatInputElementProps> = ({
   message,
   username,
-  profilePicture,
+  profileImageUrl,
 }) => {
   const truncatedUsername = useMemo(() => truncateUsername(username), [username]);
-  console.log(message, username, profilePicture);
+  console.log(message, username, profileImageUrl);
 
   return (
     <div className="flex items-start space-x-2">
-      <ProfileComponent level={85} profileImageUrl={profilePicture} />
+      <ProfileComponent level={85} profileImageUrl={profileImageUrl} />
       <div className="flex flex-col space-y-1.5 flex-grow min-w-0">
         <span className="flex text-color_chat_text text-sm" title={username}>
           {truncatedUsername}

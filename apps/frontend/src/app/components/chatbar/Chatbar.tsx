@@ -14,7 +14,7 @@ interface Message {
   message: string;
   username: string;
   timestamp: number;
-  profilePicture?: string;
+  profileImageUrl?: string;
 }
 
 export const Chatbar = () => {

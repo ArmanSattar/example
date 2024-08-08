@@ -4,12 +4,12 @@ import React, { useRef } from "react";
 import Image from "next/image";
 
 interface ProfilePictureWithEditProps {
-  profilePictureURL?: string;
+  profileImageUrl?: string;
   handleProfilePictureChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const ProfilePictureWithEdit: React.FC<ProfilePictureWithEditProps> = ({
-  profilePictureURL,
+  profileImageUrl,
   handleProfilePictureChange,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -21,7 +21,7 @@ export const ProfilePictureWithEdit: React.FC<ProfilePictureWithEditProps> = ({
   return (
     <div className="relative w-32 aspect-square rounded-full">
       <Image
-        src={profilePictureURL || "/profile-placeholder.png"}
+        src={profileImageUrl || "/profile-placeholder.png"}
         alt="profile"
         fill
         style={{ objectFit: "contain" }}

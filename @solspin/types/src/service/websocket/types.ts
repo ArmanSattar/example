@@ -22,7 +22,7 @@ const ChatMessageSchema = z.object({
   sentAt: z.number().int().positive(),
   userId: z.string().uuid(),
   username: z.string(),
-  profilePicture: z.string(),
+  profileImageUrl: z.string(),
   channel: z.string().optional(),
   expirationTime: z.number(),
 });
@@ -45,7 +45,7 @@ const WebSocketChatMessageResponseSchema = ChatMessageSchema.pick({
   message: true,
   sentAt: true,
   username: true,
-  profilePicture: true,
+  profileImageUrl: true,
 });
 
 export {

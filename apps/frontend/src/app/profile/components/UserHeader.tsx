@@ -86,7 +86,7 @@ export const UserHeader = () => {
       <div className="rounded-md flex flex-col justify-between w-full mx-auto py-4 px-6 bg-color_gray_4 relative gap-y-4 shadow-lg">
         <div className={"relative w-full flex justify-center items-center"}>
           <ProfilePictureWithEdit
-            profilePictureURL={user ? user.profileImageUrl : undefined}
+            profileImageUrl={user ? user.profileImageUrl : undefined}
             handleProfilePictureChange={handleProfilePictureChange}
           />
         </div>

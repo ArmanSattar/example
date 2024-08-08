@@ -4,7 +4,7 @@ import { ChatInputElement } from "./ChatInputElement";
 interface Message {
   message: string;
   username: string;
-  profilePicture?: string;
+  profileImageUrl?: string;
 }
 
 interface ChatBodyProps {
@@ -49,7 +49,7 @@ export const ChatBody: React.FC<ChatBodyProps> = ({ messages }) => {
             <ChatInputElement
               message={message.message}
               username={message.username}
-              profilePicture={message.profilePicture || ""}
+              profileImageUrl={message.profileImageUrl || ""}
             />
           </div>
         ))}
