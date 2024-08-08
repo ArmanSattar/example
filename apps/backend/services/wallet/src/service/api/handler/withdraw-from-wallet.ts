@@ -83,6 +83,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       }
 
       const { txnSignature } = JSON.parse(responsePayload.body);
+      console.log(responsePayload);
 
       logger.info("Withdrawal request processed on the blockchain", { txnSignature });
 

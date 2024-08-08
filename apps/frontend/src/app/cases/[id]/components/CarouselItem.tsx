@@ -6,8 +6,7 @@ import { GET_CASES_URL } from "../../../types";
 import { useFetchImage } from "../hooks/useFetchImage";
 import { toast } from "sonner";
 import { CarouselItemSkeleton } from "./CarouselItemSkeleton";
-import { ITEM_HEIGHT, ITEM_WIDTH } from "../../../libs/constants";
-import { Direction } from "../../../libs/types";
+import { ITEM_WIDTH } from "../../../libs/constants";
 
 interface CarouselItemProps {
   isMiddle: boolean;
@@ -15,7 +14,7 @@ interface CarouselItemProps {
   animationEnd: boolean;
   animationStart: boolean;
   item: BaseCaseItem;
-  direction: Direction;
+  dimension: { width: number; height: number };
 }
 
 const CarouselItem: React.FC<CarouselItemProps> = ({
@@ -24,17 +23,17 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
   animationEnd,
   animationStart,
   item,
-  direction,
+  dimension,
 }) => {
   const [shouldScaleDown, setShouldScaleDown] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${item.imagePath}`);
   const [type, name] = useMemo(() => item.name.split(" | "), [item.name]);
-  const isVertical = useMemo(() => direction === Direction.VERTICAL, [direction]);
   const gradientText = useMemo(
     () => `case-${item.rarity.toLowerCase().replace(" ", "-")}-gradient`,
     [item]
   );
+  const { width: itemWidth, height: itemHeight } = dimension;
 
   useEffect(() => {
     if (isMiddle && !shouldScaleDown) {
@@ -59,9 +58,10 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
 
   return (
     <div
-      className={`w-[150px] h-[150px] will-change-transform ${
+      className={`will-change-transform ${
         isMiddle ? "animate-middle-item" : shouldScaleDown ? "animate-scale-down" : ""
       }`}
+      style={{ width: `${itemWidth}px`, height: `${itemHeight}px` }}
     >
       <div
         className={`relative flex flex-col items-center justify-center w-full h-full rounded-xl ${
@@ -76,23 +76,33 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
             className={`absolute flex justify-center items-center overflow-visible  ${
               isFinal && isMiddle && animationEnd ? "-translate-y-5 duration-1000" : ""
             }`}
-            style={{ minHeight: `${ITEM_HEIGHT + 25}px`, minWidth: `${ITEM_WIDTH + 25}px` }}
+            style={{ minHeight: `${itemHeight + 25}px`, minWidth: `${itemWidth + 25}px` }}
           >
             <Image
               src={data || "/images/placeholder.png"}
               alt="Case item"
-              width={ITEM_WIDTH + 25}
-              height={ITEM_HEIGHT + 25}
+              fill
+              objectFit={"contain"}
             />
           </div>
           <div className={`min-h-full min-w-full absolute ${gradientText} -z-10`}></div>
         </div>
         {isFinal && isMiddle && animationEnd && (
-          <div className={`absolute bottom-0 flex flex-col items-center space-y-0.5 w-3/4 mb-4`}>
-            <span className={"text-white text-sm font-semibold whitespace-nowrap"}>{name}</span>
+          <div
+            className={`absolute bottom-0 flex flex-col items-center ${
+              itemWidth < ITEM_WIDTH ? "" : "space-y-0.5"
+            } w-3/4 mb-4`}
+          >
+            <span
+              className={`text-white ${
+                itemWidth < ITEM_WIDTH ? "text-3xs" : "text-sm"
+              } font-semibold whitespace-nowrap`}
+            >
+              {name}
+            </span>
             <Money
               amount={item.price}
-              textStyle={"text-sm"}
+              textStyle={`${itemWidth < ITEM_WIDTH ? "text-2xs" : "text-sm"}`}
               className={"space-x-1 font-semibold"}
             />
           </div>

@@ -39,7 +39,12 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
       queryClient.invalidateQueries({ queryKey: ["walletBalance"] });
       console.log(data);
       if (data.txnId) {
-        toast.success(`Withdrawal request processed successfully. Txn: ${data.txnId}`);
+        toast.success("Withdraw request processed successfully", {
+          action: {
+            label: "View transaction",
+            onClick: () => window.open(`https://explorer.solana.com/tx/${data.txnId}`, "_blank"),
+          },
+        });
       } else {
         toast.success("Withdrawal request processed successfully.");
       }

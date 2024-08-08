@@ -12,8 +12,8 @@ import React, {
 import dynamic from "next/dynamic";
 import { WindowSize } from "../hooks/useWindowResize";
 import { BaseCaseItem } from "@solspin/game-engine-types";
-import { animationCalculation } from "../utils";
-import { DISTANCE_IN_ITEMS, ITEM_HEIGHT, ITEM_WIDTH } from "../../../libs/constants";
+import { animationCalculation, getItemDimensions } from "../utils";
+import { DISTANCE_IN_ITEMS } from "../../../libs/constants";
 import { AnimationCalculation, Direction } from "../../../libs/types";
 import { RootState } from "../../../../store";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,7 +38,10 @@ interface CaseCarouselProps {
 
 type Action =
   | { type: "RESET" }
-  | { type: "START_ANIMATION"; payload: { currentPosition: number; direction: Direction } }
+  | {
+      type: "START_ANIMATION";
+      payload: { currentPosition: number; direction: Direction; numCases: number };
+    }
   | { type: "FIRST_STAGE_END" }
   | { type: "SECOND_STAGE_END" };
 
@@ -57,7 +60,8 @@ function carouselReducer(state: State, action: Action): State {
         animationStage: 1,
         offset: animationCalculation(
           action.payload.currentPosition,
-          action.payload.direction === Direction.HORIZONTAL
+          action.payload.direction === Direction.HORIZONTAL,
+          action.payload.numCases
         ),
       };
     case "FIRST_STAGE_END":
@@ -96,6 +100,11 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     const [direction, setDirection] = useState<Direction>(Direction.HORIZONTAL);
     const carouselDimensions = useSelector((state: RootState) => state.demo.dimensions);
     const middleIndexUpdatingRef = useRef(0);
+    const { width: itemWidth, height: itemHeight } = useMemo(
+      () => getItemDimensions(direction === Direction.HORIZONTAL, numCases),
+      [direction]
+    );
+    const isVertical = useMemo(() => direction === Direction.VERTICAL, [direction]);
 
     const calculateDirection = useCallback(() => {
       if (windowSize.width && windowSize.width <= 640) {
@@ -166,7 +175,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       if (!carouselContainerRef.current || !carouselRef.current) return;
 
       // Calculate the index of the middle item based on the current position
-      const middleIndex = Math.floor(Math.abs(currentPositionRef.current) / ITEM_WIDTH);
+      const middleIndex = Math.floor(Math.abs(currentPositionRef.current) / itemWidth);
 
       if (middleIndex !== middleIndexUpdatingRef.current) {
         setMiddleItem(middleIndex);
@@ -198,6 +207,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
               payload: {
                 currentPosition: currentPosition,
                 direction: direction,
+                numCases: numCases,
               },
             });
             animationCompletedRef.current = false;
@@ -241,10 +251,9 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         if (carouselRef.current) {
           const transform = getComputedStyle(carouselRef.current).transform;
           const matrix = new DOMMatrix(transform);
-          const position =
-            direction === Direction.VERTICAL
-              ? matrix.m42 - carouselDimensions.height / 2
-              : matrix.m41 - carouselDimensions.width / 2; // m42 for Y, m41 for X
+          const position = isVertical
+            ? matrix.m42 - carouselDimensions.height / 2
+            : matrix.m41 - carouselDimensions.width / 2; // m42 for Y, m41 for X
           updatePosition(position);
         }
         animationFrameId = requestAnimationFrame(animate);
@@ -305,11 +314,9 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     const setMiddleDueToResizedCarousel = useCallback(
       (width: number, height: number) => {
         if (carouselContainerRef.current) {
-          const dimension = direction === Direction.HORIZONTAL ? width : height;
+          const dimension = !isVertical ? width : height;
 
-          const middleElement = Math.ceil(
-            dimension / ((direction === Direction.HORIZONTAL ? ITEM_WIDTH : ITEM_HEIGHT) * 2)
-          );
+          const middleElement = Math.ceil(dimension / ((!isVertical ? itemWidth : itemHeight) * 2));
           reduxDispatch(setStartMiddleItem(middleElement - 1));
         }
       },
@@ -370,9 +377,8 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           </div>
         )}
         <div
-          className={`mt-md flex rounded-sm flex-col gap-xs ${
-            direction === Direction.VERTICAL ? "h-[250px]" : "h-[200px]"
-          }`}
+          className={`mt-md flex rounded-sm flex-col gap-xs`}
+          style={{ height: isVertical ? `${itemHeight * 1.5}px` : `${itemHeight * 1.25}px` }}
         >
           <div
             className="relative flex h-full w-full overflow-clip items-center justify-center"
@@ -381,7 +387,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
             <div
               ref={carouselRef}
               className={`flex absolute will-change-transform overflow-visible transform-gpu ${
-                direction === Direction.VERTICAL ? "flex-col top-0" : "flex-row left-0"
+                isVertical ? "flex-col top-0" : "flex-row left-0"
               }`}
               style={carouselStyle}
             >
@@ -394,7 +400,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
                     isFinal={index === DISTANCE_IN_ITEMS + startMiddleItem}
                     animationEnd={state.animationStage === 2 || state.animationStage === 3}
                     animationStart={state.animationStage === 1}
-                    direction={direction}
+                    dimension={{ width: itemWidth, height: itemHeight }}
                   />
                 ))}
             </div>

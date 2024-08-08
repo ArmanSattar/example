@@ -32,6 +32,14 @@ const binarySearch = (items: BaseCaseItem[], target: number): BaseCaseItem => {
   throw new Error("No item found for roll number: " + target);
 };
 
+export const getItemDimensions = (isHorizontal: boolean, numCases: number) => {
+  if (isHorizontal && numCases > 1) {
+    return { width: ITEM_WIDTH / 1.5, height: ITEM_HEIGHT / 1.5 };
+  }
+
+  return { width: ITEM_WIDTH, height: ITEM_HEIGHT };
+};
+
 const generateCases = (
   numCases: number,
   itemsWon: BaseCaseItem[] | null,
@@ -60,9 +68,11 @@ function getRandomInt(min: number, max: number) {
 
 const animationCalculation = (
   currentPosition: number,
-  isHorizontal: boolean
+  isHorizontal: boolean,
+  numCases: number
 ): AnimationCalculation => {
-  const dimension = isHorizontal ? ITEM_WIDTH : ITEM_HEIGHT;
+  const { width: itemWidth, height: itemHeight } = getItemDimensions(isHorizontal, numCases);
+  const dimension = isHorizontal ? itemWidth : itemHeight;
   const distanceInsideCenterItem = currentPosition % dimension;
   const lowerBound = DISTANCE_IN_ITEMS * dimension - distanceInsideCenterItem + 1;
   const upperBound = DISTANCE_IN_ITEMS * dimension + (dimension - distanceInsideCenterItem) - 1;

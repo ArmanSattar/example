@@ -19,8 +19,6 @@ export const withdraw = async (wallet: WalletsDBObject, amount: number): Promise
     await updateUser(wallet);
 
     // Record the transaction
-    // await recordTransaction(signature, wallet.userId, amount, false);
-    // TODO - Implement this in treasury service isntead of wallet service
     logger.info("Withdrawal from db successful", { wallet, amount });
   } catch (error) {
     // Log and throw an error

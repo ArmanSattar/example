@@ -35,7 +35,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     const depositRequest = DepositToWalletRequestSchema.parse(parsedBody);
 
     const { userId, walletAddress, txnSignature } = depositRequest;
-
+    console.log(depositRequest);
     if (!walletAddress || !txnSignature) {
       return errorResponse(new Error("Invalid request"), 400);
     }
@@ -75,7 +75,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
       return successResponse({
         message: "Deposit successful",
-        txnId: txnSignature,
+        txnId: transactionId,
         depositAmount: depositAmountInUsdFpn / 100,
       } as DepositResponse);
     } catch (error) {

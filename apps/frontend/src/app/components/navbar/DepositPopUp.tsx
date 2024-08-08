@@ -41,14 +41,16 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({ queryKey: ["walletBalance"] }).then(() => {
         if (data.txnId) {
-          toast.success(`Deposit request processed successfully. Txn: ${data.txnId}`);
+          toast.success("Deposit request processed successfully", {
+            action: {
+              label: "View transaction",
+              onClick: () => window.open(`https://explorer.solana.com/tx/${data.txnId}`, "_blank"),
+            },
+          });
         } else {
           toast.success("Deposit request processed successfully.");
         }
       });
-    },
-    onError: (error: Error) => {
-      toast.error(`Error processing deposit request: ${error.message}`);
     },
     onMutate: () => {
       toast.info("Processing deposit request...");
@@ -89,21 +91,27 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
     };
   }, [handleKeyPress, handleClickOutside]);
 
-  const handleDollarInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (/^\d*\.?\d{0,2}$/.test(value)) {
-      setDollarValue(value);
-      setCryptoValue((parseFloat(value || "0") / (priceSol || 1)).toFixed(2));
-    }
-  };
+  const handleDollarInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      if (/^\d*\.?\d{0,2}$/.test(value)) {
+        setDollarValue(value);
+        setCryptoValue((parseFloat(value || "0") / (priceSol || 1)).toFixed(2));
+      }
+    },
+    [priceSol]
+  );
 
-  const handleCryptoInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (/^\d*\.?\d*$/.test(value)) {
-      setCryptoValue(value);
-      setDollarValue((parseFloat(value || "0") * (priceSol || 1)).toFixed(2));
-    }
-  };
+  const handleCryptoInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      if (/^\d*\.?\d*$/.test(value)) {
+        setCryptoValue(value);
+        setDollarValue((parseFloat(value || "0") * (priceSol || 1)).toFixed(2));
+      }
+    },
+    [priceSol]
+  );
 
   const handleMaxClick = useCallback(() => {
     setCryptoValue(balance.toString());
@@ -153,9 +161,9 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
     }
   }, [cryptoValue, balance, user, wallet, connection, postDataMutation, handleClose]);
 
-  // if (!user) {
-  //   return null;
-  // }
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
