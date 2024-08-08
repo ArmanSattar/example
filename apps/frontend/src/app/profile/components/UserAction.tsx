@@ -1,5 +1,4 @@
 import { cn } from "../../cases/[id]/utils";
-import { useState } from "react";
 
 interface UserActionProps {
   title: string;
@@ -20,15 +19,13 @@ export const UserAction: React.FC<UserActionProps> = ({
   SvgOff,
   subtitle,
   onClick,
+  isOn = true,
 }) => {
-  const [isOn, setIsOn] = useState(true);
-
   return (
     <div
-      className="flex justify-start items-center rounded-md bg-color_gray_4 shadow-lg w-full p-4 gap-x-[1vw] h-28 hover:cursor-pointer"
+      className="flex justify-start items-center rounded-md bg-color_gray_4 shadow-lg w-full p-4 gap-x-[1vw] h-28 cursor-pointer hover:scale-[102.5%] duration-300 ease-in-out "
       onClick={() => {
         onClick();
-        setIsOn(!isOn);
       }}
     >
       {!isOn && SvgOff ? (

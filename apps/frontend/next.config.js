@@ -12,7 +12,10 @@ const nextConfig = {
     svgr: false,
   },
   images: {
-    domains: [(process.env.NEXT_PUBLIC_GET_CASES_DOMAIN || ""), 'dev-user-management-s3sta-profileimagesbucketc4d52-49sa3qkesyug.s3.amazonaws.com'],
+    domains: [
+      process.env.NEXT_PUBLIC_GET_CASES_DOMAIN || "",
+      "dev-user-management-s3sta-profileimagesbucketc4d52-cq7noyibisbh.s3.amazonaws.com",
+    ],
   },
   /**
    * @param {{ module: { rules: any[]; }; }} config

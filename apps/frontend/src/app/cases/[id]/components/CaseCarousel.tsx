@@ -160,7 +160,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       if (middleItem !== startMiddleItem && middleItem !== 0 && isSoundOn) {
         playSound("/sounds/tick.wav");
       }
-    }, [middleItem, startMiddleItem, isSoundOn]);
+    }, [middleItem, startMiddleItem]);
 
     const calculateMiddleItem = useCallback(() => {
       if (!carouselContainerRef.current || !carouselRef.current) return;
@@ -210,7 +210,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       const handleTransitionEnd = () => {
         if (state.animationStage === 1) {
           dispatch({ type: "FIRST_STAGE_END" });
-          playSound("/sounds/cashier-cha-ching.mp3");
+          if (isSoundOn) playSound("/sounds/cashier-cha-ching.mp3");
         } else if (state.animationStage === 2 && !animationCompletedRef.current) {
           animationCompletedRef.current = true;
           onAnimationComplete();

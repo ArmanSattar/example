@@ -35,3 +35,6 @@ export const CreateBetResponseSchema = BaseBetSchema;
 export const GetBetByIdResponseSchema = BaseBetSchema;
 export const GetBetsByUserIdResponseSchema = z.array(BaseBetSchema);
 export const GetBetsByGameIdResponseSchema = z.array(BaseBetSchema);
+
+// Types
+export type Bet = z.infer<typeof BaseBetSchema>;

@@ -14,6 +14,7 @@ import { ProvablyFair } from "./ProvablyFair";
 import { CarouselButtonsSubSection } from "./CarouselButtonsSubSection";
 import { SoundToggle } from "./SoundToggle";
 import { CaseCarouselSkeleton } from "./CaseCarouselSkeleton";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface CarouselSectionProps {
   caseData: BaseCase;
@@ -44,6 +45,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
     () => isDemoClicked || isPaidSpinClicked,
     [isDemoClicked, isPaidSpinClicked]
   );
+  const queryClient = useQueryClient();
 
   const handleClientSeedChange = useCallback((newClientSeed: string) => {
     setClientSeed(newClientSeed);
@@ -140,6 +142,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
             const spinResult: SpinResponse = message["case-results"];
             const { caseItems, serverSeed } = spinResult;
             console.log("Case items won", caseItems);
+            queryClient.invalidateQueries({ queryKey: ["bet_history"] });
 
             if (!caseItems) {
               toast.error("Error parsing WebSocket message: No case items found");

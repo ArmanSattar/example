@@ -18,12 +18,10 @@ export const UserActions = () => {
   const { user, updateUser } = useAuth();
   const [showSelfExcludePopup, setShowSelfExcludePopup] = useState(false);
   const [showChangeUsernamePopup, setShowChangeUsernamePopup] = useState(false);
-  const [showChangeprofileImageUrlPopup, setShowChangeprofileImageUrlPopup] = useState(false);
   const [currentUsername, setCurrentUsername] = useState("");
   const [newUsername, setNewUsername] = useState("");
   const [excludeDuration, setExcludeDuration] = useState("1 week");
   const [isMuted, setIsMuted] = useState(false);
-  const [profileImageUrl, setprofileImageUrl] = useState("");
   const dispatch = useDispatch();
   const isSoundOn = useSelector((state: RootState) => state.demo.soundOn);
 
@@ -83,8 +81,7 @@ export const UserActions = () => {
   };
 
   const toggleMute = useCallback(async () => {
-    setIsMuted(!isMuted);
-    if (isSoundOn === !isMuted) dispatch(toggleSoundOn());
+    dispatch(toggleSoundOn());
 
     try {
       const response = await axios.put(
@@ -156,12 +153,20 @@ export const UserActions = () => {
     [isSoundOn, toggleMute]
   );
 
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className={"w-full flex flex-col justify-between gap-y-2"}>
       <span className={"uppercase text-lg font-bold text-white"}>Actions</span>
       <div className={"rounded-md grid grid-cols-3 xl:grid-cols-4 justify-start gap-4 w-full"}>
         {actions.map((action, index) => (
-          <UserAction key={index} {...action} />
+          <UserAction
+            key={index}
+            {...action}
+            isOn={action.title === "Sound" ? !user.muteAllSounds : true}
+          />
         ))}
       </div>
       {showChangeUsernamePopup && (
@@ -185,6 +190,39 @@ export const UserActions = () => {
               <button
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-500 transition duration-300 ease-in-out"
                 onClick={handleConfirmChangeUsername}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showSelfExcludePopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-color_gray_2 py-6 px-8 rounded-lg border-4 border-color_stroke_1 shadow-lg w-11/12 md:w-1/2 xl:w-1/3 h-auto max-w-4xl transform translate-y-0 flex flex-col items-center justify-between relative gap-y-[2vh]">
+            <h2 className="text-xl font-bold text-white mb-4">Self Exclusion</h2>
+            <p className="text-gray-300 mb-4">How long would you like to self-exclude?</p>
+            <select
+              className="w-full p-2 mb-4 bg-gray-700 text-white rounded focus:outline-none"
+              value={excludeDuration}
+              onChange={(e) => setExcludeDuration(e.target.value)}
+            >
+              <option value="1 week">1 week</option>
+              <option value="1 month">1 month</option>
+              <option value="3 months">3 months</option>
+              <option value="6 months">6 months</option>
+              <option value="1 year">1 year</option>
+            </select>
+            <div className="flex justify-end space-x-2">
+              <button
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500 transition duration-300 ease-in-out"
+                onClick={() => setShowSelfExcludePopup(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-500 transition duration-300 ease-in-out"
+                onClick={handleConfirmExclusion}
               >
                 Confirm
               </button>
