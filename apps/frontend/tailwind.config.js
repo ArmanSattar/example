@@ -31,6 +31,7 @@ module.exports = {
         color_stroke_1: "var(--color-stroke-1)",
         hover_primary_color: "var(--hover-primary-color)",
         hover_primary_color_50: "var(--hover-primary-color-50)",
+        color_gray_4: "var(--color-gray-4)",
       },
       fontSize: {
         "md-1": "1.0625rem",

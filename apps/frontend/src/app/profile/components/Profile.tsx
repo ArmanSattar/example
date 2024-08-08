@@ -111,73 +111,6 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleprofileImageUrlChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-
-      try {
-        // Step 1: Get a pre-signed URL from the API
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_USER_MANAGEMENT_API_URL}/user/upload-image`,
-          {
-            contentType: file.type,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-
-        if (response.status !== 200) {
-          toast.error("Failed to get upload URL.");
-          return;
-        }
-
-        const { uploadUrl, imageUrl } = response.data;
-        console.log(uploadUrl)
-        // Step 2: Upload the file to S3 using the pre-signed URL
-        const uploadResponse = await axios.put(uploadUrl, file, {
-          headers: {
-            "Content-Type": file.type,
-          },
-        });
-
-        if (uploadResponse.status !== 200) {
-          toast.error("Failed to upload image.");
-          return;
-        }
-
-        // Step 3: Update user profile with the new profile picture URL
-        const updateResponse = await axios.put(
-          `${process.env.NEXT_PUBLIC_USER_MANAGEMENT_API_URL}/user`,
-          {
-            updateFields: {
-              profileImageUrl: imageUrl,
-            },
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-
-        if (updateResponse.status === 200) {
-          updateUser({ profileImageUrl: imageUrl });
-          setprofileImageUrl(imageUrl);
-          toast.success("Profile picture updated successfully!");
-        } else {
-          toast.error("Failed to update profile picture.");
-        }
-      } catch (error) {
-        toast.error("Error updating profile picture.");
-      }
-
-      setShowChangeprofileImageUrlPopup(false);
-    }
-  };
-
   return (
     <div className="w-full mx-auto my-4 p-6 rounded-lg relative">
       <div className="mb-4">
@@ -329,7 +262,7 @@ const Profile: React.FC = () => {
               className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
               type="file"
               accept="image/*"
-              onChange={handleprofileImageUrlChange}
+              onChange={() => {}}
             />
             <div className="flex justify-end space-x-2">
               <button
