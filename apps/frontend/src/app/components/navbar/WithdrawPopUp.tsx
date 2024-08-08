@@ -186,7 +186,7 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
         ref={popupRef}
-        className="bg-color_gray_2 py-6 px-8 rounded-lg border-4 border-color_stroke_1 shadow-lg w-11/12 md:w-1/2 xl:w-1/3 h-auto max-w-4xl transform translate-y-0 flex flex-col items-center justify-between relative gap-y-[2vh]"
+        className="bg-color_gray_4 py-6 px-8 rounded-lg border-4 border-color_stroke_1 shadow-lg w-11/12 md:w-1/2 xl:w-1/3 h-auto max-w-4xl transform translate-y-0 flex flex-col items-center justify-between relative gap-y-[2vh]"
       >
         <Close
           onClick={handleClose}

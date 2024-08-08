@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { betsUrl } from "../../libs/constants";
-import { Bet } from "@solspin/events/src/service/betting/schemas";
+import { Bet } from "../../types";
 
 export const useFetchBets = (id: string) => {
   return useQuery<Bet[]>({

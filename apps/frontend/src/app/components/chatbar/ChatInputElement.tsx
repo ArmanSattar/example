@@ -23,7 +23,7 @@ export const ChatInputElement: React.FC<ChatInputElementProps> = ({
 
   return (
     <div className="flex items-start space-x-2">
-      <ProfileComponent level={85} profilePic={profilePicture} />
+      <ProfileComponent level={85} profileImageUrl={profilePicture} />
       <div className="flex flex-col space-y-1.5 flex-grow min-w-0">
         <span className="flex text-color_chat_text text-sm" title={username}>
           {truncatedUsername}

@@ -80,7 +80,7 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({ className }) => {
       {open && (
         <div className="absolute right-0 top-full mt-1 w-36 bg-color_gray_2 shadow-lg xl:hidden rounded-md z-50">
           {menuOptions.map((option, index) =>
-            option.label === "Deposit" || (option.label === "Withdraw" && !user) ? null : (
+            (option.label === "Deposit" || option.label === "Withdraw") && !user ? null : (
               <button
                 key={index}
                 onClick={() => {

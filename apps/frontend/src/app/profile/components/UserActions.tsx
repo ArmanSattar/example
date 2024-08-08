@@ -39,6 +39,15 @@ export const UserActions = () => {
     }
   }, [user]);
 
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem("token");
+    router.push("/cases");
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
+  }, [router]);
+
   const handleSelfExclude = useCallback(() => {
     setShowSelfExcludePopup(true);
   }, []);
@@ -138,8 +147,8 @@ export const UserActions = () => {
         subtitle: "Turn sound on or off",
         SvgOn: SoundOff,
         SvgOff: SoundOn,
-        svgOnColor: "text-green-500",
-        svgOffColor: "text-red-500",
+        svgOnColor: "text-white",
+        svgOffColor: "text-gray-500",
         isOn: isSoundOn,
         onClick: () => {
           toggleMute();
@@ -178,9 +187,7 @@ export const UserActions = () => {
         SvgOn: Logout,
         svgOnColor: "text-red-500",
         onClick: () => {
-          localStorage.removeItem("token");
-          router.refresh();
-          router.push("/cases");
+          handleLogout();
         },
       },
     ],
