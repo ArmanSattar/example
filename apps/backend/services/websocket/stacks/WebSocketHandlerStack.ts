@@ -46,23 +46,8 @@ export function WebSocketHandlerAPI({ stack }: StackContext) {
     },
   });
 
-  const websocketStatsTable = new Table(stack, "stats", {
-    fields: {
-      id: "string",
-      activeConnections: "number",
-    },
-    primaryIndex: { partitionKey: "id" },
-    cdk: {
-      table: {
-        removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
-        timeToLiveAttribute: "expirationTime",
-      },
-    },
-  });
-
   return {
     websocketConnectionsTable: websocketConnectionsTable,
     websocketChatMessagesTable: websocketChatMessagesTable,
-    websocketStatsTable,
   };
 }
