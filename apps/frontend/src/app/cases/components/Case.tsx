@@ -60,10 +60,6 @@ const Case: React.FC<CaseProps> = ({
         <div className="absolute right-4">
           <div className="flex items-end justify-end gap-1 group-hover:opacity-0 transition-opacity duration-300">
             <Money amount={price} textStyle={"text-white font-semibold"} className={"space-x-1"} />
-            {/*<Dollar className="text-yellow-500" />*/}
-            {/*<div className="h-5 flex items-center justify-center">*/}
-            {/*  <span className="text-white">{price}</span>*/}
-            {/*</div>*/}
           </div>
         </div>
       </div>

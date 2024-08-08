@@ -6,7 +6,6 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { BaseCase } from "@solspin/game-engine-types";
 import { useFetchCase } from "./hooks/useFetchCase";
 import { toast } from "sonner";
-import { PreviousDrops } from "./components/PreviousDrops";
 import { CarouselSection } from "./components/CarouselSection";
 import { Back } from "../../components/Back";
 import { useLoading } from "../../context/LoadingContext";
@@ -53,7 +52,6 @@ export default function CasePage({ params }: { params: { id: string } }) {
             <CarouselSection caseData={caseData} />
           </div>
           <CaseItems items={caseData.items} />
-          <PreviousDrops />
         </>
       )}
     </div>

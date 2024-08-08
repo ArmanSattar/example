@@ -7,6 +7,7 @@ import store from "../store";
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LoadingProvider } from "./context/LoadingContext";
+import { websocketUrl } from "./libs/constants";
 
 const queryClient = new QueryClient();
 
@@ -15,7 +16,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <Provider store={store}>
       <LoadingProvider>
         <WalletContextProvider>
-          <WebSocketProvider url="wss://k3ieer2s4a.execute-api.eu-west-2.amazonaws.com/dev">
+          <WebSocketProvider url={websocketUrl}>
             <AuthProvider>
               <QueryClientProvider client={queryClient}>
                 <Toaster

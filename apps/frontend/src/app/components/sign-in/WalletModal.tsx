@@ -105,7 +105,10 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
 
   return createPortal(
     <div
-      className={cn(`wallet-adapter-modal ${fadeIn ? "wallet-adapter-modal-fade-in" : ""}`, "bg-")}
+      className={cn(
+        `wallet-adapter-modal ${fadeIn ? "wallet-adapter-modal-fade-in" : ""}`,
+        "bg-black/[0.5]"
+      )}
       ref={ref}
       role="dialog"
     >

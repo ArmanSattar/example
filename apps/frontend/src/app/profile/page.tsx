@@ -6,7 +6,7 @@ import BetHistory from "./components/BetHistory";
 
 export default function Page() {
   return (
-    <div className="min-h-screen flex flex-col gap-y-[4vh]">
+    <div className="min-h-screen flex flex-col gap-y-[4vh] pb-4">
       <UserHeader />
       <UserActions />
       <UserStats />

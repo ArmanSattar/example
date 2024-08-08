@@ -143,13 +143,13 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       if (src === "/sounds/tick.wav") {
         sound = new Howl({
           src: ["/sounds/tick.wav"],
-          volume: 0.4,
+          volume: 0.3,
           preload: true,
         });
       } else {
         sound = new Howl({
-          src: ["/sounds/cashier-cha-ching.mp3"],
-          volume: 0.4,
+          src: ["/sounds/reward-item-reached.wav"],
+          volume: 0.1,
           preload: true,
         });
       }
@@ -210,7 +210,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       const handleTransitionEnd = () => {
         if (state.animationStage === 1) {
           dispatch({ type: "FIRST_STAGE_END" });
-          if (isSoundOn) playSound("/sounds/cashier-cha-ching.mp3");
+          if (isSoundOn) playSound("/sounds/reward-item-reached.wav");
         } else if (state.animationStage === 2 && !animationCompletedRef.current) {
           animationCompletedRef.current = true;
           onAnimationComplete();

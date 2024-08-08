@@ -27,10 +27,6 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
     setLocalClientSeed(clientSeed);
   }, [clientSeed]);
 
-  const handleProvablyFairClick = () => {
-    setIsPopupOpen(true);
-  };
-
   const closePopup = useCallback(() => {
     setIsPopupOpen(false);
     onClientSeedChange(localClientSeed);
@@ -63,7 +59,7 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
     <>
       <div
         className="flex items-center gap-2 cursor-pointer group hover:bg-color_gray_3 duration-250 ease-in-out transition rounded-md px-2 py-3"
-        onClick={handleProvablyFairClick}
+        onClick={() => setIsPopupOpen(true)}
       >
         <Scales
           className={"text-gray-400 group-hover:text-gray-300 transition ease-in-out duration-200"}
@@ -74,7 +70,7 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
       </div>
       {isPopupOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
-          <div className="bg-background p-8 rounded-lg shadow-lg w-11/12 max-w-4xl h-4/5 overflow-y-auto">
+          <div className="bg-color_gray_4 p-8 rounded-lg shadow-lg w-11/12 max-w-4xl overflow-y-scroll max-h-[90vh]">
             <h2 className="text-2xl font-bold mb-6 text-white">Provably Fair System</h2>
 
             {hasRolled && (
@@ -88,7 +84,7 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
                     type="text"
                     value={previousServerSeedHash || "N/A"}
                     readOnly
-                    className="mt-1 block w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed"
+                    className="mt-1 block w-full px-3 py-2 bg-color_gray_3 text-white border border-color_stroke_1 rounded-md shadow-sm focus:outline-none cursor-not-allowed"
                   />
                 </div>
                 <div className="mb-6">
@@ -99,7 +95,7 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
                     type="text"
                     value={serverSeed || "N/A"}
                     readOnly
-                    className="mt-1 block w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed"
+                    className="mt-1 block w-full px-3 py-2 bg-color_gray_3 text-white border border-color_stroke_1 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed"
                   />
                 </div>
                 <div className="mb-6">
@@ -113,7 +109,7 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
                         type="text"
                         value={value || "N/A"}
                         readOnly
-                        className="mt-1 block w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed"
+                        className="mt-1 block w-full px-3 py-2 bg-color_gray_3 text-white border border-color_stroke_1 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed"
                         placeholder={`Roll ${index + 1}`}
                       />
                     ))}
@@ -132,7 +128,7 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
                   type="text"
                   value={serverSeedHash}
                   readOnly
-                  className="mt-1 block w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed"
+                  className="mt-1 block w-full px-3 py-2 bg-color_gray_3 text-white border border-color_stroke_1 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 cursor-not-allowed"
                 />
               </div>
               <div className="mb-6">
@@ -141,7 +137,7 @@ export const ProvablyFair: React.FC<ProvablyFairProps> = ({
                   type="text"
                   value={localClientSeed}
                   onChange={handleClientSeedChange}
-                  className="mt-1 block w-full px-3 py-2 bg-gray-700 text-white border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  className="mt-1 block w-full px-3 py-2 bg-color_gray_3 text-white border border-color_stroke_1 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
             </div>

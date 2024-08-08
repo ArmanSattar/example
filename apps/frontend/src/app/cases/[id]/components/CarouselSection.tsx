@@ -134,18 +134,15 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
               setPreviousServerSeedHash(serverSeedHash);
               setServerSeedHash(message["server-seed-hash"]);
             }
-            console.log("Server Seed Hash set:", message["server-seed-hash"]);
           }
 
           if ("case-results" in message) {
             const spinResult: SpinResponse = message["case-results"];
             const { caseItems, serverSeed } = spinResult;
-            console.log("Case items won", caseItems);
-            queryClient.invalidateQueries({ queryKey: ["bet_history"] });
 
             if (!caseItems) {
               toast.error("Error parsing WebSocket message: No case items found");
-              console.error("Error parsing WebSocket message: No case item");
+              if (isPaidSpinClicked) dispatch(togglePaidSpinClicked());
               return;
             }
 
@@ -153,10 +150,11 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
 
             if (caseItemsWon.length !== numCases) {
               toast.error("Error parsing WebSocket message: Incorrect number of case items");
-              console.error("Error parsing WebSocket message: Incorrect number of case items");
+              if (isPaidSpinClicked) dispatch(togglePaidSpinClicked());
               return;
             }
 
+            queryClient.invalidateQueries({ queryKey: ["bet_history"] });
             const newCases = generateCases(numCases, caseItemsWon, caseData, startMiddleItem);
             const generatedRollValues = caseItems.map((item) => item.rollValue.toString());
             setCases(newCases);
@@ -168,6 +166,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
         }
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
+        if (isPaidSpinClicked) dispatch(togglePaidSpinClicked());
       }
     };
 
