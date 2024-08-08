@@ -90,8 +90,8 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
         {isFinal && isMiddle && animationEnd && (
           <div
             className={`absolute bottom-0 flex flex-col items-center ${
-              itemWidth < ITEM_WIDTH ? "" : "space-y-0.5"
-            } w-3/4 mb-4`}
+              itemWidth < ITEM_WIDTH ? "mb-2" : "space-y-0.5 mb-4"
+            } w-3/4`}
           >
             <span
               className={`text-white ${

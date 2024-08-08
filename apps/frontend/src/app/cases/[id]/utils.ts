@@ -33,8 +33,19 @@ const binarySearch = (items: BaseCaseItem[], target: number): BaseCaseItem => {
 };
 
 export const getItemDimensions = (isHorizontal: boolean, numCases: number) => {
-  if (isHorizontal && numCases > 1) {
-    return { width: ITEM_WIDTH / 1.5, height: ITEM_HEIGHT / 1.5 };
+  if (isHorizontal) {
+    switch (numCases) {
+      case 1:
+        return { width: ITEM_WIDTH, height: ITEM_HEIGHT };
+      case 2:
+        return { width: ITEM_WIDTH, height: ITEM_HEIGHT };
+      case 3:
+        return { width: ITEM_WIDTH / 1.25, height: ITEM_HEIGHT / 1.25 };
+      case 4:
+        return { width: ITEM_WIDTH / 1.5, height: ITEM_HEIGHT / 1.5 };
+      default:
+        return { width: ITEM_WIDTH, height: ITEM_HEIGHT };
+    }
   }
 
   return { width: ITEM_WIDTH, height: ITEM_HEIGHT };

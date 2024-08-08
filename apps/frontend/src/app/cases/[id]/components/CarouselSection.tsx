@@ -198,7 +198,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-1 xl:space-y-0 space-y-4">
         {Array.from({ length: numCases }).map((_, i) => (
           <CaseCarousel
-            key={i}
+            key={`${i}-${numCases}`}
             index={i}
             items={cases[i]}
             isSpinClicked={spinClicked}
