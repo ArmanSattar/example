@@ -28,26 +28,25 @@ export const CaseMetaData: React.FC<CaseMetaDataProps> = ({
         <Back text="Back to Cases" to={""} customStyle={"hidden xl:flex"} />
       </div>
       <div
-        className={`flex flex-col space-y-1 lg:flex-row lg:space-x-1 lg:space-y-0 justify-between items-center`}
+        className={`flex flex-col justify-start space-y-1 gap-x-2 md:flex-row lg:space-x-1 lg:space-y-0 md:justify-between items-center`}
       >
-        <div className={`flex items-center gap-2`}>
-          <div className={"flex gap-x-1 justify-center items-center"}>
-            <span className="text-gray-400 text-md uppercase">Lowest Item</span>
-            <Money amount={lowestPrice} textStyle={"text-md"} className={"space-x-1"} />
-          </div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="4"
-            height="4"
-            viewBox="0 0 4 4"
-            fill="none"
-          >
-            <circle cx="2" cy="2" r="2" fill="#d1d5db" />
-          </svg>
-          <div className={"flex gap-x-1 justify-center items-center"}>
-            <span className="text-gray-400 text-md uppercase">Highest Item</span>
-            <Money amount={highestPrice} textStyle={"text-md"} className={"space-x-1"} />
-          </div>
+        <div className={"flex gap-x-1 w-full justify-start items-center"}>
+          <span className="text-gray-400 text-md uppercase">Lowest Item</span>
+          <Money amount={lowestPrice} textStyle={"text-md"} className={"space-x-1"} />
+        </div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="4"
+          height="4"
+          viewBox="0 0 4 4"
+          fill="none"
+          className={"hidden md:block"}
+        >
+          <circle cx="2" cy="2" r="2" fill="#d1d5db" />
+        </svg>
+        <div className={"flex gap-x-1 w-full justify-start items-center"}>
+          <span className="text-gray-400 text-md uppercase whitespace-nowrap">Highest Item</span>
+          <Money amount={highestPrice} textStyle={"text-md"} className={"space-x-1"} />
         </div>
       </div>
     </div>

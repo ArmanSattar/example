@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import bs58 from "bs58";
 import { useLoading } from "./LoadingContext";
 import { userManagementUrl } from "../libs/constants";
+import { useRouter } from "next/navigation";
 
 interface User {
   userId: string;
@@ -45,6 +46,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const { sendMessage, connectionStatus } = useWebSocket();
   const { connection } = useConnection();
   const { startLoading, finishLoading } = useLoading();
+  const router = useRouter();
 
   const checkToken = useCallback(async () => {
     const token = localStorage.getItem("token");
@@ -138,6 +140,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
               })
             );
           }
+          location.reload();
           toast.success("Successfully logged in!");
         }
       } else {

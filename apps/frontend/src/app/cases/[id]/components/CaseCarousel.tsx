@@ -275,7 +275,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           transformDistance = distance;
           transition = `transform ${
             !isFastAnimationClicked
-              ? `${6.5 + Math.random() - 0.5}s`
+              ? `${6.5 + Math.random() - 1}s`
               : `${2 + Math.random() * 0.33 - 0.165}s`
           } cubic-bezier(0, 0.46, 0.09, 1)`;
           break;
@@ -385,17 +385,18 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
               }`}
               style={carouselStyle}
             >
-              {items.map((item, index) => (
-                <CarouselItem
-                  key={index}
-                  item={item}
-                  isMiddle={index === (middleItem === 0 ? startMiddleItem : middleItem)}
-                  isFinal={index === DISTANCE_IN_ITEMS + startMiddleItem}
-                  animationEnd={state.animationStage === 2 || state.animationStage === 3}
-                  animationStart={state.animationStage === 1}
-                  direction={direction}
-                />
-              ))}
+              {items &&
+                items.map((item, index) => (
+                  <CarouselItem
+                    key={index}
+                    item={item}
+                    isMiddle={index === (middleItem === 0 ? startMiddleItem : middleItem)}
+                    isFinal={index === DISTANCE_IN_ITEMS + startMiddleItem}
+                    animationEnd={state.animationStage === 2 || state.animationStage === 3}
+                    animationStart={state.animationStage === 1}
+                    direction={direction}
+                  />
+                ))}
             </div>
           </div>
         </div>

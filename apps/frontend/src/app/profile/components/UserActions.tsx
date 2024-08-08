@@ -39,21 +39,21 @@ export const UserActions = () => {
     }
   }, [user]);
 
-  const handleSelfExclude = () => {
+  const handleSelfExclude = useCallback(() => {
     setShowSelfExcludePopup(true);
-  };
+  }, []);
 
-  const handleConfirmExclusion = () => {
+  const handleConfirmExclusion = useCallback(() => {
     console.log(`Self-excluded for ${excludeDuration}`);
     setShowSelfExcludePopup(false);
-  };
+  }, [excludeDuration]);
 
-  const handleChangeUsername = () => {
+  const handleChangeUsername = useCallback(() => {
     setNewUsername(currentUsername);
     setShowChangeUsernamePopup(true);
-  };
+  }, [currentUsername]);
 
-  const handleConfirmChangeUsername = async () => {
+  const handleConfirmChangeUsername = useCallback(async () => {
     setCurrentUsername(newUsername);
     setShowChangeUsernamePopup(false);
 
@@ -83,7 +83,7 @@ export const UserActions = () => {
     }
 
     setShowChangeUsernamePopup(false);
-  };
+  }, [newUsername, updateUser]);
 
   const toggleMute = useCallback(async () => {
     dispatch(toggleSoundOn());
@@ -179,8 +179,8 @@ export const UserActions = () => {
         svgOnColor: "text-red-500",
         onClick: () => {
           localStorage.removeItem("token");
-          router.push("/");
-          window.location.reload();
+          router.refresh();
+          router.push("/cases");
         },
       },
     ],
@@ -194,7 +194,11 @@ export const UserActions = () => {
   return (
     <div className={"w-full flex flex-col justify-between gap-y-2"}>
       <span className={"uppercase text-lg font-bold text-white"}>Actions</span>
-      <div className={"rounded-md grid grid-cols-3 xl:grid-cols-4 justify-start gap-4 w-full"}>
+      <div
+        className={
+          "rounded-md grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 justify-start gap-4 w-full"
+        }
+      >
         {actions.map((action, index) => (
           <UserAction
             key={index}

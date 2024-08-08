@@ -13,7 +13,6 @@ import { useWebSocket } from "../../../context/WebSocketContext";
 import { ProvablyFair } from "./ProvablyFair";
 import { CarouselButtonsSubSection } from "./CarouselButtonsSubSection";
 import { SoundToggle } from "./SoundToggle";
-import { CaseCarouselSkeleton } from "./CaseCarouselSkeleton";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface CarouselSectionProps {
@@ -198,24 +197,20 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
         <SoundToggle />
       </div>
       <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-1 xl:space-y-0 space-y-4">
-        {Array.from({ length: numCases }).map((_, i) =>
-          cases[i] ? (
-            <CaseCarousel
-              key={i}
-              index={i}
-              items={cases[i]}
-              isSpinClicked={spinClicked}
-              isFastAnimationClicked={fastClicked}
-              numCases={numCases}
-              onAnimationComplete={handleAnimationComplete}
-              windowSize={windowSize}
-              skipAnimation={isSkipAnimationClicked}
-              attachObserver={i === 0}
-            />
-          ) : (
-            <CaseCarouselSkeleton key={i} />
-          )
-        )}
+        {Array.from({ length: numCases }).map((_, i) => (
+          <CaseCarousel
+            key={i}
+            index={i}
+            items={cases[i]}
+            isSpinClicked={spinClicked}
+            isFastAnimationClicked={fastClicked}
+            numCases={numCases}
+            onAnimationComplete={handleAnimationComplete}
+            windowSize={windowSize}
+            skipAnimation={isSkipAnimationClicked}
+            attachObserver={i === 0}
+          />
+        ))}
       </div>
       <div
         className={"flex flex-col md:flex-row justify-end xl:justify-between items-center w-full"}

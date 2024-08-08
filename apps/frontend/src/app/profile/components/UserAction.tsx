@@ -23,7 +23,7 @@ export const UserAction: React.FC<UserActionProps> = ({
 }) => {
   return (
     <div
-      className="flex justify-start items-center rounded-md bg-color_gray_4 shadow-lg w-full p-4 gap-x-[1vw] h-28 cursor-pointer hover:scale-[102.5%] duration-300 ease-in-out "
+      className="flex justify-start items-center rounded-md bg-color_gray_4 shadow-lg w-full p-4 gap-x-6 h-28 cursor-pointer hover:scale-[102.5%] duration-300 ease-in-out "
       onClick={() => {
         onClick();
       }}

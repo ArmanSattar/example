@@ -10,6 +10,8 @@ interface CasesHeaderProps {
 }
 
 export const CasesHeader: React.FC<CasesHeaderProps> = ({ updateFilters, handleSearch }) => {
+  const [filtersExpand, setFiltersExpand] = React.useState(false);
+
   const dropdownItems = [
     {
       title: "Category",
@@ -71,10 +73,32 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({ updateFilters, handleS
             "flex flex-col justify-center items-center xl:justify-end sm:flex-row space-y-2 sm:space-y-0 lg:space-y-2 sm:space-x-2 w-full"
           }
         >
-          <button className="lg:hidden w-full sm:flex-1 h-10 bg-color_gray_3 text-white rounded text-xs font-semibold min-h-12">
+          <button
+            className="lg:hidden w-full sm:flex-1 h-10 bg-color_gray_4 text-white rounded text-xs font-semibold min-h-12 shadow-lg"
+            onClick={() => {
+              setFiltersExpand(!filtersExpand);
+            }}
+          >
             Filters
           </button>
-          <div className="w-full lg:basis-auto lg:max-w-sm sm:flex-1 min-h-12 overflow-clip min-w-0">
+          {filtersExpand && (
+            <div className="flex flex-col space-y-4 justify-between w-full items-center rounded-lg -mt-5 bg-black/[0.3] p-4">
+              {dropdownItems.map((item) => (
+                <div key={item.title} className="flex w-full flex-col space-y-0.5">
+                  <span className="text-2xs text-white ml-1.5">{item.title}</span>
+                  <FilterDropdownMenu
+                    key={item.title}
+                    title={item.title}
+                    options={item.options}
+                    onSelect={item.onSelect}
+                    type={item.type as "checkbox" | "radio"}
+                    width={"100%"}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="w-full lg:basis-auto lg:max-w-sm sm:flex-1 min-h-12 overflow-clip min-w-0 shadow-lg">
             <Search handleSearch={handleSearch} />
           </div>
         </div>
