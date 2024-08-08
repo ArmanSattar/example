@@ -1,6 +1,9 @@
 "use client";
 
 import UserOutline from "../../../../public/icons/user-outline.svg";
+import Twitter from "../../../../public/icons/twitter.svg";
+import Logout from "../../../../public/icons/logout.svg";
+import Discord from "../../../../public/icons/discord.svg";
 import Coupon from "../../../../public/icons/coupon.svg";
 import SoundOff from "../../../../public/icons/sound-off.svg";
 import SoundOn from "../../../../public/icons/sound-on.svg";
@@ -13,6 +16,7 @@ import { toggleSoundOn } from "../../../store/slices/demoSlice";
 import { RootState } from "../../../store";
 import axios from "axios";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export const UserActions = () => {
   const { user, updateUser } = useAuth();
@@ -24,6 +28,7 @@ export const UserActions = () => {
   const [isMuted, setIsMuted] = useState(false);
   const dispatch = useDispatch();
   const isSoundOn = useSelector((state: RootState) => state.demo.soundOn);
+  const router = useRouter();
 
   useEffect(() => {
     if (user) {
@@ -114,7 +119,7 @@ export const UserActions = () => {
       {
         title: "Change Username",
         SvgOn: UserOutline,
-        svgOnColor: "text-gray-400",
+        svgOnColor: "text-white",
         onClick: () => {
           handleChangeUsername();
         },
@@ -123,7 +128,7 @@ export const UserActions = () => {
         title: "Coupon Code",
         subtitle: "Got a coupon code? Redeem it here",
         SvgOn: Coupon,
-        svgOnColor: "text-gray-400",
+        svgOnColor: "text-yellow-500",
         onClick: () => {
           toast.info("Coupon code redemption coming soon!");
         },
@@ -144,9 +149,38 @@ export const UserActions = () => {
         title: "Self Exclusion",
         subtitle: "Exclude yourself from playing",
         SvgOn: Time,
-        svgOnColor: "text-red-500",
+        svgOnColor: "text-purple-500",
         onClick: () => {
           handleSelfExclude();
+        },
+      },
+      {
+        title: "Twitter",
+        subtitle: "Link your twitter account",
+        SvgOn: Twitter,
+        svgOnColor: "",
+        onClick: () => {
+          toast.info("Twitter linking coming soon!");
+        },
+      },
+      {
+        title: "Discord",
+        subtitle: "Link your discord account",
+        SvgOn: Discord,
+        svgOnColor: "",
+        onClick: () => {
+          toast.info("Discord linking coming soon!");
+        },
+      },
+      {
+        title: "Logout",
+        subtitle: "Logout from your account",
+        SvgOn: Logout,
+        svgOnColor: "text-red-500",
+        onClick: () => {
+          localStorage.removeItem("token");
+          router.push("/");
+          window.location.reload();
         },
       },
     ],

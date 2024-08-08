@@ -4,72 +4,8 @@ import { ChatInputElement } from "./ChatInputElement";
 interface Message {
   message: string;
   username: string;
-  timestamp: number;
   profilePicture?: string;
 }
-
-const mockMessages: Message[] = [
-  {
-    message: "What are you up to? It feels like it's been a while since we last talked. 😄!",
-    username: "JohnDoe",
-    timestamp: Date.now(),
-    profilePicture: "/icons/portrait-09.png",
-  },
-  {
-    message: "Hey, how are you?",
-    username: "JaneDoe",
-    timestamp: Date.now(),
-    profilePicture: "/icons/portrait-09.png",
-  },
-  {
-    message: "I'm good, thanks!",
-    username: "JohnDoe",
-    timestamp: Date.now(),
-    profilePicture: "/icons/portrait-09.png",
-  },
-  {
-    message: "How about you?",
-    username: "JohnDoe",
-    timestamp: Date.now(),
-    profilePicture: "/icons/portrait-09.png",
-  },
-  {
-    message: "I'm good too, thanks for asking!",
-    username: "JaneDoe",
-    timestamp: Date.now(),
-    profilePicture: "/icons/portrait-09.png",
-  },
-  {
-    message: "What are you up to? It feels like it's been a while since we last talked. 😄!",
-    username: "JaneDoe",
-    timestamp: Date.now(),
-    profilePicture: "/icons/portrait-09.png",
-  },
-  {
-    message: "Just working on some stuff",
-    username: "JohnDoe",
-    timestamp: Date.now(),
-    profilePicture: "/icons/portrait-09.png",
-  },
-  {
-    message: "Cool, cool",
-    username: "JaneDoe",
-    timestamp: Date.now(),
-    profilePicture: "/icons/portrait-09.png",
-  },
-  {
-    message: "Yeah",
-    username: "JohnDoe",
-    timestamp: Date.now(),
-    profilePicture: "/icons/portrait-09.png",
-  },
-  {
-    message: "What are you up to? It feels like it's been a while since we last talked. 😄!",
-    username: "JaneDoe",
-    timestamp: Date.now(),
-    profilePicture: "/icons/portrait-09.png",
-  },
-];
 
 interface ChatBodyProps {
   messages: Message[];
@@ -98,6 +34,7 @@ export const ChatBody: React.FC<ChatBodyProps> = ({ messages }) => {
 
   useEffect(() => {
     const latestMessages = messages.slice(-50);
+    console.log(latestMessages[0]);
     setVisibleMessages(latestMessages.reverse());
   }, [messages]);
 
@@ -108,11 +45,10 @@ export const ChatBody: React.FC<ChatBodyProps> = ({ messages }) => {
         ref={chatBodyRef}
       >
         {visibleMessages.map((message, index) => (
-          <div key={index} className={`transition-opacity relative pt-4 px-2 duration-300`}>
+          <div key={index} className={`transition-opacity relative p-2 duration-300`}>
             <ChatInputElement
               message={message.message}
               username={message.username}
-              timestamp={message.timestamp}
               profilePicture={message.profilePicture || ""}
             />
           </div>

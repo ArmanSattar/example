@@ -277,7 +277,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
             !isFastAnimationClicked
               ? `${6.5 + Math.random() - 0.5}s`
               : `${2 + Math.random() * 0.33 - 0.165}s`
-          } cubic-bezier(0, 0.49, 0.1, 1)`;
+          } cubic-bezier(0, 0.46, 0.09, 1)`;
           break;
         case 2:
           transformDistance = distance - tickerOffset;
