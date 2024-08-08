@@ -83,8 +83,8 @@ export const UserHeader = () => {
   return (
     <div className={"flex flex-col gap-y-2"}>
       <span className={"uppercase text-white text-lg font-bold"}>Profile</span>
-      <div className="rounded-md flex flex-col justify-between w-full mx-auto py-4 px-6 bg-color_gray_4 relative gap-y-4 shadow-lg">
-        <div className={"relative w-full flex justify-center items-center"}>
+      <div className="flex flex-col justify-between mx-auto p-10 rounded-xl bg-color_gray_4 relative gap-y-4 shadow-lg">
+        <div className={"relative w-full flex justify-center items-center scale-125"}>
           <ProfilePictureWithEdit
             profileImageUrl={user ? user.profileImageUrl : undefined}
             handleProfilePictureChange={handleProfilePictureChange}
@@ -92,14 +92,14 @@ export const UserHeader = () => {
         </div>
         <div className={"flex flex-col gap-y-1 justify-between items-start w-full"}>
           <div className="text-white text-xl font-bold">{user.username}</div>
-          <div className="text-gray-400">{user.level}</div>
-          <div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
-            <div
-              className="bg-green-500 h-full rounded-full w-full "
-              style={{ width: `${45}%` }}
-            ></div>
-          </div>
-          <div className="text-gray-400 text-sm mt-1">{45}% to next rank</div>
+          {/*<div className="text-gray-400">{user.level}</div>*/}
+          {/*<div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">*/}
+          {/*  <div*/}
+          {/*    className="bg-green-500 h-full rounded-full w-full "*/}
+          {/*    style={{ width: `${45}%` }}*/}
+          {/*  ></div>*/}
+          {/*</div>*/}
+          {/*<div className="text-gray-400 text-sm mt-1">{45}% to next rank</div>*/}
         </div>
       </div>
     </div>

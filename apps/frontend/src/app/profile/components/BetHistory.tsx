@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from "react";
 import { useFetchBets } from "../hooks/useFetchBets";
 import { useAuth } from "../../context/AuthContext";
 import { useLoading } from "../../context/LoadingContext";
+import { Money } from "../../components/Money";
 
 const BetHistoryTable = () => {
   const { user } = useAuth();
@@ -69,16 +70,18 @@ const BetHistoryTable = () => {
               <tr key={bet.id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{bet.id}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <span className="flex items-center">
-                    <span className="text-yellow-500 mr-1">◆</span>
-                    {bet.amountBet.toFixed(2)}
-                  </span>
+                  <Money
+                    amount={bet.amountBet}
+                    textStyle={"text-md font-semibold"}
+                    className={"space-x-1"}
+                  />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  <span className="flex items-center">
-                    <span className="text-yellow-500 mr-1">◆</span>
-                    {bet.outcomeAmount.toFixed(2)}
-                  </span>
+                  <Money
+                    amount={bet.outcomeAmount}
+                    textStyle={"text-md font-semibold"}
+                    className={"space-x-1"}
+                  />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{bet.gameType}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
