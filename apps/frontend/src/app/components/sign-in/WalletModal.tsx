@@ -4,6 +4,7 @@ import { WalletName, WalletReadyState } from "@solana/wallet-adapter-base";
 import { createPortal } from "react-dom";
 import { useAuth } from "../../context/AuthContext";
 import { cn } from "../../cases/[id]/utils";
+import { toast } from "sonner";
 
 interface CustomWalletModalProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
   const [fadeIn, setFadeIn] = useState(false);
   const [shouldAttemptLogin, setShouldAttemptLogin] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
   const { login } = useAuth();
   const installedWallets = useMemo(
     () => wallets.filter((wallet) => wallet.readyState === WalletReadyState.Installed),
@@ -46,9 +48,11 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
         setShouldAttemptLogin(false); // Reset the flag
       } catch (error) {
         console.error("Login failed:", error);
-        setError("Login failed. Please try again.");
+        toast.error("Login failed. Please try again.");
+        
       }
     }
+    setIsConnecting(false)
   }, [connected, publicKey, login, onClose, shouldAttemptLogin]);
 
   useEffect(() => {
@@ -60,11 +64,11 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
   const handleWalletClick = useCallback(
     async (walletName: WalletName<string> | null) => {
       setError(null);
+      setIsConnecting(true);
       try {
         console.log(`Selecting wallet: ${walletName}`);
         await select(walletName);
 
-        // Increase the delay and add a check
         await new Promise((resolve) => setTimeout(resolve, 200));
 
         const selectedWallet = wallets.find((w) => w.adapter.name === walletName);
@@ -76,27 +80,31 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
         console.log("Attempting to connect...");
 
         if (selectedWallet.readyState !== WalletReadyState.Installed) {
-          setError("Wallet is not detected please install it and try again");
+          toast.error("Wallet is not detected please install it and try again");
           select(null);
+          setIsConnecting(false)
         } else {
           setShouldAttemptLogin(true); // Set the flag to attempt login
         }
       } catch (error) {
         console.error("Wallet connection error:", error);
         if ((error as Error).name === "WalletNotSelectedError") {
-          setError("Wallet not selected. Please try again or choose a different wallet.");
+          toast.error("Wallet not selected. Please try again or choose a different wallet.");
         } else {
-          setError(`Failed to connect: ${(error as Error).message}`);
+          toast.error(`Failed to connect: ${(error as Error).message}`);
         }
+        setIsConnecting(false)
       }
     },
     [select, wallets]
   );
+
   const handleClose = useCallback(
     (event: { preventDefault: () => void }) => {
       event.preventDefault();
       setError(null);
       onClose();
+      setIsConnecting(false)
     },
     [onClose]
   );
@@ -113,14 +121,19 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
       role="dialog"
     >
       <div className="wallet-adapter-modal-container">
-        <div className="wallet-adapter-modal-wrapper">
+        <div className="wallet-adapter-modal-wrapper relative">
+          {isConnecting && (
+            <div className="absolute inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+              <div className="w-12 h-12 border-4 border-white-400 border-t-transparent rounded-full animate-spin-slow"></div>
+            </div>
+          )}
           <button onClick={handleClose} className="wallet-adapter-modal-button-close">
             <svg width="14" height="14">
               <path d="M14 12.461L8.3 6.772l5.234-5.233L12.006 0 6.772 5.234 1.54 0 0 1.539l5.234 5.233L0 12.006l1.539 1.528L6.772 8.3l5.69 5.7L14 12.461z" />
             </svg>
           </button>
           <h1 className="wallet-adapter-modal-title">Connect a wallet on Solana to continue</h1>
-          {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
+          {error && <p className="text-red-500 text-center">{error}</p>}
           <ul className="wallet-adapter-modal-list">
             {installedWallets.map((wallet) => (
               <li key={wallet.adapter.name} onClick={() => handleWalletClick(wallet.adapter.name)}>
@@ -151,7 +164,6 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
               </li>
             ))}
           </ul>
-          {connecting && <p style={{ textAlign: "center" }}>Connecting...</p>}
         </div>
       </div>
       <div className="wallet-adapter-modal-overlay" onMouseDown={handleClose} />

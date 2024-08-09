@@ -243,7 +243,12 @@ export function WebSocketGateway({ stack }: StackContext) {
     job: {
       function: {
         handler: "src/handlers/pruneConnections.handler",
-        permissions: ["dynamodb:Scan", "dynamodb:DeleteItem", "execute-api:ManageConnections"],
+        permissions: [
+          "dynamodb:Scan",
+          "dynamodb:DeleteItem",
+          "execute-api:ManageConnections",
+          "dynamodb:UpdateItem",
+        ],
         environment: {
           WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketConnectionsTable.tableName,
           DOMAIN: domainName,
@@ -252,13 +257,6 @@ export function WebSocketGateway({ stack }: StackContext) {
     },
   });
 
-  pruneConnectionCRON.attachPermissions([
-    "dynamodb:Scan",
-    "dynamodb:DeleteItem",
-    "dynamodb:UpdateItem",
-    "execute-api:ManageConnections",
-  ]);
-
   pruneConnectionCRON.bind([websocketConnectionsTable]);
 
   const broadcastPlayersOnlineCRON = new Cron(stack, "BroadcastPlayersOnlineCRON", {
@@ -266,7 +264,7 @@ export function WebSocketGateway({ stack }: StackContext) {
     job: {
       function: {
         handler: "src/handlers/broadcastPlayersOnline.handler",
-        permissions: ["dynamodb:GetItem", "execute-api:ManageConnections"],
+        permissions: ["dynamodb:Scan", "execute-api:ManageConnections"],
         environment: {
           WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketConnectionsTable.tableName,
           DOMAIN: domainName,
