@@ -16,6 +16,7 @@ export interface IFilters {
   rarity: string[];
   order: string[];
   price: string[];
+  priceRange: string[];
 }
 
 export enum GameOutcome {

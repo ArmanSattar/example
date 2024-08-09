@@ -7,14 +7,11 @@ import { RootState } from "../../store";
 import { DepositPopUp } from "./navbar/DepositPopUp";
 import { toggleDepositClicked, toggleWithdrawClicked } from "../../store/slices/navbarSlice";
 import { WithdrawPopUp } from "./navbar/WithdrawPopUp";
-import RarityInfoPopup from "../cases/[id]/components/RarityInfoPopup";
 
 export const MainSection = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useDispatch();
-  const isChatOpen = useSelector((state: RootState) => state.chatBar.chatBarOpen);
   const isDepositOpen = useSelector((state: RootState) => state.navbar.isDepositOpen);
   const isWithdrawOpen = useSelector((state: RootState) => state.navbar.isWithdrawOpen);
-  const isRarityInfoOpen = useSelector((state: RootState) => state.demo.rarityInfoPopup);
 
   const toggleDepositOpen = () => {
     dispatch(toggleDepositClicked());
@@ -28,7 +25,6 @@ export const MainSection = ({ children }: { children: React.ReactNode }) => {
     <div className="flex flex-1 overflow-hidden relative w-full max-w-full">
       {isDepositOpen && <DepositPopUp handleClose={toggleDepositOpen} />}
       {isWithdrawOpen && <WithdrawPopUp handleClose={toggleWithdrawOpen} />}
-      {isRarityInfoOpen && <RarityInfoPopup />}
       <Chatbar />
       <main className="flex-grow overflow-y-auto relative bg-transparent overflow-x-hidden min-h-full p-4">
         {children}

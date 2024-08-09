@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
 interface FilterDropdownMenuProps {
-  title: string;
   options: string[];
   onSelect: (options: string[]) => void;
   type: "checkbox" | "radio";
@@ -14,7 +13,6 @@ interface FilterDropdownMenuProps {
 }
 
 const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
-  title,
   options,
   onSelect,
   type,

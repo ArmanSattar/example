@@ -29,6 +29,15 @@ export const UserActions = () => {
   const dispatch = useDispatch();
   const isSoundOn = useSelector((state: RootState) => state.demo.soundOn);
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState({
+    "Change Username": false,
+    Sound: false,
+    "Coupon Code": false,
+    "Self Exclusion": false,
+    Twitter: false,
+    Discord: false,
+    Logout: false,
+  });
 
   useEffect(() => {
     if (user) {
@@ -95,9 +104,8 @@ export const UserActions = () => {
   }, [newUsername, updateUser]);
 
   const toggleMute = useCallback(async () => {
-    dispatch(toggleSoundOn());
-
     try {
+      setIsLoading({ ...isLoading, Sound: true });
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_USER_MANAGEMENT_API_URL}/user`,
         {
@@ -114,12 +122,15 @@ export const UserActions = () => {
 
       if (response.status === 200) {
         updateUser({ muteAllSounds: !isMuted });
+        if (!isMuted === isSoundOn) dispatch(toggleSoundOn());
         toast.success(`Successfully turned sounds ${isMuted ? "on" : "off"}!`);
       } else {
         toast.error("Something went wrong...");
       }
     } catch (error) {
       toast.error("Failed to change the sound setting");
+    } finally {
+      setIsLoading({ ...isLoading, Sound: false });
     }
   }, [dispatch, isMuted, isSoundOn, updateUser]);
 
@@ -211,6 +222,7 @@ export const UserActions = () => {
             key={index}
             {...action}
             isOn={action.title === "Sound" ? !user.muteAllSounds : true}
+            isLoading={isLoading[action.title as keyof typeof isLoading]}
           />
         ))}
       </div>
