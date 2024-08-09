@@ -46,6 +46,14 @@ module.exports = {
       screens: {
         "lg-1": "985px",
       },
+      keyframes: {
+        spin: {
+          to: { transform: 'rotate(360deg)' }
+        }
+      },
+      animation: {
+        'spin-slow': 'spin 1.5s linear infinite',
+      }
     },
   },
   plugins: [
