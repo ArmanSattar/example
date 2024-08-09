@@ -22,6 +22,12 @@ export const WalletTransactionSchema = z.object({
   walletAddress: z.string(),
 });
 
+export const WalletTransactionStatsSchema = z.object({
+  userId: z.string().uuid(),
+  amount: z.number().positive(),
+  lastUpdated: z.coerce.date(),
+});
+
 // Request Schemas
 export const CreateWalletRequestSchema = BaseWalletsSchema.omit({
   createdAt: true,
@@ -41,19 +47,25 @@ export const UpdateUserBalanceRequestSchema = WalletTransactionSchema.omit({
   walletAddress: true,
 });
 
+export const WalletTransactionStatsRequestSchema = z.object({
+  userId: z.string().uuid(),
+});
+
 // Response Schemas
 export const CreateWalletsResponseSchema = BaseWalletsSchema;
 export const GetWalletsByIdResponseSchema = BaseWalletsSchema;
 export const DepositToWalletResponseSchema = BaseWalletsSchema;
 export const WithdrawFromWalletResponseSchema = BaseWalletsSchema;
 export const UpdateUserBalanceResponseSchema = BaseWalletsSchema;
-export const ReserveBalanceResponseSchema = BaseWalletsSchema;
-export const ReleaseBalanceReservationResponseSchema = BaseWalletsSchema;
 export const GatewayResponseSchema = z.object({
   statusCode: z.number(),
   body: z.string(),
+});
+export const WalletTransactionStatsResponseSchema = WalletTransactionStatsSchema.omit({
+  lastUpdated: true,
 });
 
 //type definitions
 export type Wallet = z.infer<typeof BaseWalletsSchema>;
 export type GatewayResponse = z.infer<typeof GatewayResponseSchema>;
+export type WalletTransactionStats = z.infer<typeof WalletTransactionStatsResponseSchema>;

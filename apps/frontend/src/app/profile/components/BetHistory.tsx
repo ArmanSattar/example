@@ -2,12 +2,15 @@
 
 import React, { useEffect, useRef } from "react";
 import { useFetchBets } from "../hooks/useFetchBets";
-import { useAuth } from "../../context/AuthContext";
 import { useLoading } from "../../context/LoadingContext";
 import { Money } from "../../components/Money";
+import { User } from "@solspin/user-management-types";
 
-const BetHistoryTable = () => {
-  const { user } = useAuth();
+interface BetHistoryProps {
+  user: User;
+}
+
+const BetHistoryTable: React.FC<BetHistoryProps> = ({ user }) => {
   const { data: bets, isLoading, isError, error } = useFetchBets(user ? user.userId : "");
   const loadingFlag = useRef(false);
   const { startLoading, finishLoading } = useLoading();
@@ -29,14 +32,6 @@ const BetHistoryTable = () => {
   bets.sort((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
-
-  if (bets.length === 0) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-gray-300 text-xl">No bets made</p>
-      </div>
-    );
-  }
 
   return (
     <div className={"w-full flex flex-col justify-between gap-y-2"}>

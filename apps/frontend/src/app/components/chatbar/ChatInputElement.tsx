@@ -19,11 +19,10 @@ export const ChatInputElement: React.FC<ChatInputElementProps> = ({
   profileImageUrl,
 }) => {
   const truncatedUsername = useMemo(() => truncateUsername(username), [username]);
-  console.log(message, username, profileImageUrl);
 
   return (
     <div className="flex items-start space-x-2">
-      <ProfileComponent level={85} profileImageUrl={profileImageUrl} />
+      <ProfileComponent level={1} profileImageUrl={profileImageUrl} />
       <div className="flex flex-col space-y-1.5 flex-grow min-w-0">
         <span className="flex text-color_chat_text text-sm" title={username}>
           {truncatedUsername}

@@ -60,7 +60,7 @@ export const UserProfile: React.FC = () => {
         className="flex items-center justify-center mt-1 space-x-4 p-2 rounded-lg cursor-pointer hover:scale-[102%] transition-transform duration-200 ease-in-out"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
-        <ProfileComponent level={45} profileImageUrl={user.profileImageUrl} />
+        <ProfileComponent level={1} profileImageUrl={user.profileImageUrl} />
       </div>
 
       {isDropdownOpen && (

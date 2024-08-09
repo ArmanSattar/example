@@ -18,6 +18,11 @@ export interface IFilters {
   price: string[];
   priceRange: string[];
 }
+export interface UserStat {
+  title: string;
+  amount: number;
+  img: string;
+}
 
 export enum GameOutcome {
   WIN = "WIN",

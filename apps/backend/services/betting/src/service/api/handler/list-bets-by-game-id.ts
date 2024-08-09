@@ -10,13 +10,13 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   logger.info("Received get bets by game ID request", { event });
 
   try {
-    const { gameId } = Betting.GetBetsByGameIdRequestSchema.parse(event.pathParameters);
+    const { gameType } = Betting.GetBetsByGameIdRequestSchema.parse(event.pathParameters);
 
     const query = Betting.BetQuerySchema.parse(event.queryStringParameters || {});
 
     const { gameOutcome, outcomeAmount, betAmount } = query;
 
-    const bets = await queryBetsByGameId(gameId, gameOutcome, outcomeAmount, betAmount);
+    const bets = await queryBetsByGameId(gameType, gameOutcome, outcomeAmount, betAmount);
 
     const response = Betting.GetBetsByGameIdResponseSchema.parse(bets);
 

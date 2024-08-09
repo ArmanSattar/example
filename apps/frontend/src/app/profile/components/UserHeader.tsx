@@ -4,11 +4,14 @@ import React, { useCallback } from "react";
 import { ProfilePictureWithEdit } from "./ProfilePictureWithEdit";
 import axios from "axios";
 import { toast } from "sonner";
-import { useAuth } from "../../context/AuthContext";
+import { User } from "@solspin/user-management-types";
 
-export const UserHeader = () => {
-  const { updateUser, user } = useAuth();
+interface UserHeaderProps {
+  user: User;
+  updateUser: (updatedUserData: Partial<User>) => void;
+}
 
+export const UserHeader: React.FC<UserHeaderProps> = ({ user, updateUser }) => {
   const handleProfilePictureChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files[0]) {

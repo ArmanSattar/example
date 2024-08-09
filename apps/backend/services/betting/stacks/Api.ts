@@ -75,6 +75,18 @@ export function ApiStack({ stack }: StackContext) {
           ],
         },
       },
+      "GET /bets/stats/{userId}": {
+        function: {
+          handler: "src/service/api/handler/get-bet-stats.handler",
+          permissions: [
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: ["dynamodb:GetItem"],
+              resources: [betStatsTableArn],
+            }),
+          ],
+        },
+      },
       "GET /bets/game/{gameId}": {
         function: {
           handler: "src/service/api/handler/list-bets-by-game-id.handler",
@@ -93,6 +105,7 @@ export function ApiStack({ stack }: StackContext) {
         environment: {
           BETS_TABLE_ARN: betsTableArn,
           EVENT_BUS_ARN: eventBusArn,
+          BET_STATS_TABLE_NAME: betStatsTableName,
         },
       },
     },

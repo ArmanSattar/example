@@ -21,21 +21,13 @@ export function DatabaseStack({ stack }: StackContext) {
     },
   });
 
-  const transactionsTable = new Table(stack, "transactions", {
+  const transactionStatsTable = new Table(stack, "transactions", {
     fields: {
-      id: "string",
       userId: "string",
       amount: "number",
-      createdAt: "string",
-      walletAddress: "string",
-      type: "string",
+      lastUpdated: "string",
     },
-    primaryIndex: { partitionKey: "id" },
-    globalIndexes: {
-      byUserId: { partitionKey: "userId", sortKey: "createdAt" },
-      byType: { partitionKey: "type", sortKey: "createdAt" },
-      byWalletAddress: { partitionKey: "walletAddress", sortKey: "createdAt" },
-    },
+    primaryIndex: { partitionKey: "userId" },
     cdk: {
       table: {
         removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
@@ -46,7 +38,7 @@ export function DatabaseStack({ stack }: StackContext) {
   return {
     walletsTableArn: walletsTable.tableArn,
     walletsTableName: walletsTable.tableName,
-    transactionsTableArn: transactionsTable.tableArn,
-    transactionsTableName: transactionsTable.tableName,
+    transactionsTableArn: transactionStatsTable.tableArn,
+    transactionsTableName: transactionStatsTable.tableName,
   };
 }

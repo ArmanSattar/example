@@ -8,7 +8,6 @@ import Coupon from "../../../../public/icons/coupon.svg";
 import SoundOff from "../../../../public/icons/sound-off.svg";
 import SoundOn from "../../../../public/icons/sound-on.svg";
 import Time from "../../../../public/icons/time.svg";
-import { useAuth } from "../../context/AuthContext";
 import { UserAction } from "./UserAction";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,9 +16,14 @@ import { RootState } from "../../../store";
 import axios from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { User } from "@solspin/user-management-types";
 
-export const UserActions = () => {
-  const { user, updateUser } = useAuth();
+interface UserActionsProps {
+  user: User;
+  updateUser: (updatedUserData: Partial<User>) => void;
+}
+
+export const UserActions: React.FC<UserActionsProps> = ({ updateUser, user }) => {
   const [showSelfExcludePopup, setShowSelfExcludePopup] = useState(false);
   const [showChangeUsernamePopup, setShowChangeUsernamePopup] = useState(false);
   const [currentUsername, setCurrentUsername] = useState("");

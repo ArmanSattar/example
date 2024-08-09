@@ -4,7 +4,8 @@ import * as cdk from "aws-cdk-lib";
 import { DatabaseStack } from "./Database";
 
 export function ApiStack({ stack }: StackContext) {
-  const { walletsTableArn, walletsTableName } = use(DatabaseStack);
+  const { walletsTableArn, walletsTableName, transactionsTableName, transactionsTableArn } =
+    use(DatabaseStack);
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
 
   const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
@@ -80,6 +81,7 @@ export function ApiStack({ stack }: StackContext) {
           WALLETS_TABLE_ARN: walletsTableName,
           DEPOSIT_TREASURY_FUNCTION_ARN: depositTreasuryFunction.functionArn,
           WITHDRAW_TREASURY_FUNCTION_ARN: withdrawTreasuryFunction.functionArn,
+          TRANSACTIONS_TABLE_ARN: transactionsTableName,
         },
       },
     },
@@ -108,6 +110,18 @@ export function ApiStack({ stack }: StackContext) {
           ],
         },
       },
+      "GET /wallets/{userId}/transactions": {
+        function: {
+          handler: "src/service/api/handler/get-wallet-transactions.handler",
+          permissions: [
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: ["dynamodb:GetItem"],
+              resources: [transactionsTableArn],
+            }),
+          ],
+        },
+      },
       "POST /wallets/deposit": {
         function: {
           handler: "src/service/api/handler/deposit-to-wallet.handler",
@@ -115,7 +129,7 @@ export function ApiStack({ stack }: StackContext) {
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
               actions: ["dynamodb:UpdateItem", "dynamodb:PutItem"],
-              resources: [walletsTableArn],
+              resources: [walletsTableArn, transactionsTableArn],
             }),
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,

@@ -1,6 +1,6 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, QueryCommand } from "@aws-sdk/lib-dynamodb";
-import { GameOutcome } from "@solspin/types";
+import { GameOutcome, GameType } from "@solspin/types";
 import { BetDBObject } from "../foundation/types";
 import { BETS_TABLE_ARN } from "../foundation/runtime";
 
@@ -8,14 +8,14 @@ const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
 
 export const queryBetsByGameId = async (
-  gameId: string,
+  gameType: GameType,
   gameOutcome?: GameOutcome,
   outcomeAmount?: number,
   betAmount?: number
 ): Promise<BetDBObject[]> => {
   const filterExpressions: string[] = [];
   const expressionAttributeValues: Record<string, any> = {
-    ":gameId": gameId,
+    ":gameId": GameType,
   };
 
   if (gameOutcome) {

@@ -49,7 +49,7 @@ export const ProfileComponent: React.FC<ProfileComponentProps> = ({
       >
         <div className="absolute bg-black rounded-full flex justify-center items-center overflow-clip w-[32px] h-[32px] sm:w-[40px] sm:h-[40px]">
           <Image
-            src={profileImageUrl ? profileImageUrl : "/icons/portrait-09.png"}
+            src={profileImageUrl ? profileImageUrl : "/profile-placeholder.png"}
             alt="profile"
             width={32}
             height={32}
