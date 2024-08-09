@@ -147,12 +147,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw new Error("Login failed");
       }
     } catch (error) {
+
       if ((error as Error).name === "WalletSignMessageError") {
         await disconnect();
-      } else if ((error as Error).name !== "TypeError") {
-        console.error("Login error:", error);
-        toast.error((error as Error).message);
       }
+      toast.error((error as Error).message);
+      
     } finally {
       finishLoading();
     }
