@@ -1,12 +1,20 @@
 import React, { KeyboardEvent, useState } from "react";
 import { useWebSocket } from "../../context/WebSocketContext";
 import Send from "./../../../../public/icons/send.svg";
+import { useAuth } from "../../context/AuthContext";
+import { toast } from "sonner";
 
 export const ChatInput = () => {
   const [message, setMessage] = useState("");
   const { sendMessage } = useWebSocket();
+  const { user } = useAuth();
 
   const handleSendMessage = () => {
+    if (!user) {
+      toast.error("You need to be logged in to send messages");
+      return;
+    }
+
     if (message.trim()) {
       const websocketMessage = JSON.stringify({ action: "chat", message });
       sendMessage(websocketMessage);

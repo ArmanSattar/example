@@ -6,11 +6,14 @@ import { UserActions } from "./components/UserActions";
 import { UserStats } from "./components/UserStats";
 import BetHistory from "./components/BetHistory";
 import { useAuth } from "../context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const { user, updateUser } = useAuth();
+  const router = useRouter();
 
   if (!user) {
+    router.push("/cases");
     return null;
   }
 
