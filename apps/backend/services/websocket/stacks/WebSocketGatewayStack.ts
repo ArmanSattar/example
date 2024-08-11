@@ -269,7 +269,6 @@ export function WebSocketGateway({ stack }: StackContext) {
           WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketConnectionsTable.tableName,
           DOMAIN: domainName,
         },
-        bind: [websocketConnectionsTable],
       },
     },
   });

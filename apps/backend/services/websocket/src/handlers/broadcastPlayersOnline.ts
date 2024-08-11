@@ -7,7 +7,7 @@ const logger = getLogger("broadcast-active-players-handler");
 const tableName = process.env.WEBSOCKET_CONNECTIONS_TABLE_NAME;
 const messageEndpoint = process.env.DOMAIN as string;
 if (!tableName) {
-  throw new Error("WEBSOCKET stats table name environment variable is not set");
+  throw new Error("WEBSOCKET connections table name environment variable is not set");
 }
 export const handler = WebSocketApiHandler(async (_event) => {
   try {
