@@ -80,7 +80,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
   const createWalletFunction = Function.fromFunctionName(
     stack,
     "CreateWalletFunction",
-    "dev-wallet-ApiStack-createWallet"
+    `${stack.stage}-wallet-ApiStack-createWallet`
   );
 
   const api = new Api(stack, "UserManagementApi", {

@@ -10,6 +10,7 @@ export const ChatInput = () => {
   const { user } = useAuth();
 
   const handleSendMessage = () => {
+    console.log(user, "user");
     if (!user) {
       toast.error("You need to be logged in to send messages");
       return;

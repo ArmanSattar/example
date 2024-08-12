@@ -12,7 +12,6 @@ import { toast } from "sonner";
 import bs58 from "bs58";
 import { useLoading } from "./LoadingContext";
 import { userManagementUrl } from "../libs/constants";
-import { useRouter } from "next/navigation";
 
 interface User {
   userId: string;
@@ -32,6 +31,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   checkToken: () => Promise<boolean>;
   updateUser: (updatedUserData: Partial<User>) => void;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const { sendMessage, connectionStatus } = useWebSocket();
   const { connection } = useConnection();
   const { startLoading, finishLoading } = useLoading();
-  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
 
   const checkToken = useCallback(async () => {
     const token = localStorage.getItem("token");
@@ -73,18 +73,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
       localStorage.removeItem("token");
     } finally {
       finishLoading();
+      setIsLoading(false);
     }
     return false;
   }, []);
 
   useEffect(() => {
     startLoading();
+    setIsLoading(true);
     console.log("Checking token...");
     checkToken();
   }, [checkToken]);
 
   const login = useCallback(async () => {
     startLoading();
+    setIsLoading(true);
     try {
       if (!connected || !publicKey || !signMessage) {
         toast.error("Wallet not connected or does not support message signing!");
@@ -147,14 +150,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw new Error("Login failed");
       }
     } catch (error) {
-
       if ((error as Error).name === "WalletSignMessageError") {
         await disconnect();
       }
       toast.error((error as Error).message);
-      
     } finally {
       finishLoading();
+      setIsLoading(false);
     }
 
     setUser(null);
@@ -162,6 +164,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = useCallback(async () => {
     startLoading();
+    setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
 
@@ -186,6 +189,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       toast.error("Error occurred during logout!");
     } finally {
       finishLoading();
+      setIsLoading(false);
     }
   }, [disconnect, connectionStatus, sendMessage]);
 
@@ -204,6 +208,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     logout,
     checkToken,
     updateUser,
+    isLoading,
   };
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { UserHeader } from "./components/UserHeader";
 import { UserActions } from "./components/UserActions";
 import { UserStats } from "./components/UserStats";
@@ -9,11 +9,16 @@ import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 
 export default function Page() {
-  const { user, updateUser } = useAuth();
+  const { user, isLoading, updateUser } = useAuth();
   const router = useRouter();
 
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/cases");
+    }
+  }, [isLoading, user, router]);
+
   if (!user) {
-    router.push("/cases");
     return null;
   }
 

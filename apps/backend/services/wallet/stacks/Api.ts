@@ -17,7 +17,7 @@ export function ApiStack({ stack }: StackContext) {
   const depositTreasuryFunction = Function.fromFunctionName(
     stack,
     "DepositTreasuryFunction",
-    "dev-treasury-ApiStack-deposit-to-wallet"
+    `${stack.stage}-treasury-ApiStack-deposit-to-wallet`
   );
 
   const createWalletFunction = new Function(stack, "CreateWalletFunction", {
@@ -38,7 +38,7 @@ export function ApiStack({ stack }: StackContext) {
   const withdrawTreasuryFunction = Function.fromFunctionName(
     stack,
     "WithdrawTreasuryFunction",
-    "dev-treasury-ApiStack-withdraw-from-wallet"
+    `${stack.stage}-treasury-ApiStack-withdraw-from-wallet`
   );
 
   const betTransactionHandler = new Function(stack, "BetTransactionHandler", {
@@ -77,6 +77,7 @@ export function ApiStack({ stack }: StackContext) {
   const api = new Api(stack, "api", {
     defaults: {
       function: {
+        enableLiveDev: stack.stage === "dev",
         environment: {
           WALLETS_TABLE_ARN: walletsTableName,
           DEPOSIT_TREASURY_FUNCTION_ARN: depositTreasuryFunction.functionArn,
@@ -88,7 +89,7 @@ export function ApiStack({ stack }: StackContext) {
     routes: {
       "POST /wallets": {
         function: {
-          handler: "../wallet/src/service/api/handler/create-wallet.handler",
+          handler: "src/service/event/handler/create-wallet.handler",
           permissions: [
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,

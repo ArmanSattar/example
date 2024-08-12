@@ -47,8 +47,8 @@ export const UserStats: React.FC<UserStatsProps> = ({ user }) => {
               <div className={"flex flex-col justify-between items-start w-full"}>
                 <div className="text-white text-lg mt-2 font-semibold">{stat.title}</div>
                 <Money
-                  amount={stat.amount}
-                  textStyle={"text-gray-400 text-md"}
+                  amount={Math.round(stat.amount) / 100}
+                  textStyle={"text-gray-400 text-lg font-semibold"}
                   className={"mt-1"}
                 />
               </div>

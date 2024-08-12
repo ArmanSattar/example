@@ -386,7 +386,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           >
             <div
               ref={carouselRef}
-              className={`flex absolute will-change-transform overflow-visible transform-gpu ${
+              className={`flex absolute overflow-visible ${
                 isVertical ? "flex-col top-0" : "flex-row left-0"
               }`}
               style={carouselStyle}

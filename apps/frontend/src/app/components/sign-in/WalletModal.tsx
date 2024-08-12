@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useAuth } from "../../context/AuthContext";
 import { cn } from "../../cases/[id]/utils";
 import { toast } from "sonner";
+import { Spinner } from "../Spinner";
 
 interface CustomWalletModalProps {
   isOpen: boolean;
@@ -49,10 +50,9 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
       } catch (error) {
         console.error("Login failed:", error);
         toast.error("Login failed. Please try again.");
-        
       }
     }
-    setIsConnecting(false)
+    setIsConnecting(false);
   }, [connected, publicKey, login, onClose, shouldAttemptLogin]);
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
         if (selectedWallet.readyState !== WalletReadyState.Installed) {
           toast.error("Wallet is not detected please install it and try again");
           select(null);
-          setIsConnecting(false)
+          setIsConnecting(false);
         } else {
           setShouldAttemptLogin(true); // Set the flag to attempt login
         }
@@ -93,7 +93,7 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
         } else {
           toast.error(`Failed to connect: ${(error as Error).message}`);
         }
-        setIsConnecting(false)
+        setIsConnecting(false);
       }
     },
     [select, wallets]
@@ -104,7 +104,7 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
       event.preventDefault();
       setError(null);
       onClose();
-      setIsConnecting(false)
+      setIsConnecting(false);
     },
     [onClose]
   );
@@ -120,11 +120,11 @@ export const CustomWalletModal: React.FC<CustomWalletModalProps> = ({ isOpen, on
       ref={ref}
       role="dialog"
     >
-      <div className="wallet-adapter-modal-container">
-        <div className="wallet-adapter-modal-wrapper relative">
+      <div className="wallet-adapter-modal-container relative">
+        <div className="wallet-adapter-modal-wrapper">
           {isConnecting && (
-            <div className="absolute inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
-              <div className="w-12 h-12 border-4 border-white-400 border-t-transparent rounded-full animate-spin-slow"></div>
+            <div className={"fixed inset-0 flex justify-center items-center z-50"}>
+              <Spinner size={"medium"} color={"text-red-500"} />
             </div>
           )}
           <button onClick={handleClose} className="wallet-adapter-modal-button-close">

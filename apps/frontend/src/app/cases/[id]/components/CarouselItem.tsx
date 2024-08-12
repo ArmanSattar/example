@@ -58,7 +58,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
 
   return (
     <div
-      className={`will-change-transform ${
+      className={`will-change-transform transform-gpu ${
         isMiddle ? "animate-middle-item" : shouldScaleDown ? "animate-scale-down" : ""
       }`}
       style={{ width: `${itemWidth}px`, height: `${itemHeight}px` }}

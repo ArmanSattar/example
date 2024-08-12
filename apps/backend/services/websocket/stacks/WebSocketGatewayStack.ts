@@ -12,31 +12,31 @@ export function WebSocketGateway({ stack }: StackContext) {
   const callAuthorizerFunction = Function.fromFunctionName(
     stack,
     "CallAuthorizerFunction",
-    "dev-user-management-UserManagementHandlerAPI-authorizer"
+    `${stack.stage}-user-management-UserManagementHandlerAPI-authorizer`
   );
 
   const getCaseFunction = Function.fromFunctionName(
     stack,
     "GetCaseFunction",
-    "dev-game-engine-GameEngineHandlerAPI-getCaseFunction"
+    `${stack.stage}-game-engine-GameEngineHandlerAPI-getCaseFunction`
   );
 
   const performSpinFunction = Function.fromFunctionName(
     stack,
     "PerformSpinFunction",
-    "dev-game-engine-GameEngineHandlerAPI-performSpinFunction"
+    `${stack.stage}-game-engine-GameEngineHandlerAPI-performSpinFunction`
   );
 
   const betTransactionFunction = Function.fromFunctionName(
     stack,
     "UpdateBalanceFunction",
-    "dev-wallet-ApiStack-update-balance"
+    `${stack.stage}-wallet-ApiStack-update-balance`
   );
 
   const getUserFunction = Function.fromFunctionName(
     stack,
     "GetUserFunction",
-    "dev-user-management-UserManagementHandlerAPI-getUser"
+    `${stack.stage}-user-management-UserManagementHandlerAPI-getUser`
   );
 
   const api = new WebSocketApi(stack, "WebSocketGatewayApi", {

@@ -30,9 +30,10 @@ export default function CasePage({ params }: { params: { id: string } }) {
   if (isError || error) {
     toast.error(`Failed to fetch case data`);
     return (
-      <div className={"w-full h-full flex justify-center items-center"}>
-        <span className={"text-3xl text-center whitespace-nowrap"}>
-          Oops! Something went wrong.
+      <div className={"w-full h-full flex flex-col gap-y-[5vh] justify-center items-center"}>
+        <span className={"text-8xl text-center text-white whitespace-nowrap"}>Oops!</span>
+        <span className={"text-6xl text-center text-white whitespace-nowrap"}>
+          Something went wrong.
         </span>
       </div>
     );
