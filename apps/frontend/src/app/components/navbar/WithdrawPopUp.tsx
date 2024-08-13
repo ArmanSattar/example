@@ -11,7 +11,7 @@ import { postData } from "./utils/requests";
 import { WithdrawRequest, WithdrawResponse } from "@solspin/types";
 import { WALLETS_API_URL } from "../../types";
 import Close from "../../../../public/icons/close.svg";
-import Wallet from "../../../../public/icons/wallet.svg";
+import Wallet from "../../../../public/icons/Wallet.svg";
 import Dollar from "../../../../public/icons/dollar.svg";
 
 interface WithdrawPopUpProps {
