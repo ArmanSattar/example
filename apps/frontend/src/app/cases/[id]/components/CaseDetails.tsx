@@ -1,10 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Image from "next/image";
-import { useFetchImage } from "../hooks/useFetchImage";
-import { GET_CASES_URL } from "../../../types";
-import { toast } from "sonner";
-import { Tag } from "../../components/Tag";
 import { CaseMetaData } from "./CaseMetaData";
+import { GET_CASES_URL } from "../../../types";
 
 interface CaseDetailsProps {
   name: string;
@@ -14,7 +11,6 @@ interface CaseDetailsProps {
   highestPrice: number;
   lowestPrice: number;
   numberOfItems: number;
-  onLoaded: () => void;
 }
 
 export const CaseDetails: React.FC<CaseDetailsProps> = ({
@@ -25,51 +21,27 @@ export const CaseDetails: React.FC<CaseDetailsProps> = ({
   highestPrice,
   lowestPrice,
   numberOfItems,
-  onLoaded,
 }) => {
-  const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${imagePath}`);
-
-  useEffect(() => {
-    if (!isLoading) {
-      onLoaded();
-    }
-  }, [isLoading]);
-
-  if (isError) {
-    toast.error("Error fetching image");
-    return <div>Error fetching image</div>;
-  }
-
-  if (!isLoading && !data) {
-    return <div>No image found</div>;
-  }
-
   return (
-    <div className={"w-full flex justify-center items-center -mt-[8vh]"}>
-      <div className="relative flex flex-col justify-start h-full max-w-[40vw] items-center main-element rounded-md p-4 gap-2">
-        <div className={"flex-col flex justify-start items-center gap-4"}>
-          <div className="flex gap-6 justify-between items-center mb-4">
-            <span className="text-white font-bold text-3xl whitespace-nowrap">{name}</span>
-            {tag !== "" && <Tag name={tag} customStyle={"!text-lg !px-3"} />}
-          </div>
-          <div className="relative flex justify-center items-center -mt-12 w-[200px] h-[200px] lg:w-[300px] lg:h-[275px]">
-            <Image
-              src={data || "/images/placeholder.png"}
-              alt={name}
-              fill={true}
-              objectFit="contain"
-              className="object-contain"
-            />
-          </div>
-          <CaseMetaData
-            name={name}
-            highestPrice={highestPrice}
-            lowestPrice={lowestPrice}
-            totalItems={numberOfItems}
-            label={tag}
+    <div className="relative flex flex-col sm:flex-row justify-start sm:items-center items-start w-full sm:gap-4 xl:-mt-10">
+      <div className="relative flex justify-center sm:justify-start items-center w-full sm:w-max">
+        <div className="flex relative justify-center items-center min-w-[320px] min-h-[320px] -mt-4 xl:-mt-10">
+          <Image
+            src={`${GET_CASES_URL}${imagePath}`}
+            alt={name}
+            fill
+            priority
+            className="object-contain"
           />
         </div>
       </div>
+      <CaseMetaData
+        name={name}
+        highestPrice={highestPrice}
+        lowestPrice={lowestPrice}
+        price={price}
+        label={tag}
+      />
     </div>
   );
 };

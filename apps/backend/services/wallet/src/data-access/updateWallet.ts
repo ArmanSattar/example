@@ -10,7 +10,6 @@ const logger = getLogger("updateWallet");
 
 export const updateUser = async (wallet: WalletsDBObject): Promise<void> => {
   // Maybe look at using updateItem instead of putItem
-
   const params = {
     TableName: WALLETS_TABLE_ARN,
     Item: wallet,

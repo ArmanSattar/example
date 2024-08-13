@@ -18,8 +18,11 @@ const userSlice = createSlice({
     addToBalance(state, action) {
       state.balance += action.payload * 100;
     },
+    resetBalance(state) {
+      state.balance = 0;
+    },
   },
 });
 
-export const { addToBalance, setBalance } = userSlice.actions;
+export const { addToBalance, setBalance, resetBalance } = userSlice.actions;
 export default userSlice.reducer;

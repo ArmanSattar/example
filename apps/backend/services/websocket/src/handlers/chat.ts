@@ -16,6 +16,7 @@ import {
 } from "../data-access/chatMessageRepository";
 import { callGetUser } from "../helpers/getUserHelper";
 import { getAllConnectionIds } from "../data-access/connectionRepository";
+import { User } from "@solspin/user-management-types";
 
 const logger = getLogger("chat-handler");
 const MESSAGE_HISTORY_MAX_NUMBER: number = Number(process.env.MESSAGE_HISTORY_MAX_NUMBER) || 25;
@@ -48,7 +49,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     }
 
     const userId = connectionInfo.userId;
-    const userInfo = await callGetUser(userId);
+    const userInfo: User = await callGetUser(userId);
 
     const chatMessage: ChatMessage = {
       messageId: randomUUID(),
@@ -56,7 +57,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       sentAt: Date.now(),
       userId,
       username: userInfo.username,
-      profilePicture: userInfo.profilePicture,
+      profileImageUrl: userInfo.profileImageUrl,
       channel: "GENERAL",
       expirationTime: Math.floor(Date.now() / 1000) + 48 * 60 * 60,
     };
@@ -72,7 +73,7 @@ export const handler = WebSocketApiHandler(async (event) => {
         message: chatMessage.message,
         sentAt: chatMessage.sentAt,
         username: chatMessage.username,
-        profilePicture: chatMessage.profilePicture,
+        profileImageUrl: chatMessage.profileImageUrl,
       },
     };
     broadcastMessage(messageEndpoint, broadcastChatMessage, connectionIds, TYPE);

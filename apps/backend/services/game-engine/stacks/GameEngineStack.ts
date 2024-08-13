@@ -57,6 +57,7 @@ export function GameEngineHandlerAPI({ stack }: StackContext) {
             resources: [casesTable.tableArn],
           }),
         ],
+        copyFiles: [{ from: "src/cases.json", to: "cases.json" }],
       },
     },
 

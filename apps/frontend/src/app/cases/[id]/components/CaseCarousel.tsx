@@ -12,33 +12,36 @@ import React, {
 import dynamic from "next/dynamic";
 import { WindowSize } from "../hooks/useWindowResize";
 import { BaseCaseItem } from "@solspin/game-engine-types";
-import {
-  animationCalculation,
-  AnimationCalculation,
-  Direction,
-  DISTANCE_IN_ITEMS,
-  ITEM_HEIGHT,
-  ITEM_WIDTH,
-} from "../utils";
+import { animationCalculation, getItemDimensions } from "../utils";
+import { DISTANCE_IN_ITEMS } from "../../../libs/constants";
+import { AnimationCalculation, Direction } from "../../../libs/types";
 import { RootState } from "../../../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { setStartMiddleItem } from "../../../../store/slices/caseCarouselSlice";
+import TriangleIcon from "./TriangleIcon";
+import { Howl } from "howler";
+import { setDimensions } from "../../../../store/slices/demoSlice";
 
 const CarouselItem = dynamic(() => import("./CarouselItem"), { ssr: false });
 
 interface CaseCarouselProps {
   items: BaseCaseItem[];
+  index: number;
   isSpinClicked: boolean;
   isFastAnimationClicked: boolean;
   numCases: number;
   onAnimationComplete: () => void;
   windowSize: WindowSize;
   skipAnimation: boolean;
+  attachObserver: boolean;
 }
 
 type Action =
   | { type: "RESET" }
-  | { type: "START_ANIMATION"; payload: { currentPosition: number; direction: Direction } }
+  | {
+      type: "START_ANIMATION";
+      payload: { currentPosition: number; direction: Direction; numCases: number };
+    }
   | { type: "FIRST_STAGE_END" }
   | { type: "SECOND_STAGE_END" };
 
@@ -57,7 +60,8 @@ function carouselReducer(state: State, action: Action): State {
         animationStage: 1,
         offset: animationCalculation(
           action.payload.currentPosition,
-          action.payload.direction === Direction.HORIZONTAL
+          action.payload.direction === Direction.HORIZONTAL,
+          action.payload.numCases
         ),
       };
     case "FIRST_STAGE_END":
@@ -72,12 +76,14 @@ function carouselReducer(state: State, action: Action): State {
 const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
   ({
     items,
+    index,
     isFastAnimationClicked,
     numCases,
     onAnimationComplete,
     windowSize,
     isSpinClicked,
     skipAnimation,
+    attachObserver,
   }) => {
     const [state, dispatch] = useReducer(carouselReducer, {
       animationStage: 0,
@@ -89,11 +95,16 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     const carouselContainerRef = useRef<HTMLDivElement | null>(null);
     const [middleItem, setMiddleItem] = useState<number>(0);
     const startMiddleItem = useSelector((state: RootState) => state.caseCarousel.startMiddleItem);
+    const isSoundOn = useSelector((state: RootState) => state.demo.soundOn);
     const reduxDispatch = useDispatch();
     const [direction, setDirection] = useState<Direction>(Direction.HORIZONTAL);
-    const [carouselDimensions, setCarouselDimensions] = useState<{ width: number; height: number }>(
-      { width: 0, height: 0 }
+    const carouselDimensions = useSelector((state: RootState) => state.demo.dimensions);
+    const middleIndexUpdatingRef = useRef(0);
+    const { width: itemWidth, height: itemHeight } = useMemo(
+      () => getItemDimensions(direction === Direction.HORIZONTAL, numCases),
+      [direction]
     );
+    const isVertical = useMemo(() => direction === Direction.VERTICAL, [direction]);
 
     const calculateDirection = useCallback(() => {
       if (windowSize.width && windowSize.width <= 640) {
@@ -118,10 +129,67 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       }
     }, [windowSize, numCases, calculateDirection, direction, items]);
 
-    const updatePosition = useCallback((position: number) => {
-      currentPositionRef.current = position;
-      calculateMiddleItem();
-    }, []);
+    const useDebouncedCallback = <T extends (...args: any[]) => any>(func: T, wait: number): T => {
+      const timeout = useRef<NodeJS.Timeout | undefined>();
+
+      return useCallback(
+        ((...args: Parameters<T>) => {
+          const later = () => {
+            clearTimeout(timeout.current);
+            func(...args);
+          };
+
+          clearTimeout(timeout.current);
+          timeout.current = setTimeout(later, wait);
+        }) as T,
+        [func, wait]
+      );
+    };
+
+    const playSound = useDebouncedCallback((src: string) => {
+      let sound: Howl;
+
+      if (src === "/sounds/tick.wav") {
+        sound = new Howl({
+          src: ["/sounds/tick.wav"],
+          volume: 0.3,
+          preload: true,
+        });
+      } else {
+        sound = new Howl({
+          src: ["/sounds/reward-item-reached.wav"],
+          volume: 0.1,
+          preload: true,
+        });
+      }
+      sound.play();
+    }, 20);
+
+    useEffect(() => {
+      if (middleItem !== startMiddleItem && middleItem !== 0 && isSoundOn) {
+        playSound("/sounds/tick.wav");
+      }
+    }, [middleItem, startMiddleItem]);
+
+    const calculateMiddleItem = useCallback(() => {
+      if (!carouselContainerRef.current || !carouselRef.current) return;
+
+      // Calculate the index of the middle item based on the current position
+      const middleIndex = Math.floor(Math.abs(currentPositionRef.current) / itemWidth);
+
+      if (middleIndex !== middleIndexUpdatingRef.current) {
+        setMiddleItem(middleIndex);
+        middleIndexUpdatingRef.current = middleIndex;
+      }
+    }, [direction]);
+
+    const updatePosition = useCallback(
+      (position: number) => {
+        currentPositionRef.current = position;
+        calculateMiddleItem();
+      },
+      [calculateMiddleItem]
+    );
 
     useLayoutEffect(() => {
       if ((state.animationStage === 3 || state.animationStage === 0) && isSpinClicked) {
@@ -139,6 +207,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
               payload: {
                 currentPosition: currentPosition,
                 direction: direction,
+                numCases: numCases,
               },
             });
             animationCompletedRef.current = false;
@@ -151,6 +220,7 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       const handleTransitionEnd = () => {
         if (state.animationStage === 1) {
           dispatch({ type: "FIRST_STAGE_END" });
+          if (isSoundOn) playSound("/sounds/reward-item-reached.wav");
         } else if (state.animationStage === 2 && !animationCompletedRef.current) {
           animationCompletedRef.current = true;
           onAnimationComplete();
@@ -181,17 +251,15 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
         if (carouselRef.current) {
           const transform = getComputedStyle(carouselRef.current).transform;
           const matrix = new DOMMatrix(transform);
-          const position =
-            direction === Direction.VERTICAL
-              ? matrix.m42 - carouselDimensions.height / 2
-              : matrix.m41 - carouselDimensions.width / 2; // m42 for Y, m41 for X
+          const position = isVertical
+            ? matrix.m42 - carouselDimensions.height / 2
+            : matrix.m41 - carouselDimensions.width / 2; // m42 for Y, m41 for X
           updatePosition(position);
-          console.log(position)
         }
         animationFrameId = requestAnimationFrame(animate);
       };
 
-      if (state.animationStage === 1 || state.animationStage === 2) {
+      if (state.animationStage === 1) {
         animationFrameId = requestAnimationFrame(animate);
       }
 
@@ -216,9 +284,9 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           transformDistance = distance;
           transition = `transform ${
             !isFastAnimationClicked
-              ? `${6.5 + Math.random() - 0.5}s`
+              ? `${6.5 + Math.random() - 1}s`
               : `${2 + Math.random() * 0.33 - 0.165}s`
-          } cubic-bezier(0, 0.49, 0.1, 1)`;
+          } cubic-bezier(0, 0.46, 0.09, 1)`;
           break;
         case 2:
           transformDistance = distance - tickerOffset;
@@ -243,25 +311,12 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
       };
     }, [state.animationStage, state.offset, isFastAnimationClicked, direction]);
 
-    const calculateMiddleItem = useCallback(() => {
-      if (!carouselContainerRef.current || !carouselRef.current) return;
-
-      // Calculate the index of the middle item based on the current position
-      const middleIndex = Math.floor(Math.abs(currentPositionRef.current) / ITEM_WIDTH);
-
-      if (middleIndex !== middleItem) {
-        setMiddleItem(middleIndex);
-      }
-    }, [direction, middleItem]);
-
     const setMiddleDueToResizedCarousel = useCallback(
       (width: number, height: number) => {
         if (carouselContainerRef.current) {
-          const dimension = direction === Direction.HORIZONTAL ? width : height;
+          const dimension = !isVertical ? width : height;
 
-          const middleElement = Math.ceil(
-            dimension / ((direction === Direction.HORIZONTAL ? ITEM_WIDTH : ITEM_HEIGHT) * 2)
-          );
+          const middleElement = Math.ceil(dimension / ((!isVertical ? itemWidth : itemHeight) * 2));
           reduxDispatch(setStartMiddleItem(middleElement - 1));
         }
       },
@@ -269,15 +324,19 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
     );
 
     useEffect(() => {
-      if (!carouselContainerRef.current) return;
+      setMiddleDueToResizedCarousel(carouselDimensions.width, carouselDimensions.height);
+    }, [carouselDimensions, setMiddleDueToResizedCarousel]);
+
+    useEffect(() => {
+      if (!carouselContainerRef.current || !attachObserver) return;
 
       const carouselRefTemp = carouselContainerRef.current;
 
       const resizeObserver = new ResizeObserver((entries) => {
         for (const entry of entries) {
           const { width, height } = entry.contentRect;
-          setMiddleDueToResizedCarousel(width, height);
-          setCarouselDimensions({ width: width, height: height });
+          reduxDispatch(setDimensions({ width, height }));
+          break;
         }
       });
 
@@ -289,52 +348,61 @@ const CaseCarousel: React.FC<CaseCarouselProps> = React.memo(
           resizeObserver.unobserve(carouselRefTemp);
         }
       };
-    }, [setMiddleDueToResizedCarousel]);
+    }, [attachObserver, reduxDispatch, setMiddleDueToResizedCarousel]);
 
     return (
-      <div className={`relative rounded-md h-full flex-grow w-full example`}>
+      <div
+        className={`relative rounded-md h-full flex-grow w-full bg-navbar_bg border-2 border-color_stroke_1`}
+      >
+        {index === 0 && (
+          <div
+            className={`h-full absolute flex z-20 ${
+              direction === Direction.HORIZONTAL
+                ? "w-full justify-center h-max -top-2 inset-x-0 mx-auto "
+                : "h-full items-center -left-2 inset-y-0 my-auto"
+            }`}
+          >
+            <TriangleIcon isVertical={direction !== Direction.HORIZONTAL} firstIcon={true} />
+          </div>
+        )}
+        {index === numCases - 1 && (
+          <div
+            className={`absolute flex items-center z-20 ${
+              direction === Direction.HORIZONTAL
+                ? "w-full justify-center h-max -bottom-2 inset-x-0 mx-auto"
+                : "h-full -right-2 inset-y-0 my-auto"
+            }`}
+          >
+            <TriangleIcon isVertical={direction !== Direction.HORIZONTAL} firstIcon={false} />
+          </div>
+        )}
         <div
-          className={`w-0 h-0 absolute z-20 ${
-            direction === Direction.HORIZONTAL
-              ? "top-0 inset-x-0 mx-auto border-l-[16px] border-r-[16px] border-t-[27.71px] border-l-transparent border-r-transparent border-t-yellow-400"
-              : "left-0 inset-y-0 my-auto border-t-[16px] border-b-[16px] border-l-[27.71px] border-t-transparent border-b-transparent border-l-yellow-400"
-          }`}
-        ></div>
-        <div
-          className={`w-0 h-0 absolute z-20 ${
-            direction === Direction.HORIZONTAL
-              ? // ? "bottom-0 inset-x-0 mx-auto border-l-[16px] border-r-[16px] border-b-[27.71px] border-l-transparent border-r-transparent border-b-yellow-400"
-                "hidden"
-              : "right-0 inset-y-0 my-auto border-t-[16px] border-b-[16px] border-r-[27.71px] border-t-transparent border-b-transparent border-r-yellow-400"
-          }`}
-        ></div>
-        <div
-          className={`mt-md flex overflow-hidden rounded-sm flex-col gap-xs ${
-            direction === Direction.VERTICAL ? "h-[450px]" : "h-[245px]"
-          }`}
+          className={`mt-md flex rounded-sm flex-col gap-xs`}
+          style={{ height: isVertical ? `${itemHeight * 1.5}px` : `${itemHeight * 1.25}px` }}
         >
           <div
-            className="relative flex h-full overflow-hidden bg-dark-4 w-full items-center justify-center"
+            className="relative flex h-full w-full overflow-clip items-center justify-center"
             ref={carouselContainerRef}
           >
             <div
               ref={carouselRef}
-              className={`flex absolute will-change-transform transform-gpu ${
-                direction === Direction.VERTICAL ? "flex-col top-0" : "flex-row left-0"
-              } h-max`}
+              className={`flex absolute overflow-visible ${
+                isVertical ? "flex-col top-0" : "flex-row left-0"
+              }`}
               style={carouselStyle}
             >
-              {items.map((item, index) => (
-                <CarouselItem
-                  key={index}
-                  item={item}
-                  isMiddle={index === (middleItem === 0 ? startMiddleItem : middleItem)}
-                  isFinal={index === DISTANCE_IN_ITEMS + startMiddleItem}
-                  animationEnd={state.animationStage === 2 || state.animationStage === 3}
-                  animationStart={state.animationStage === 1}
-                  direction={direction}
-                />
-              ))}
+              {items &&
+                items.map((item, index) => (
+                  <CarouselItem
+                    key={index}
+                    item={item}
+                    isMiddle={index === (middleItem === 0 ? startMiddleItem : middleItem)}
+                    isFinal={index === DISTANCE_IN_ITEMS + startMiddleItem}
+                    animationEnd={state.animationStage === 2 || state.animationStage === 3}
+                    animationStart={state.animationStage === 1}
+                    dimension={{ width: itemWidth, height: itemHeight }}
+                  />
+                ))}
             </div>
           </div>
         </div>

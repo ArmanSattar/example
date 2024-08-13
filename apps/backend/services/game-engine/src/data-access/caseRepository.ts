@@ -4,6 +4,7 @@ import { CaseDoesNotExistError } from "@solspin/errors"; // Update with actual p
 import { BaseCase, BaseCaseItem, CaseType } from "@solspin/game-engine-types";
 import { CASES_TABLE_NAME } from "../foundation/runtime";
 import fs from "fs";
+import path from "path";
 
 const client = new DynamoDBClient({ region: "eu-west-2" });
 const ddbDocClient = DynamoDBDocumentClient.from(client);
@@ -69,13 +70,22 @@ export const listCases = async (): Promise<BaseCase[]> => {
   return result.Items as BaseCase[];
 };
 
-// Method to initialize database with mock data
 export const initializeDatabase = async (): Promise<void> => {
   try {
-    // Read the JSON file
-    const casesContent = fs.readFileSync("src/data/cases.json", "utf-8");
-    const casesData = JSON.parse(casesContent) as BaseCase[];
+    let casesData: BaseCase[];
+
+    // Check if we're running in a Lambda environment
+    if (process.env.AWS_LAMBDA_FUNCTION_NAME) {
+      // In Lambda, use require to load the JSON file
+      casesData = require("./cases.json");
+    } else {
+      // In local development, use fs.readFileSync
+      const casesContent = fs.readFileSync(path.join(__dirname, "./cases.json"), "utf-8");
+      casesData = JSON.parse(casesContent);
+    }
+
     console.log(casesData);
+
     // Loop through each case in the JSON data
     for (const caseData of casesData) {
       // Add the case to the database
@@ -94,5 +104,6 @@ export const initializeDatabase = async (): Promise<void> => {
     console.log("Database initialized successfully");
   } catch (error) {
     console.error("Error initializing database:", error);
+    throw error; // Re-throw the error to ensure it's not silently caught
   }
 };

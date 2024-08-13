@@ -1,5 +1,5 @@
 import { RemovalPolicy } from "aws-cdk-lib/core";
-import { Function, StackContext, Table } from "sst/constructs";
+import { StackContext, Table } from "sst/constructs";
 
 export function WebSocketHandlerAPI({ stack }: StackContext) {
   const removeOnDelete = stack.stage !== "prod";
@@ -27,7 +27,7 @@ export function WebSocketHandlerAPI({ stack }: StackContext) {
       sentAt: "number",
       userId: "string",
       username: "string",
-      profilePicture: "string",
+      profileImageUrl: "string",
       channel: "string",
       expirationTime: "number",
     },
@@ -46,23 +46,8 @@ export function WebSocketHandlerAPI({ stack }: StackContext) {
     },
   });
 
-  const websocketStatsTable = new Table(stack, "stats", {
-    fields: {
-      id: "string",
-      activeConnections: "number",
-    },
-    primaryIndex: { partitionKey: "id" },
-    cdk: {
-      table: {
-        removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
-        timeToLiveAttribute: "expirationTime",
-      },
-    },
-  });
-
   return {
     websocketConnectionsTable: websocketConnectionsTable,
     websocketChatMessagesTable: websocketChatMessagesTable,
-    websocketStatsTable,
   };
 }

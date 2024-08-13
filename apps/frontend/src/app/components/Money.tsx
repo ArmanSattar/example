@@ -1,17 +1,20 @@
 import React from "react";
 import Dollar from "../../../public/icons/dollar.svg";
+import { cn } from "../cases/[id]/utils";
 
 interface MoneyProps {
   amount: number;
   className?: string;
-  textSize?: string;
+  textStyle?: string;
 }
 
-export const Money: React.FC<MoneyProps> = ({ amount, className, textSize }) => {
+export const Money: React.FC<MoneyProps> = ({ amount, className, textStyle = "lg" }) => {
   return (
-    <div className={`flex space-x-2 items-center ${className}`}>
+    <div className={cn(`flex space-x-2 items-center`, className)}>
       <Dollar className="text-yellow-400" />
-      <span className={`text-lg text-white text-${textSize}`}>{amount.toFixed(2)}</span>
+      <span className={cn(`text-white whitespace-nowrap`, textStyle)}>
+        {amount.toLocaleString()}
+      </span>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { Context, EventBridgeEvent, SQSEvent } from "aws-lambda";
-import { Service } from "@solspin/types";
+import { Service } from "../types/src";
 import { EventBody, EventProvider } from "./types";
 import { validateEvent } from "./validate";
 

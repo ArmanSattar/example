@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { EventProvider } from "../types";
-import { GameOutcome } from "@solspin/betting-types";
+import { GameOutcome } from "../../types/src";
+
 export enum GameType {
   CASES = "CASES",
   CASE_BATTLES = "CASE_BATTLES",

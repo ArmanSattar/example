@@ -6,22 +6,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleSoundOn } from "../../../store/slices/demoSlice";
 import { RootState } from "../../../store";
 
-interface UserInfoProps {
-  username: string;
-}
-
-const Profile: React.FC<UserInfoProps> = ({ username }) => {
+const Profile: React.FC = () => {
   const { user, updateUser } = useAuth();
 
   const [isLoading, setIsLoading] = useState(true);
   const [showSelfExcludePopup, setShowSelfExcludePopup] = useState(false);
   const [showChangeUsernamePopup, setShowChangeUsernamePopup] = useState(false);
-  const [showChangeProfilePicturePopup, setShowChangeProfilePicturePopup] = useState(false);
+  const [showChangeprofileImageUrlPopup, setShowChangeprofileImageUrlPopup] = useState(false);
   const [currentUsername, setCurrentUsername] = useState("");
   const [newUsername, setNewUsername] = useState("");
   const [excludeDuration, setExcludeDuration] = useState("1 week");
   const [isMuted, setIsMuted] = useState(false);
-  const [profilePicture, setProfilePicture] = useState("/header-image.png");
+  const [profileImageUrl, setprofileImageUrl] = useState("");
   const dispatch = useDispatch();
   const isSoundOn = useSelector((state: RootState) => state.demo.soundOn);
 
@@ -115,21 +111,12 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
     }
   };
 
-  const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const newProfilePicture = URL.createObjectURL(event.target.files[0]);
-      setProfilePicture(newProfilePicture);
-      setShowChangeProfilePicturePopup(false);
-      console.log("Profile picture changed");
-    }
-  };
-
   return (
     <div className="w-full mx-auto my-4 p-6 rounded-lg relative">
       <div className="mb-4">
         <button
           className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-300 ease-in-out"
-          onClick={() => setShowChangeProfilePicturePopup(true)}
+          onClick={() => setShowChangeprofileImageUrlPopup(true)}
         >
           Change Profile Picture
         </button>
@@ -267,7 +254,7 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
       )}
 
       {/* Change Profile Picture popup */}
-      {showChangeProfilePicturePopup && (
+      {showChangeprofileImageUrlPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-gray-800 p-6 rounded-lg shadow-xl">
             <h2 className="text-xl font-bold text-white mb-4">Change Profile Picture</h2>
@@ -275,19 +262,19 @@ const Profile: React.FC<UserInfoProps> = ({ username }) => {
               className="w-full p-2 mb-4 bg-gray-700 text-white rounded"
               type="file"
               accept="image/*"
-              onChange={handleProfilePictureChange}
+              onChange={() => {}}
             />
             <div className="flex justify-end space-x-2">
               <button
                 className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition duration-300 ease-in-out"
-                onClick={() => setShowChangeProfilePicturePopup(false)}
+                onClick={() => setShowChangeprofileImageUrlPopup(false)}
               >
                 Cancel
               </button>
               <button
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition duration-300 ease-in-out"
                 onClick={() => {
-                  setShowChangeProfilePicturePopup(false);
+                  setShowChangeprofileImageUrlPopup(false);
                   console.log("Profile picture upload confirmed");
                 }}
               >

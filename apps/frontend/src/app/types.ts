@@ -1,3 +1,5 @@
+import { GameType } from "@solspin/types";
+
 export enum CaseItemRarity {
   CONSUMER_GRADE = "Consumer Grade",
   INDUSTRIAL_GRADE = "Industrial Grade",
@@ -14,7 +16,29 @@ export interface IFilters {
   rarity: string[];
   order: string[];
   price: string[];
+  priceRange: string[];
 }
+export interface UserStat {
+  title: string;
+  amount: number;
+  img: string;
+}
+
+export enum GameOutcome {
+  WIN = "WIN",
+  LOSE = "LOSE",
+  NEUTRAL = "NEUTRAL",
+}
+
+export type Bet = {
+  id: string; //primary key
+  userId: string; // sort key
+  gameType: GameType; // how much they bet
+  amountBet: number; // WIN || LOSE
+  outcome: GameOutcome; // how much they won from the bet
+  outcomeAmount: number;
+  createdAt: string; // which game they played
+};
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 

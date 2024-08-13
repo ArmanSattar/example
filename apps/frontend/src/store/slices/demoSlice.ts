@@ -1,6 +1,11 @@
 // src/store/slices/demoSlice.ts
 import { createSlice } from "@reduxjs/toolkit";
 
+type Dimensions = {
+  width: number;
+  height: number;
+};
+
 interface DemoState {
   demoClicked: boolean;
   numCases: number;
@@ -8,6 +13,7 @@ interface DemoState {
   soundOn: boolean;
   rarityInfoPopup: boolean;
   paidSpinClicked: boolean;
+  dimensions: Dimensions;
 }
 
 const initialState: DemoState = {
@@ -17,6 +23,7 @@ const initialState: DemoState = {
   soundOn: true,
   rarityInfoPopup: false,
   paidSpinClicked: false,
+  dimensions: { width: 1000, height: 300 },
 };
 
 const demoSlice = createSlice({
@@ -41,6 +48,17 @@ const demoSlice = createSlice({
     togglePaidSpinClicked(state) {
       state.paidSpinClicked = !state.paidSpinClicked;
     },
+    resetDemoState(state) {
+      state.demoClicked = false;
+      state.numCases = 1;
+      state.fastClicked = false;
+      state.soundOn = true;
+      state.rarityInfoPopup = false;
+      state.paidSpinClicked = false;
+    },
+    setDimensions: (state, action) => {
+      state.dimensions = action.payload;
+    },
   },
 });
 
@@ -51,5 +69,7 @@ export const {
   toggleRarityInfoPopup,
   toggleSoundOn,
   togglePaidSpinClicked,
+  resetDemoState,
+  setDimensions,
 } = demoSlice.actions;
 export default demoSlice.reducer;

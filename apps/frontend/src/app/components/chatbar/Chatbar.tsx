@@ -3,34 +3,26 @@
 import React, { useEffect, useState } from "react";
 import { ChatBody } from "./ChatBody";
 import { ChatInput } from "./ChatInput";
-import { ExpandButton } from "./ExpandButton";
-import { DismissButton } from "./DismissButton";
 import { useWebSocket } from "../../context/WebSocketContext";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store";
+import { ChatHeader } from "./ChatHeader";
+import { ExpandButton } from "./ExpandButton";
 import { toggleChatBarClicked } from "../../../store/slices/chatBarSlice";
-
-interface ChatbarProps {
-  chatOpenCallback: () => void;
-}
 
 interface Message {
   message: string;
   username: string;
   timestamp: number;
-  profilePicture?: string;
+  profileImageUrl?: string;
 }
 
-export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
-  const dispatch = useDispatch();
+export const Chatbar = () => {
   const isChatOpen = useSelector((state: RootState) => state.chatBar.chatBarOpen);
   const [messages, setMessages] = useState<Message[]>([]);
   const { socket, sendMessage, connectionStatus } = useWebSocket();
   const [playerCount, setPlayerCount] = useState<number>(0);
-  const toggleChatOpen = () => {
-    dispatch(toggleChatBarClicked());
-    chatOpenCallback();
-  };
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -49,24 +41,20 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
     fetchMessages();
   }, []);
   useEffect(() => {
-    console.log('in here')
     if (connectionStatus === "connected") {
-      sendMessage(JSON.stringify({"action": "player-count"}))
+      sendMessage(JSON.stringify({ action: "player-count" }));
     }
-  }, [connectionStatus, sendMessage])
+  }, [connectionStatus, sendMessage]);
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
         if ("type" in data && data["type"] === "chat") {
-          const message = data["message"]
-          console.log(message)
-          if (message && "player-count" in message){
-            const playersCount = message["player-count"]["count"]
-            setPlayerCount(playersCount)
-
+          const message = data["message"];
+          if (message && "player-count" in message) {
+            const playersCount = message["player-count"]["count"];
+            setPlayerCount(playersCount);
           } else if (message && "chat-message" in message) {
-
             const newMessage: Message = message["chat-message"];
             setMessages((prevMessages) => {
               const updatedMessages = [...prevMessages, newMessage];
@@ -76,7 +64,6 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
               return updatedMessages;
             });
           }
-         
         }
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
@@ -99,35 +86,38 @@ export const Chatbar: React.FC<ChatbarProps> = ({ chatOpenCallback }) => {
   const handleOldestMessageVisible = (isVisible: boolean) => {
     setIsOldestMessageVisible(isVisible);
   };
+
   return (
-    <div
-      className={`absolute lg:relative inset-0 md:h-[calc(100vh-5rem)] ${
-        isChatOpen ? "w-screen md:w-[320px]" : "w-0"
-      } z-40 transition-all duration-500 ease-in-out flex-shrink-0 bg-background shadow-2xl`}
-    >
+    <div className="relative">
       <div
-        className={`h-full flex flex-col justify-between shadow-2xl transition-transform duration-500 w-full ${
-          !isChatOpen ? "-translate-x-full hidden" : "translate-x-0"
-        }`}
+        className={`
+        absolute lg:relative inset-0 md:h-[calc(100vh-5rem)]
+        ${
+          isChatOpen
+            ? "w-[320px] border-r border-color_gray_3 translate-x-0"
+            : "w-0 -translate-x-full"
+        }
+        z-40 transition-all duration-300 ease-in-out flex-shrink-0 bg-chatbar_bg shadow-2xl
+      `}
       >
-        <ChatBody messages={messages} />
-        <div className="w-full">
-          <ChatInput playersOnline={playerCount}/>
+        <div className="h-full flex flex-col items-center justify-between shadow-2xl w-full overflow-x-hidden">
+          <ChatHeader onlineCount={playerCount} title="General Chat" />
+          <ChatBody messages={messages} />
+          <ChatInput />
         </div>
       </div>
       <div
-        className={`absolute hidden md:block bottom-4 -right-10 transform translate-x-full -translate-y-1/2 ${
-          isChatOpen ? "!hidden" : ""
-        }`}
+        className={`
+          absolute bottom-8
+          ${isChatOpen ? "left-[320px]" : "left-0"}
+          transition-all duration-300 ease-in-out z-50
+        `}
       >
-        <ExpandButton toggleChatOpen={toggleChatOpen} />
-      </div>
-      <div
-        className={`absolute top-6 right-12 transform translate-x-full -translate-y-1/2 transition-transform duration-500 ${
-          !isChatOpen ? "hidden" : ""
-        }`}
-      >
-        <DismissButton toggleChatClose={toggleChatOpen} />
+        <ExpandButton
+          toggleChatOpen={() => {
+            dispatch(toggleChatBarClicked());
+          }}
+        />
       </div>
     </div>
   );

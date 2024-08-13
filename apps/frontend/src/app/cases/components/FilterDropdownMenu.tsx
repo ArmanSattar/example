@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
 interface FilterDropdownMenuProps {
-  title: string;
   options: string[];
   onSelect: (options: string[]) => void;
   type: "checkbox" | "radio";
@@ -14,7 +13,6 @@ interface FilterDropdownMenuProps {
 }
 
 const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
-  title,
   options,
   onSelect,
   type,
@@ -71,7 +69,7 @@ const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
             height !== "" ? height : "h-10"
           } ${
             isOpen ? "rounded-b-none" : ""
-          } bg-gray_action_btn px-4 py-2 text-sm font-medium text-white focus:outline-none transition-custom`}
+          } bg-color_gray_3 px-4 py-2 text-sm font-medium text-white focus:outline-none transition-custom`}
           onClick={toggleDropdown}
         >
           <span className={`${textSizeClass} truncate`}>{displayText}</span>
@@ -92,17 +90,12 @@ const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
       </div>
 
       {isOpen && (
-        <div className="origin-top-right absolute right-0 w-full rounded-b-md shadow-lg bg-gray_action_btn z-50">
-          <div
-            className="py-1"
-            role="menu"
-            aria-orientation="vertical"
-            aria-labelledby="options-menu"
-          >
+        <div className="origin-top-right absolute right-0 w-full rounded-b-md shadow-lg bg-color_gray_3 z-50">
+          <div className="" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
             {options.map((option) => (
               <label
                 key={option}
-                className={`flex items-center w-full px-4 py-2 ${textSizeClass} text-white bg-gray_action_btn hover:brightness-125 cursor-pointer`}
+                className={`flex items-center w-full p-2 h-10 ${textSizeClass} text-white bg-color_gray_3 hover:brightness-125 cursor-pointer last:rounded-b-md`}
               >
                 <input
                   type={type}

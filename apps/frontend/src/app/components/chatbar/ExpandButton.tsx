@@ -1,26 +1,20 @@
-"use client";
-
 import ChatIconSvg from "../../../../public/icons/chat-icon.svg";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../store";
 
 interface ExpandButtonProps {
   toggleChatOpen: () => void;
 }
 
 export const ExpandButton: React.FC<ExpandButtonProps> = ({ toggleChatOpen }) => {
-  const isChatOpen = useSelector((state: RootState) => state.chatBar.chatBarOpen);
-
   return (
     <button
-      className="flex justify-center items-center bg-gray-700 rounded-full w-16 h-16 z-20 hover:cursor-pointer shadow-circle hover:bg-gray-600 transition-all duration-250 ease-in-out"
+      className="flex justify-center items-center bg-chatbar_bg rounded-l-none rounded-r-md w-12 h-12 z-50 hover:cursor-pointer expand-button hover:bg-color_gray_4 transition-all duration-250 ease-in-out border-[1px] border-l-0 border-color_gray_3"
       onClick={() => {
-        if (!isChatOpen) toggleChatOpen();
+        toggleChatOpen();
       }}
     >
       <ChatIconSvg
         className={
-          "mt-1 fill-white text-white transition-all duration-250 ease-in-out w-10 h-10 bg-none"
+          "mt-1 fill-white text-white transition-all duration-250 ease-in-out w-8 h-8 bg-none"
         }
       />
     </button>

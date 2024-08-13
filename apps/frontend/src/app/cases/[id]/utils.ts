@@ -1,12 +1,11 @@
 import { BaseCase, BaseCaseItem } from "@solspin/game-engine-types";
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { DISTANCE_IN_ITEMS, ITEM_HEIGHT, ITEM_WIDTH, NUMBER_OF_ITEMS } from "../../libs/constants";
+import { AnimationCalculation } from "../../libs/types";
 
-const DISTANCE_IN_ITEMS = 30;
-const ITEM_WIDTH = 192;
-const ITEM_HEIGHT = 192;
-const NUMBER_OF_ITEMS = 40;
-export enum Direction {
-  HORIZONTAL,
-  VERTICAL,
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
 
 const generateClientSeed = async (): Promise<string> => {
@@ -18,7 +17,7 @@ const generateClientSeed = async (): Promise<string> => {
 const binarySearch = (items: BaseCaseItem[], target: number): BaseCaseItem => {
   let left = 0;
   let right = items.length - 1;
-  console.log(target);
+
   while (left <= right) {
     const mid = Math.floor((left + right) / 2);
     if (target < items[mid].rollNumbers[0]) {
@@ -33,6 +32,25 @@ const binarySearch = (items: BaseCaseItem[], target: number): BaseCaseItem => {
   throw new Error("No item found for roll number: " + target);
 };
 
+export const getItemDimensions = (isHorizontal: boolean, numCases: number) => {
+  if (isHorizontal) {
+    switch (numCases) {
+      case 1:
+        return { width: ITEM_WIDTH, height: ITEM_HEIGHT };
+      case 2:
+        return { width: ITEM_WIDTH, height: ITEM_HEIGHT };
+      case 3:
+        return { width: ITEM_WIDTH / 1.25, height: ITEM_HEIGHT / 1.25 };
+      case 4:
+        return { width: ITEM_WIDTH / 1.5, height: ITEM_HEIGHT / 1.5 };
+      default:
+        return { width: ITEM_WIDTH, height: ITEM_HEIGHT };
+    }
+  }
+
+  return { width: ITEM_WIDTH, height: ITEM_HEIGHT };
+};
+
 const generateCases = (
   numCases: number,
   itemsWon: BaseCaseItem[] | null,
@@ -45,7 +63,6 @@ const generateCases = (
       if (index === DISTANCE_IN_ITEMS + startItemIndex && itemsWon) {
         return itemsWon[rootIndex];
       }
-
       const roll = Math.floor(Math.random() * 100000);
       return { ...binarySearch(baseCase.items, roll) };
     })
@@ -60,17 +77,13 @@ function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export type AnimationCalculation = {
-  distance: number;
-  tickerOffset: number;
-};
-
 const animationCalculation = (
   currentPosition: number,
-  isHorizontal: boolean
+  isHorizontal: boolean,
+  numCases: number
 ): AnimationCalculation => {
-  console.log(currentPosition, "currentPosition");
-  const dimension = isHorizontal ? ITEM_WIDTH : ITEM_HEIGHT;
+  const { width: itemWidth, height: itemHeight } = getItemDimensions(isHorizontal, numCases);
+  const dimension = isHorizontal ? itemWidth : itemHeight;
   const distanceInsideCenterItem = currentPosition % dimension;
   const lowerBound = DISTANCE_IN_ITEMS * dimension - distanceInsideCenterItem + 1;
   const upperBound = DISTANCE_IN_ITEMS * dimension + (dimension - distanceInsideCenterItem) - 1;
@@ -91,12 +104,4 @@ export const wearToColorAndAbbrev = new Map<string, [string, string]>([
   ["Battle Scarred", ["BS", "text-red-400"]],
 ]);
 
-export {
-  generateClientSeed,
-  generateCases,
-  animationCalculation,
-  DISTANCE_IN_ITEMS,
-  ITEM_WIDTH,
-  ITEM_HEIGHT,
-  NUMBER_OF_ITEMS,
-};
+export { generateClientSeed, generateCases, animationCalculation };

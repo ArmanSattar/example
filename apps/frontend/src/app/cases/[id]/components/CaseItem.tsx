@@ -1,22 +1,28 @@
 import Image from "next/image";
-import React from "react";
+import React, { memo, useMemo } from "react";
 import { Money } from "../../../components/Money";
 import { BaseCaseItem } from "@solspin/game-engine-types";
 import { useFetchImage } from "../hooks/useFetchImage";
 import { GET_CASES_URL } from "../../../types";
 import { toast } from "sonner";
 import { wearToColorAndAbbrev } from "../utils";
+import Tooltip from "../../../components/ToolTip";
 
 interface CaseItemProps {
   item: BaseCaseItem;
 }
 
-export const CaseItem: React.FC<CaseItemProps> = ({ item }) => {
+export const CaseItem: React.FC<CaseItemProps> = memo(({ item }) => {
   const [wearAbbrev, wearColor] = wearToColorAndAbbrev.get(item.wear) || ["", "text-gray-400"];
   const typeAndName = item.name.split(" | ");
   const type = typeAndName[0];
   const name = typeAndName[1];
   const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${item.imagePath}`);
+
+  const gradientText = useMemo(
+    () => `case-${item.rarity.toLowerCase().replace(" ", "-")}-gradient`,
+    [item]
+  );
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -28,44 +34,51 @@ export const CaseItem: React.FC<CaseItemProps> = ({ item }) => {
   }
 
   return (
-    <div className="flex items-center rounded-md space-x-4 p-4 main-element overflow-hidden h-40 group min-w-[260px] max-w-[300px]">
-      <div className="relative flex flex-col items-center justify-center bg-black border-black border-[1px] rounded-lg min-w-[125px] min-h-[125px] overflow-clip">
-        <div className="relative flex justify-center items-center h-full w-full scale-125 z-10">
-          <Image
-            src={data || "/images/placeholder.png"}
-            alt={`${item.name} - ${item.wear}`}
-            width={125}
-            height={125}
-            objectFit="contain"
-          />
+    <div className="p-0.5 rounded-lg bg-gradient-to-br from-[#3a3b46] via-[#2a2b36] to-[#1f2029] element-with-stroke lg:shadow-[0_4px_#15161d,0_20px_50px_rgba(0,0,0,0.45),inset_0_1px_#3a3b46]">
+      <div
+        className={`flex flex-col items-start p-4 group min-w-[200px] max-w-[220px]
+
+                    rounded-lg`}
+      >
+        <div className="relative flex flex-col items-center justify-center rounded-lg min-w-[125px] w-full min-h-[125px]">
+          <div className="relative flex justify-center items-center h-full w-full z-10">
+            <div className={"absolute scale-125"}>
+              <Image
+                src={data || "/images/placeholder.png"}
+                alt={`${item.name} - ${item.wear}`}
+                width={250}
+                height={250}
+                objectFit="contain"
+              />
+            </div>
+          </div>
+          <div className={`absolute mx-auto inset-x-0 h-32 w-32 ${gradientText} opacity-100`}></div>
         </div>
         <div
-          className={`absolute -bottom-8 inset-x-0 w-full h-2/3 opacity-30 case-${item.rarity
-            .toLowerCase()
-            .replace(" ", "-")}-gradient`}
-        ></div>
-        <div
-          className={`absolute bottom-2 w-full h-1.5 case-${item.rarity
-            .toLowerCase()
-            .replace(" ", "-")}-beam`}
-        ></div>
-      </div>
-      <div className="flex flex-col justify-center items-start space-y-1.5 flex-grow px-2">
-        <span className={`${wearColor} text-2xs whitespace-nowrap`}>{item.wear}</span>
-        <span className="text-gray-400 text-2xs whitespace-nowrap">{type}</span>
-        <span className="text-white text-sm whitespace-nowrap">{name}</span>
-        <Money amount={item.price} textSize={"sm"} />
-        <div className="rounded-md bg-dark py-0.5 px-2 border-[1px] border-black h-8 flex justify-center items-center whitespace-nowrap w-full">
-          <div className="relative w-full h-full">
-            <span className="absolute inset-0 flex items-center justify-center text-white text-xs duration-300 group-hover:opacity-0">
-              {item.chance}%
-            </span>
-            <span className="absolute inset-0 flex items-center justify-center text-white text-2xs opacity-0 duration-300 group-hover:opacity-100">
-              {item.rollNumbers[0]}-{item.rollNumbers[1]}
-            </span>
+          className={`flex flex-col justify-center items-start space-y-0.5 flex-grow px-0 lg:px-2 w-full`}
+        >
+          <span className="font-bold text-white text-sm whitespace-nowrap">{name}</span>
+          <span className="text-2xs whitespace-nowrap text-[#98A0C3]">{type}</span>
+          <span className={`${wearColor} text-2xs whitespace-nowrap`}>{item.wear}</span>
+          <div className={"flex justify-between items-center w-full"}>
+            <div className="rounded-2xl py-0.5 px-2 bg-[#181B1D] h-8 flex justify-center items-center whitespace-nowrap">
+              <Money amount={item.price} textStyle={"text-sm"} />
+            </div>
+            <div>
+              <Tooltip text={`Roll numbers: ${item.rollNumbers[0]} - ${item.rollNumbers[1]}`}>
+                <div className="relative w-full h-full flex justify-between items-center space-x-1">
+                  <Image src={"/icons/dice.svg"} alt={"Dice"} width={16} height={16} />
+                  <span className="text-[#98A0C3] text-sm whitespace-nowrap text-right">
+                    {item.chance}
+                  </span>
+                </div>
+              </Tooltip>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-};
+});
+
+CaseItem.displayName = "CaseItem";

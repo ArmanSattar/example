@@ -13,25 +13,6 @@ interface CasesProps {
 }
 
 export const Cases: React.FC<CasesProps> = ({ cases, isLoading }) => {
-  if (isLoading || cases.length === 0) {
-    return (
-      <div className="grid grid-cols-dynamic gap-6 justify-center grid-flow-row-dense cases-container">
-        <CaseSkeleton />
-        <CaseSkeleton />
-        <CaseSkeleton />
-        <CaseSkeleton />
-        <CaseSkeleton />
-        <CaseSkeleton />
-        <CaseSkeleton />
-        <CaseSkeleton />
-        <CaseSkeleton />
-        <CaseSkeleton />
-        <CaseSkeleton />
-        <CaseSkeleton />
-      </div>
-    );
-  }
-
   return (
     <div className="grid grid-cols-dynamic gap-6 justify-center grid-flow-row-dense cases-container">
       {cases.map((item, index) => (

@@ -20,8 +20,12 @@ const caseCarouselSlice = createSlice({
     setStartMiddleItem(state, action) {
       state.startMiddleItem = action.payload;
     },
+    resetCaseCarouselState(state) {
+      state.serverSeed = null;
+    },
   },
 });
 
-export const { setServerSeed, setStartMiddleItem } = caseCarouselSlice.actions;
+export const { setServerSeed, setStartMiddleItem, resetCaseCarouselState } =
+  caseCarouselSlice.actions;
 export default caseCarouselSlice.reducer;

@@ -6,32 +6,36 @@ import { AuthProvider } from "./context/AuthContext";
 import store from "../store";
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { LoadingProvider } from "./context/LoadingContext";
+import { websocketUrl } from "./libs/constants";
 
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
-      <WalletContextProvider>
-        <WebSocketProvider url="wss://8xazz5itd1.execute-api.eu-west-2.amazonaws.com/dev">
-          <AuthProvider>
-            <QueryClientProvider client={queryClient}>
-              <Toaster
-                richColors
-                position="top-right"
-                expand={false}
-                duration={5000}
-                toastOptions={{
-                  className: "toast-style",
-                  closeButton: true,
-                  descriptionClassName: "text-white",
-                }}
-              />
-              {children}
-            </QueryClientProvider>
-          </AuthProvider>
-        </WebSocketProvider>
-      </WalletContextProvider>
+      <LoadingProvider>
+        <WalletContextProvider>
+          <WebSocketProvider url={websocketUrl}>
+            <AuthProvider>
+              <QueryClientProvider client={queryClient}>
+                <Toaster
+                  richColors
+                  position="top-right"
+                  expand={false}
+                  duration={5000}
+                  toastOptions={{
+                    className: "toast-style",
+                    closeButton: true,
+                    descriptionClassName: "text-white",
+                  }}
+                />
+                {children}
+              </QueryClientProvider>
+            </AuthProvider>
+          </WebSocketProvider>
+        </WalletContextProvider>
+      </LoadingProvider>
     </Provider>
   );
 }

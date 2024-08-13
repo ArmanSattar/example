@@ -4,7 +4,8 @@ import * as cdk from "aws-cdk-lib";
 import { DatabaseStack } from "./Database";
 
 export function ApiStack({ stack }: StackContext) {
-  const { walletsTableArn, walletsTableName } = use(DatabaseStack);
+  const { walletsTableArn, walletsTableName, transactionsTableName, transactionsTableArn } =
+    use(DatabaseStack);
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
 
   const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
@@ -16,12 +17,12 @@ export function ApiStack({ stack }: StackContext) {
   const depositTreasuryFunction = Function.fromFunctionName(
     stack,
     "DepositTreasuryFunction",
-    "dev-treasury-ApiStack-deposit-to-wallet"
+    `${stack.stage}-treasury-ApiStack-deposit-to-wallet`
   );
 
   const createWalletFunction = new Function(stack, "CreateWalletFunction", {
     functionName: `${stack.stackName}-createWallet`,
-    handler: "../wallet/src/service/api/handler/create-wallet.handler",
+    handler: "../wallet/src/service/event/handler/create-wallet.handler",
     environment: {
       WALLETS_TABLE_ARN: walletsTableName,
     },
@@ -37,7 +38,7 @@ export function ApiStack({ stack }: StackContext) {
   const withdrawTreasuryFunction = Function.fromFunctionName(
     stack,
     "WithdrawTreasuryFunction",
-    "dev-treasury-ApiStack-withdraw-from-wallet"
+    `${stack.stage}-treasury-ApiStack-withdraw-from-wallet`
   );
 
   const betTransactionHandler = new Function(stack, "BetTransactionHandler", {
@@ -64,20 +65,31 @@ export function ApiStack({ stack }: StackContext) {
     targets: [new cdk.aws_events_targets.LambdaFunction(betTransactionHandler)],
   });
 
+  new cdk.aws_events.Rule(stack, "CreateWalletRule", {
+    eventBus: existingEventBus,
+    eventPattern: {
+      source: ["user_service.CreateWallet"],
+      detailType: ["event"],
+    },
+    targets: [new cdk.aws_events_targets.LambdaFunction(createWalletFunction)],
+  });
+
   const api = new Api(stack, "api", {
     defaults: {
       function: {
+        enableLiveDev: stack.stage === "dev",
         environment: {
           WALLETS_TABLE_ARN: walletsTableName,
           DEPOSIT_TREASURY_FUNCTION_ARN: depositTreasuryFunction.functionArn,
           WITHDRAW_TREASURY_FUNCTION_ARN: withdrawTreasuryFunction.functionArn,
+          TRANSACTIONS_TABLE_ARN: transactionsTableName,
         },
       },
     },
     routes: {
       "POST /wallets": {
         function: {
-          handler: "../wallet/src/service/api/handler/create-wallet.handler",
+          handler: "src/service/event/handler/create-wallet.handler",
           permissions: [
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
@@ -99,6 +111,18 @@ export function ApiStack({ stack }: StackContext) {
           ],
         },
       },
+      "GET /wallets/{userId}/transactions": {
+        function: {
+          handler: "src/service/api/handler/get-wallet-transactions.handler",
+          permissions: [
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: ["dynamodb:GetItem"],
+              resources: [transactionsTableArn],
+            }),
+          ],
+        },
+      },
       "POST /wallets/deposit": {
         function: {
           handler: "src/service/api/handler/deposit-to-wallet.handler",
@@ -106,7 +130,7 @@ export function ApiStack({ stack }: StackContext) {
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,
               actions: ["dynamodb:UpdateItem", "dynamodb:PutItem"],
-              resources: [walletsTableArn],
+              resources: [walletsTableArn, transactionsTableArn],
             }),
             new iam.PolicyStatement({
               effect: iam.Effect.ALLOW,

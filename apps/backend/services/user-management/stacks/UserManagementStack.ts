@@ -1,9 +1,19 @@
-import { Api, Config, Function, StackContext, Table } from "sst/constructs";
+import { Api, Config, Function, StackContext, Table, use } from "sst/constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { RemovalPolicy } from "aws-cdk-lib/core";
+import { S3Stack } from "./S3Stack";
+import * as cdk from "aws-cdk-lib";
 
 export function UserManagementHandlerAPI({ stack }: StackContext) {
+  const { profileImagesBucket, profileImagesDistribution } = use(S3Stack);
   const removeOnDelete = true;
+  const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
+  const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
+    stack,
+    "solspin-event-bus",
+    eventBusArn
+  );
+
   const userTable = new Table(stack, "users", {
     fields: {
       userId: "string",
@@ -70,7 +80,7 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
   const createWalletFunction = Function.fromFunctionName(
     stack,
     "CreateWalletFunction",
-    "dev-wallet-ApiStack-createWallet"
+    `${stack.stage}-wallet-ApiStack-createWallet`
   );
 
   const api = new Api(stack, "UserManagementApi", {
@@ -86,25 +96,22 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
       },
     },
     routes: {
-      "POST /authorize": {
+      "POST /user/upload-image": {
         function: {
-          handler: "src/handlers/authorize.handler",
-          bind: [TEST_SECRET],
-          environment: { USERS_TABLE_NAME: userTable.tableName },
-        },
-      },
-      "POST /user": {
-        function: {
-          handler: "../user-management/src/handlers/createUser.handler",
+          handler: "../user-management/src/handlers/uploadImage.handler",
           permissions: [
             new PolicyStatement({
-              actions: ["dynamodb:PutItem"],
-              resources: [userTable.tableArn],
+              actions: ["dynamodb:PutItem", "s3:PutObject"],
+              resources: [userTable.tableArn, profileImagesBucket.bucketArn],
             }),
           ],
-          bind: [userTable, TEST_SECRET],
-          environment: { USERS_TABLE_NAME: userTable.tableName },
+          bind: [userTable],
+          environment: {
+            USERS_TABLE_NAME: userTable.tableName,
+            PROFILE_BUCKET_NAME: profileImagesBucket.bucketName,
+          },
         },
+        authorizer: "CustomAuthorizer",
       },
       "GET /user": {
         function: {
@@ -160,12 +167,17 @@ export function UserManagementHandlerAPI({ stack }: StackContext) {
               actions: ["dyamodb:PutItem", "lambda:InvokeFunction"],
               resources: [createWalletFunction.functionArn],
             }),
+            new PolicyStatement({
+              actions: ["events:PutEvents"],
+              resources: [eventBusArn],
+            }),
           ],
           bind: [userTable, nonceTable, TEST_SECRET],
           environment: {
             USERS_TABLE_NAME: userTable.tableName,
             NONCE_TABLE_NAME: nonceTable.tableName,
             CREATE_WALLET_FUNCTION_NAME: createWalletFunction.functionName,
+            EVENT_BUS_ARN: existingEventBus.eventBusArn,
           },
         },
       },

@@ -12,7 +12,10 @@ const nextConfig = {
     svgr: false,
   },
   images: {
-    domains: [process.env.NEXT_PUBLIC_GET_CASES_DOMAIN || ""],
+    domains: [
+      process.env.NEXT_PUBLIC_GET_CASES_DOMAIN || "",
+      process.env.NEXT_PUBLIC_GET_PROFILE_IMAGE_URL || "",
+    ],
   },
   /**
    * @param {{ module: { rules: any[]; }; }} config

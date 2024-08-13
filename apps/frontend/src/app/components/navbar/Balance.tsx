@@ -1,25 +1,24 @@
 "use client";
 
 import { useDispatch, useSelector } from "react-redux";
-import { toggleDepositClicked } from "../../../store/slices/navbarSlice";
-import { Money } from "../Money";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { fromMinorAmount } from "./utils/money";
 import { useWalletInfo } from "./hooks/useWalletInfo";
 import { setBalance } from "../../../store/slices/userSlice";
 import { RootState } from "../../../store";
-import { Spinner } from "../Spinner";
+import Coins from "../../../../public/icons/coins.svg";
+import BalanceAnimation from "./BalanceAnimation";
 
 export const Balance = () => {
   const dispatch = useDispatch();
 
-  const handleDepositClick = () => {
-    dispatch(toggleDepositClicked());
-  };
   const { data: wallet, isLoading, isError } = useWalletInfo();
   const balance = useSelector((state: RootState) => state.user.balance);
-
+  const [prevBalance, setPrevBalance] = useState(balance);
+  const [difference, setDifference] = useState(0);
+  const isFirstBalanceUpdate = useRef(true);
+  console.log(balance);
   useEffect(() => {
     if (wallet?.balance) {
       dispatch(setBalance(wallet.balance));
@@ -32,19 +31,26 @@ export const Balance = () => {
     }
   }, [isError]);
 
+  useEffect(() => {
+    if (isFirstBalanceUpdate.current && balance !== 0) {
+      isFirstBalanceUpdate.current = false;
+      setPrevBalance(balance);
+    } else {
+      setDifference(balance - prevBalance);
+      setPrevBalance(balance);
+    }
+  }, [balance]);
+
   return (
-    <div className="flex rounded-lg bg-gray_action_btn items-center justify-between">
-      {isLoading ? (
-        <Spinner size={"small"} color={"text-white"} />
-      ) : (
-        <Money amount={fromMinorAmount(balance)} className="px-4" />
-      )}
-      <button
-        className="rounded-lg bg-green-500 p-2 w-12 h-12 action-btn-green"
-        onClick={handleDepositClick}
-      >
-        <span className="text-white text-2xl font-bold">+</span>
-      </button>
-    </div>
+    <fieldset className="flex rounded-lg items-center justify-center border-2 border-color_tertiary h-12 -mt-2 sm:-mt-1 sm:h-14 bg-color_tertiary_2 relative">
+      <legend className={"text-xs ml-1"}>BALANCE</legend>
+      <div className={`flex space-x-2 items-center justify-between px-4 -mt-1`}>
+        <Coins className="text-yellow-400 mt-0.5" />
+        <span className={`text-white whitespace-nowrap text-md text-center`}>
+          {fromMinorAmount(isLoading ? 0 : balance).toFixed(2)}
+        </span>
+      </div>
+      {!isFirstBalanceUpdate.current && <BalanceAnimation amount={fromMinorAmount(difference)} />}
+    </fieldset>
   );
 };

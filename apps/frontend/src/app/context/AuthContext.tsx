@@ -10,6 +10,8 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useWebSocket } from "./WebSocketContext";
 import { toast } from "sonner";
 import bs58 from "bs58";
+import { useLoading } from "./LoadingContext";
+import { userManagementUrl } from "../libs/constants";
 
 interface User {
   userId: string;
@@ -29,9 +31,9 @@ interface AuthContextType {
   logout: () => Promise<void>;
   checkToken: () => Promise<boolean>;
   updateUser: (updatedUserData: Partial<User>) => void;
+  isLoading: boolean;
 }
 
-const apiUrl: string = `${process.env.NEXT_PUBLIC_USER_MANAGEMENT_API_URL}`;
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
@@ -43,12 +45,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const { connected, disconnect, publicKey, signMessage } = useWallet();
   const { sendMessage, connectionStatus } = useWebSocket();
   const { connection } = useConnection();
+  const { startLoading, finishLoading } = useLoading();
+  const [isLoading, setIsLoading] = useState(true);
 
   const checkToken = useCallback(async () => {
     const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const response = await fetch(`${apiUrl}/user`, {
+    try {
+      if (token) {
+        const response = await fetch(`${userManagementUrl}/user`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -63,27 +67,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
         } else {
           localStorage.removeItem("token");
         }
-      } catch (error) {
-        console.error("Token verification error:", error);
-        localStorage.removeItem("token");
       }
+    } catch (error) {
+      console.error("Token verification error:", error);
+      localStorage.removeItem("token");
+    } finally {
+      finishLoading();
+      setIsLoading(false);
     }
     return false;
   }, []);
 
   useEffect(() => {
+    startLoading();
+    setIsLoading(true);
+    console.log("Checking token...");
     checkToken();
   }, [checkToken]);
 
   const login = useCallback(async () => {
-    if (!connected || !publicKey || !signMessage) {
-      toast.error("Wallet not connected or does not support message signing!");
-      return;
-    }
-
+    startLoading();
+    setIsLoading(true);
     try {
+      if (!connected || !publicKey || !signMessage) {
+        toast.error("Wallet not connected or does not support message signing!");
+        return;
+      }
+
       // Request a nonce from the server
-      const nonceResponse = await fetch(`${apiUrl}/auth/nonce`, {
+      const nonceResponse = await fetch(`${userManagementUrl}/auth/nonce`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ walletAddress: publicKey.toString() }),
@@ -104,7 +116,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const signature = bs58.encode(signedMessage);
 
       // Send the signed message to the server
-      const loginResponse = await fetch(`${apiUrl}/auth/connect`, {
+      const loginResponse = await fetch(`${userManagementUrl}/auth/connect`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -131,6 +143,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
               })
             );
           }
+          location.reload();
           toast.success("Successfully logged in!");
         }
       } else {
@@ -139,16 +152,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       if ((error as Error).name === "WalletSignMessageError") {
         await disconnect();
-      } else if ((error as Error).name !== "TypeError") {
-        console.error("Login error:", error);
-        toast.error((error as Error).message);
       }
-
-      setUser(null);
+      toast.error((error as Error).message);
+    } finally {
+      finishLoading();
+      setIsLoading(false);
     }
+
+    setUser(null);
   }, [publicKey, signMessage, connectionStatus, sendMessage, connected, disconnect]);
 
   const logout = useCallback(async () => {
+    startLoading();
+    setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
 
@@ -171,6 +187,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       localStorage.removeItem("token");
     } catch (error) {
       toast.error("Error occurred during logout!");
+    } finally {
+      finishLoading();
+      setIsLoading(false);
     }
   }, [disconnect, connectionStatus, sendMessage]);
 
@@ -188,7 +207,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     logout,
     checkToken,
-    updateUser
+    updateUser,
+    isLoading,
   };
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

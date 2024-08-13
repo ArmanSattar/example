@@ -1,14 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import Image from "next/image";
 import Link from "next/link";
+import { ProfileComponent } from "../chatbar/ProfileComponent";
+import { useDispatch } from "react-redux";
+import { resetBalance } from "../../../store/slices/userSlice";
+import { resetCaseCarouselState } from "../../../store/slices/caseCarouselSlice";
+import { resetDemoState } from "../../../store/slices/demoSlice";
 
 export const UserProfile: React.FC = () => {
-  const { connected } = useWallet();
   const { user, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -16,12 +19,18 @@ export const UserProfile: React.FC = () => {
         setIsDropdownOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const cleanupState = useCallback(() => {
+    dispatch(resetBalance());
+    dispatch(resetCaseCarouselState());
+    dispatch(resetDemoState());
+    console.log("State cleaned up");
+  }, [dispatch]);
 
   if (!user) {
     return null;
@@ -35,6 +44,7 @@ export const UserProfile: React.FC = () => {
 
   const handleLogout = async () => {
     try {
+      cleanupState();
       await logout();
     } catch (error) {
       console.error("Error during logout:", error);
@@ -43,14 +53,12 @@ export const UserProfile: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center relative" ref={dropdownRef}>
+    <div className="flex items-center justify-center relative" ref={dropdownRef}>
       <div
-        className="flex items-center space-x-4 p-2 rounded-lg cursor-pointer hover:opacity-90"
+        className="flex items-center justify-center mt-1 space-x-4 p-2 rounded-lg cursor-pointer hover:scale-[102%] transition-transform duration-200 ease-in-out"
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       >
-        <div className="relative w-12 h-12 rounded-full overflow-hidden shadow-lg">
-          <Image src={"/header-image.png"} alt="" layout="fill" objectFit="cover" />
-        </div>
+        <ProfileComponent level={1} profileImageUrl={user.profileImageUrl} />
       </div>
 
       {isDropdownOpen && (

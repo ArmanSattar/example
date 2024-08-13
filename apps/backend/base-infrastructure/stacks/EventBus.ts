@@ -21,7 +21,7 @@ export function Event({ stack }: StackContext) {
 
   new cdk.CfnOutput(stack, "EventBusArn", {
     value: eventBus.eventBusArn,
-    exportName: `EventBusArn--dev`,
+    exportName: `EventBusArn--${stack.stage}`,
   });
 
   return {

@@ -35,7 +35,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     const depositRequest = DepositToWalletRequestSchema.parse(parsedBody);
 
     const { userId, walletAddress, txnSignature } = depositRequest;
-
+    console.log(depositRequest);
     if (!walletAddress || !txnSignature) {
       return errorResponse(new Error("Invalid request"), 400);
     }
@@ -67,7 +67,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
       logger.info("Deposit request processed", { depositAmountInCrypto, transactionId });
 
-      // Dollars are converted into FPN (floating point number) to avoid floating point arithmetic issues (i.e x100)
+      // Dollars are converted into minor amounts to avoid floating point arithmetic issues (i.e x100)
       const currentPriceSolFpn = (await getCurrentPrice()) * 100;
       const depositAmountInUsdFpn = Math.round(depositAmountInCrypto * currentPriceSolFpn);
 
@@ -75,7 +75,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
       return successResponse({
         message: "Deposit successful",
-        txnId: txnSignature,
+        txnId: transactionId,
         depositAmount: depositAmountInUsdFpn / 100,
       } as DepositResponse);
     } catch (error) {

@@ -73,7 +73,9 @@ export const handler = async (event: WithdrawRequest, context: Context) => {
       TransactionType.WITHDRAW
     );
 
-    return successResponse(txnSignature);
+    return successResponse({
+      txnSignature: txnSignature,
+    });
   } catch (error) {
     logger.error(`Error processing withdrawal request for ${userId}`, { error, withdrawId });
 

@@ -1,14 +1,12 @@
 import Image from "next/image";
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../store";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import { Money } from "../../../components/Money";
 import { BaseCaseItem } from "@solspin/game-engine-types";
 import { GET_CASES_URL } from "../../../types";
 import { useFetchImage } from "../hooks/useFetchImage";
 import { toast } from "sonner";
 import { CarouselItemSkeleton } from "./CarouselItemSkeleton";
-import { Direction, ITEM_HEIGHT, ITEM_WIDTH, wearToColorAndAbbrev } from "../utils";
+import { ITEM_WIDTH } from "../../../libs/constants";
 
 interface CarouselItemProps {
   isMiddle: boolean;
@@ -16,69 +14,38 @@ interface CarouselItemProps {
   animationEnd: boolean;
   animationStart: boolean;
   item: BaseCaseItem;
-  direction: Direction;
+  dimension: { width: number; height: number };
 }
-
-const TICK_SOUND = "/sounds/tick.wav";
-const CHA_CHING_SOUND = "/sounds/cashier-cha-ching.mp3";
 
 const CarouselItem: React.FC<CarouselItemProps> = ({
   isMiddle,
   isFinal,
+  animationEnd,
+  animationStart,
   item,
-  direction,
+  dimension,
 }) => {
   const [shouldScaleDown, setShouldScaleDown] = useState(false);
-  const [isInfiniteAnimating, setIsInfiniteAnimating] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const isSoundOn = useSelector((state: RootState) => state.demo.soundOn);
   const { data, isLoading, isError } = useFetchImage(`${GET_CASES_URL}${item.imagePath}`);
   const [type, name] = useMemo(() => item.name.split(" | "), [item.name]);
-  const [wearAbbrev, wearColor] = useMemo(
-    () => wearToColorAndAbbrev.get(item.wear) || ["", "text-gray-400"],
-    [item.wear]
+  const gradientText = useMemo(
+    () => `case-${item.rarity.toLowerCase().replace(" ", "-")}-gradient`,
+    [item]
   );
-
-  const isVertical = direction === Direction.VERTICAL;
-
-  const playSound = useCallback((src: string) => {
-    const audio = new Audio(src);
-    audio.play().catch((error) => console.error("Audio playback failed:", error));
-  }, []);
+  const { width: itemWidth, height: itemHeight } = dimension;
 
   useEffect(() => {
-    if (isMiddle && isSoundOn) {
-      const soundSrc = isFinal ? CHA_CHING_SOUND : TICK_SOUND;
-      playSound(soundSrc);
-
-      if (!shouldScaleDown) {
-        setShouldScaleDown(true);
-      }
+    if (isMiddle && !shouldScaleDown) {
+      setShouldScaleDown(true);
     }
-  }, [isMiddle, isSoundOn, isFinal, shouldScaleDown, playSound]);
+  }, [isMiddle, animationEnd, shouldScaleDown]);
 
   useEffect(() => {
-    setShouldScaleDown(false);
-    setIsInfiniteAnimating(false);
-
-  }, [item]);
-
-  const handleTransitionEnd = useCallback(() => {
-    if (isFinal && isMiddle) {
-      setIsInfiniteAnimating(true);
+    if (animationStart) {
+      setShouldScaleDown(false);
     }
-  }, [isFinal, isMiddle]);
-
-  useEffect(() => {
-    const imageContainer = imageContainerRef.current;
-    if (!imageContainer) return;
-
-    imageContainer.addEventListener("transitionend", handleTransitionEnd);
-
-    return () => {
-      imageContainer.removeEventListener("transitionend", handleTransitionEnd);
-    };
-  }, [isFinal, isMiddle, handleTransitionEnd]);
+  }, [animationStart]);
 
   if (isLoading) {
     return <CarouselItemSkeleton />;
@@ -91,67 +58,55 @@ const CarouselItem: React.FC<CarouselItemProps> = ({
 
   return (
     <div
-      className={`w-[${ITEM_WIDTH}px] h-[${ITEM_HEIGHT}px] ${
-        direction === Direction.VERTICAL ? "p-1" : "p-0.5"
+      className={`will-change-transform transform-gpu ${
+        isMiddle ? "animate-middle-item" : shouldScaleDown ? "animate-scale-down" : ""
       }`}
+      style={{ width: `${itemWidth}px`, height: `${itemHeight}px` }}
     >
       <div
-        className={`relative flex flex-col items-center justify-center w-full h-full opacity-50 case-${item.rarity
-          .toLowerCase()
-          .replace(" ", "-")}-container will-change-transform ${
-          isMiddle ? "-highlight !opacity-100" : ""
-        } rounded-xl overflow-clip ${
-          isMiddle && isFinal ? "animate-final" : ""
+        className={`relative flex flex-col items-center justify-center w-full h-full rounded-xl ${
+          isMiddle ? "opacity-100" : "opacity-30"
         }`}
       >
-        <div className={`case-${item.rarity.toLowerCase().replace(" ", "-")}-blur`}></div>
         <div
           ref={imageContainerRef}
-          className={`h-full w-full ${
-            isFinal && isMiddle ? "-translate-y-10 duration-1000" : ""
-          }`}
+          className="relative min-h-full min-w-full flex justify-center items-center overflow-visible"
         >
           <div
-            className={`relative flex justify-center items-center h-full w-full mt-8 scale-110 ${
-              isInfiniteAnimating
-                ? "animate-final-item scale-125 brightness-110"
-                : isMiddle
-                ? "animate-middle-item"
-                : shouldScaleDown
-                ? "animate-scale-down"
-                : ""
-            } case-${item.rarity.toLowerCase().replace(" ", "-")}-shadow`}
+            className={`absolute flex justify-center items-center overflow-visible  ${
+              isFinal && isMiddle && animationEnd ? "-translate-y-5 duration-1000" : ""
+            }`}
+            style={{ minHeight: `${itemHeight + 25}px`, minWidth: `${itemWidth + 25}px` }}
           >
             <Image
               src={data || "/images/placeholder.png"}
-              alt={"Case item"}
-              width={200}
-              height={200}
-              objectFit="contain"
+              alt="Case item"
+              fill
+              objectFit={"contain"}
             />
           </div>
+          <div className={`min-h-full min-w-full absolute ${gradientText} -z-10`}></div>
         </div>
-        {isFinal && isMiddle &&
-          <>
-        <div
-          className={`flex flex-col items-center space-y-0.5 w-3/4 opacity-0 -mt-5 ${
-            isFinal && isMiddle ? "-translate-y-10 duration-1000 opacity-100" : ""
-          }`}
-        >
-          <span className={"text-white text-sm font-semibold whitespace-nowrap"}>{name}</span>
-          <Money amount={item.price} />
-        </div>
-        <div
-          className={`absolute -bottom-10 inset-x-0 w-full h-2/5 opacity-30 case-${item.rarity
-            .toLowerCase()
-            .replace(" ", "-")}-gradient -z-10`}
-        ></div>
-        <div
-          className={`absolute inset-x-0 bottom-0.5 w-full h-2 case-${item.rarity
-            .toLowerCase()
-            .replace(" ", "-")}-beam brightness-150`}
-        ></div>
-          </>}
+        {isFinal && isMiddle && animationEnd && (
+          <div
+            className={`absolute bottom-0 flex flex-col items-center ${
+              itemWidth < ITEM_WIDTH ? "mb-2" : "space-y-0.5 mb-4"
+            } w-3/4`}
+          >
+            <span
+              className={`text-white ${
+                itemWidth < ITEM_WIDTH ? "text-3xs" : "text-sm"
+              } font-semibold whitespace-nowrap`}
+            >
+              {name}
+            </span>
+            <Money
+              amount={item.price}
+              textStyle={`${itemWidth < ITEM_WIDTH ? "text-2xs" : "text-sm"}`}
+              className={"space-x-1 font-semibold"}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

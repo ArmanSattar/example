@@ -7,13 +7,10 @@ export interface WalletsDBObject {
   lockedAt: string;
 }
 
-export interface WalletTransactions {
-  id: string;
+export interface TransactionStatsDBObject {
   userId: string;
   amount: number;
-  createdAt: string;
-  walletAddress: string;
-  type: "deposit" | "withdraw";
+  lastUpdated: string;
 }
 
 export const LOCK_DURATION = 15000; // 30 seconds, for example

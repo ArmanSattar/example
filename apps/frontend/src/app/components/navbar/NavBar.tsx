@@ -2,60 +2,71 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
 import { UserProfile } from "./UserProfile";
 import Hamburger from "./Hamburger";
-import { CasesIcon, GamesIcon, LeaderboardsIcon, RewardsIcon } from "./NavIcon";
 import CustomWalletMultiButton from "../sign-in/WalletSignIn";
+import GamePad from "../../../../public/icons/Gamepad.svg";
+import Medal from "../../../../public/icons/Medal.svg";
+import Podium from "../../../../public/icons/Podium.svg";
+import Case from "../../../../public/icons/Case.svg";
 import { Balance } from "./Balance";
 import { useDispatch } from "react-redux";
-import { toggleWithdrawClicked } from "../../../store/slices/navbarSlice";
+import { toggleDepositClicked, toggleWithdrawClicked } from "../../../store/slices/navbarSlice";
 import Image from "next/image";
+import { useAuth } from "../../context/AuthContext";
 
 const navLinks = [
   {
     name: "Games",
-    icon: GamesIcon,
+    icon: GamePad,
     href: "/games",
   },
   {
     name: "Rewards",
-    icon: RewardsIcon,
+    icon: Medal,
     href: "/rewards",
   },
   {
     name: "Leaderboards",
-    icon: LeaderboardsIcon,
+    icon: Podium,
     href: "/leaderboards",
   },
   {
     name: "Cases",
-    icon: CasesIcon,
+    icon: Case,
     href: "/cases",
   },
 ];
 
+const HOME = "/cases";
+
 export const NavBar = () => {
   const [navActiveLink, setNavActiveLink] = useState("/cases");
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const dispatch = useDispatch();
-
   const handleWithdrawClick = () => {
     dispatch(toggleWithdrawClicked());
   };
 
+  const handleDepositClick = () => {
+    dispatch(toggleDepositClicked());
+  };
+
   return (
-    <header className="text-white top-0 left-0 bg-background w-full shadow-2xl sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0">
+    <header className="text-white top-0 left-0 bg-navbar_bg w-full sticky z-50 h-14 sm:h-16 md:h-20 px-3 lg:pl-0 border-b-[1px] border-color_gray_3">
       <div className="flex justify-between items-center w-full h-full z-10">
         <div className="flex items-center justify-between h-full">
-          <div className="flex items-center w-[60px] sm:w-[80px] lg:w-[320px] justify-center">
-            <Image
-              src="/icons/logo.webp"
-              alt="logo"
-              width={48}
-              height={48}
-              className="sm:w-[60px] sm:h-[60px] md:w-[80px] md:h-[80px]"
-            />
+          <div className="flex relative items-center w-[60px] sm:w-[80px] lg:w-[320px] h-full justify-center border-r-[0px] lg:border-r-[1px] border-color_gray_3 cursor-pointer">
+            <Link onClick={() => setNavActiveLink(HOME)} href={HOME}>
+              <Image
+                src="/icons/logo.webp"
+                alt="logo"
+                fill
+                className="object-contain"
+                sizes="(max-width: 640px) 60px, (max-width: 1024px) 80px, 320px"
+                priority={true}
+              />
+            </Link>
           </div>
           <ul className="hidden xl:flex xl:space-x-10 h-full pl-4">
             {navLinks.map((navLink, index) => (
@@ -67,19 +78,21 @@ export const NavBar = () => {
               >
                 <li className="relative flex flex-col items-center justify-center space-y-1 group hover:cursor-pointer px-2 h-full">
                   <div
-                    className={`absolute inset-x-0 bottom-0 h-1 rounded-t-md bg-red-500 origin-center ${
+                    className={`absolute inset-x-0 bottom-0 h-1 rounded-t-md bg-color_primary origin-center ${
                       navLink.href === navActiveLink
                         ? ""
                         : "transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"
                     }`}
                   ></div>
-                  <navLink.icon
-                    className={`h-4 w-4 md:h-6 md:w-6 text-gray-400 group-hover:text-red-500 duration-75 ${
-                      navActiveLink === navLink.href ? "text-red-500" : ""
+                  <div
+                    className={`group-hover:text-color_primary duration-200 ease-in-out ${
+                      navActiveLink === navLink.href ? "text-color_primary" : "text-gray-400"
                     }`}
-                  />
+                  >
+                    <navLink.icon />
+                  </div>
                   <span
-                    className={`text-xs md:text-sm text-gray-400 group-hover:text-white duration-75 ${
+                    className={`text-xs md:text-sm text-gray-400 group-hover:text-white duration-200 ease-in-out uppercase ${
                       navActiveLink === navLink.href ? "text-white" : ""
                     }`}
                   >
@@ -90,15 +103,23 @@ export const NavBar = () => {
             ))}
           </ul>
         </div>
-        <div className="flex items-center gap-4">
-          {user && <Balance />}
+        <div className="flex items-center justify-center gap-x-4">
           {user && (
-            <button
-              className="hidden sm:block bg-custom_gray text-white py-2 px-2 sm:px-3 md:px-4 rounded text-xs sm:text-sm md:text-base h-12"
-              onClick={handleWithdrawClick}
-            >
-              Withdraw
-            </button>
+            <>
+              <Balance />
+              <button
+                className="hidden sm:block text-white py-2 px-2 sm:px-3 uppercase md:px-4 cursor-pointer hover:bg-color_gray_3 duration-250 ease-in-out transition rounded-md text-xs sm:text-sm md:text-base h-10 sm:h-12 "
+                onClick={handleWithdrawClick}
+              >
+                Withdraw
+              </button>
+              <button
+                className="hidden sm:block rounded-md px-6 h-10 sm:h-12 action-btn-green bg-color_secondary"
+                onClick={handleDepositClick}
+              >
+                <span className="text-white font-semibold uppercase">Deposit</span>
+              </button>
+            </>
           )}
           {user ? <UserProfile /> : <CustomWalletMultiButton />}
           <Hamburger className="xl:hidden" />
