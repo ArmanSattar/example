@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useLayoutEffect, useState } from "react";
 
 interface LoadingContextType {
   isLoading: boolean;
@@ -24,7 +24,7 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
   const isLoading = loadingCount > 0;
 
   // Simulate initial app loading
-  useEffect(() => {
+  useLayoutEffect(() => {
     const initialLoadTimeout = setTimeout(() => {
       finishLoading(); // This will set loadingCount to 0
     }, 250); // Adjust this time as needed
