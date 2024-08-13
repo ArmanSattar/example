@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { Service } from "@solspin/types";
+import { Service } from "../types/src";
 
 export interface EventBody<T> {
   publisher: Service;

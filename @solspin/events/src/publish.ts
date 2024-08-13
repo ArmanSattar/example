@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from "uuid";
 import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
-import { Service } from "@solspin/types";
+import { Service } from "../types/src";
 import { EventBody, EventProvider } from "./types";
 import { validateEvent } from "./validate";
-import { getLogger } from "@solspin/logger";
+import { getLogger } from "../utils/logger";
 
 const logger = getLogger("publish-event");
 const eventBridgeClient = new EventBridgeClient({});
@@ -13,7 +13,7 @@ const eventBridgeClient = new EventBridgeClient({});
  *
  * @param {EventProvider} event - The event provider containing the event name, validation schema, and factory function.
  * @param {T} payload - The payload of the event.
- * @param {EventConfig} config - The configuration object for the event.
+ * @param publisher
  * @returns {Promise<void>}
  */
 export async function publishEvent<T>(

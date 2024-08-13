@@ -12,9 +12,6 @@
   "main": "./src/index.js",
   "typings": "./src/index.d.ts",
   "private": true,
-  "implicitDependencies": [
-    "@solspin/types"
-  ],
   "devDependencies": {
     "@types/aws-lambda": "^8.10.138",
     "@types/uuid": "^9.0.8"

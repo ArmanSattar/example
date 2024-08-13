@@ -1,4 +1,3 @@
-import { ChatMessage } from "@solspin/websocket-types";
 import { ApiGatewayManagementApi } from "aws-sdk";
 
 export async function sendWebSocketMessage(

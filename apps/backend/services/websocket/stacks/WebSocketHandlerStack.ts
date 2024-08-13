@@ -1,5 +1,5 @@
 import { RemovalPolicy } from "aws-cdk-lib/core";
-import { Function, StackContext, Table } from "sst/constructs";
+import { StackContext, Table } from "sst/constructs";
 
 export function WebSocketHandlerAPI({ stack }: StackContext) {
   const removeOnDelete = stack.stage !== "prod";

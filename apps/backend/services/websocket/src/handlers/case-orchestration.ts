@@ -39,7 +39,7 @@ export const handler = WebSocketApiHandler(async (event) => {
 
     const parsedBody = JSON.parse(event.body || "{}");
 
-    let payload = WebSocketOrchestrationPayloadSchema.parse(parsedBody);
+    const payload = WebSocketOrchestrationPayloadSchema.parse(parsedBody);
     const { caseId, clientSeed, spins } = payload;
 
     logger.info(`Getting websocket connection info for connection id: ${connectionId}`);

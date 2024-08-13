@@ -17,6 +17,7 @@
     "sourceMap": false,
     "inlineSourceMap": true,
     "inlineSources": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": ".",
   }
 }
