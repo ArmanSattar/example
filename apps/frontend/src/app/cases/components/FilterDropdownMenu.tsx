@@ -9,8 +9,10 @@ interface FilterDropdownMenuProps {
   width: string;
   height?: string;
   textSize?: string;
-  defaultText?: string;
+  currentFilter: string[];
 }
+
+const DEFAULT_TEXT = "None";
 
 const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
   options,
@@ -19,10 +21,10 @@ const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
   width,
   height,
   textSize,
-  defaultText = "None",
+  currentFilter,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(currentFilter);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
@@ -48,13 +50,13 @@ const FilterDropdownMenu: React.FC<FilterDropdownMenuProps> = ({
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
-    if (defaultText !== "None") setSelectedOptions([defaultText]);
+    if (DEFAULT_TEXT !== "None") setSelectedOptions([DEFAULT_TEXT]);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  const displayText = selectedOptions.length > 0 ? selectedOptions.join(", ") : defaultText;
+  const displayText = selectedOptions.length > 0 ? selectedOptions.join(", ") : DEFAULT_TEXT;
 
   const textSizeClass = textSize ? textSize : "text-xs";
 

@@ -15,8 +15,11 @@ const chatbarSlice = createSlice({
     toggleChatBarClicked(state) {
       state.chatBarOpen = !state.chatBarOpen;
     },
+    setChatBarOpen(state, action) {
+      state.chatBarOpen = action.payload;
+    },
   },
 });
 
-export const { toggleChatBarClicked } = chatbarSlice.actions;
+export const { toggleChatBarClicked, setChatBarOpen } = chatbarSlice.actions;
 export default chatbarSlice.reducer;

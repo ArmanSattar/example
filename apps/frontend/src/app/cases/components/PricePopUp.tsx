@@ -7,16 +7,22 @@ interface PricePopUpProps {
   handleClose: () => void;
   updateFilters: (filterType: keyof IFilters, selectedOptions: string[]) => void;
   priceRangeCallback: (priceRange: [string, string]) => void;
+  currentFilter: string[];
 }
 
 export const PricePopUp: React.FC<PricePopUpProps> = ({
   handleClose,
   updateFilters,
   priceRangeCallback,
+  currentFilter,
 }) => {
   const popupRef = useRef<HTMLDivElement>(null);
-  const [lowerBoundValue, setLowerBoundValue] = React.useState<string>("");
-  const [upperBoundValue, setUpperBoundValue] = React.useState<string>("");
+  const [lowerBoundValue, setLowerBoundValue] = React.useState<string>(
+    currentFilter.length > 0 ? currentFilter[0] : ""
+  );
+  const [upperBoundValue, setUpperBoundValue] = React.useState<string>(
+    currentFilter.length > 0 ? currentFilter[1] : ""
+  );
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {

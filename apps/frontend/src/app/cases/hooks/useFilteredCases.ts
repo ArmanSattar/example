@@ -8,7 +8,7 @@ export const useFilteredCases = (cases: BaseCase[], isLoading: boolean) => {
     rarity: [],
     order: [],
     price: [],
-    priceRange: ["0", "100000000"],
+    priceRange: [],
   });
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -24,8 +24,8 @@ export const useFilteredCases = (cases: BaseCase[], isLoading: boolean) => {
 
   const filteredCases = useMemo(() => {
     if (!cases) return [];
-    const minPrice = parseFloat(filters.priceRange[0]);
-    const maxPrice = parseFloat(filters.priceRange[1]);
+    const minPrice = filters.priceRange.length > 0 ? parseFloat(filters.priceRange[0]) : 0;
+    const maxPrice = filters.priceRange.length > 0 ? parseFloat(filters.priceRange[1]) : Infinity;
 
     return cases.filter((item) => {
       const isPriceInRange = item.price >= minPrice && item.price <= maxPrice;
@@ -74,5 +74,5 @@ export const useFilteredCases = (cases: BaseCase[], isLoading: boolean) => {
     }));
   }, []);
 
-  return { cases: sortedCases, updateFilters, handleSearch };
+  return { cases: sortedCases, updateFilters, handleSearch, filters };
 };

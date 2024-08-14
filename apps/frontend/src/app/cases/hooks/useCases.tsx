@@ -8,6 +8,7 @@ export const useCases = () => {
     cases: filteredCases,
     updateFilters,
     handleSearch,
+    filters,
   } = useFilteredCases(fetchedCases as BaseCase[], isLoading);
-  return { filteredCases, updateFilters, handleSearch, isLoading, isError, error };
+  return { filteredCases, updateFilters, handleSearch, isLoading, isError, error, filters };
 };

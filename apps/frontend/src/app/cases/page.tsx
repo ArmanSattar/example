@@ -8,7 +8,8 @@ import { toast } from "sonner";
 import { useLoading } from "../context/LoadingContext";
 
 export default function CasesPage() {
-  const { filteredCases, updateFilters, handleSearch, isLoading, isError, error } = useCases();
+  const { filteredCases, updateFilters, handleSearch, isLoading, isError, error, filters } =
+    useCases();
   const { startLoading, finishLoading } = useLoading();
   const loadingFlag = useRef(false);
 
@@ -30,7 +31,7 @@ export default function CasesPage() {
 
   return (
     <div className="w-full h-full flex-col justify-between items-center px-8">
-      <CasesHeader updateFilters={updateFilters} handleSearch={handleSearch} />
+      <CasesHeader updateFilters={updateFilters} handleSearch={handleSearch} filters={filters} />
       <Cases cases={filteredCases} isLoading={isLoading} />
       <div className="h-8 w-full"></div>
     </div>

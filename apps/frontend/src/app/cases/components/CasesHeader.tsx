@@ -9,9 +9,16 @@ import Dollar from "../../../../public/icons/dollar.svg";
 interface CasesHeaderProps {
   updateFilters: (filterType: keyof IFilters, selectedOptions: string[]) => void;
   handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  filters: IFilters;
 }
 
-export const CasesHeader: React.FC<CasesHeaderProps> = ({ updateFilters, handleSearch }) => {
+type FilterKey = keyof IFilters;
+
+export const CasesHeader: React.FC<CasesHeaderProps> = ({
+  updateFilters,
+  handleSearch,
+  filters,
+}) => {
   const [filtersExpand, setFiltersExpand] = React.useState(false);
   const [isPricePopUpOpen, setIsPricePopUpOpen] = React.useState(false);
   const [priceRange, setPriceRange] = React.useState({ min: "", max: "" });
@@ -32,7 +39,6 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({ updateFilters, handleS
           "Industrial Grade",
           "Mil-Spec",
           "Restricted",
-          "Consumer Grade",
           "Classified",
           "Covert",
           "Extraordinary",
@@ -74,6 +80,7 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({ updateFilters, handleS
                 type={item.type as "checkbox" | "radio"}
                 width={item.width}
                 height={"h-10"}
+                currentFilter={filters[item.title.toLowerCase() as FilterKey] as string[]}
               />
             </div>
           ))}
@@ -109,7 +116,7 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({ updateFilters, handleS
             Filters
           </button>
           {filtersExpand && (
-            <div className="flex flex-col space-y-4 justify-between w-full items-center rounded-lg -mt-5 bg-black/[0.3] p-4">
+            <div className="flex flex-col lg:hidden space-y-4 justify-between w-full items-center rounded-lg -mt-5 bg-black/[0.3] p-4">
               {dropdownItems.map((item) => (
                 <div key={item.title} className="flex w-full flex-col space-y-0.5">
                   <label className="text-2xs text-white ml-1.5">{item.title}</label>
@@ -119,17 +126,25 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({ updateFilters, handleS
                     onSelect={item.onSelect}
                     type={item.type as "checkbox" | "radio"}
                     width={"100%"}
+                    currentFilter={filters[item.title.toLowerCase() as FilterKey] as string[]}
                   />
                 </div>
               ))}
               <div className="flex flex-col space-y-0.5">
                 <label className="text-2xs text-white ml-1.5">Price</label>
                 <button
-                  className={`inline-flex justify-between items-center w-full rounded-md h-9
-               bg-color_gray_3 px-4 py-2 text-sm font-medium text-white focus:outline-none transition-custom`}
+                  className={`inline-flex justify-between items-center w-full rounded-md h-10
+               bg-color_gray_3 py-2 px-3 text-sm font-medium text-white focus:outline-none transition-custom gap-x-3`}
                   onClick={() => setIsPricePopUpOpen(!isPricePopUpOpen)}
                 >
-                  All
+                  <Dollar className="ml-1 inset-y-0 my-auto scale-125 text-color_tertiary" />
+                  {filters.priceRange.length === 0 ? (
+                    <span className={"text-white whitespace-nowrap"}>All</span>
+                  ) : (
+                    <span className={"text-white whitespace-nowrap font-semibold font-mono"}>
+                      {filters.priceRange[0]} to {filters.priceRange[1]}
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
@@ -146,6 +161,7 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({ updateFilters, handleS
           priceRangeCallback={(priceRange: [string, string]) => {
             setPriceRange({ min: priceRange[0], max: priceRange[1] });
           }}
+          currentFilter={filters.priceRange}
         />
       )}
     </div>

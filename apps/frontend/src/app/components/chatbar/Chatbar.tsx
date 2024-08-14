@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { ChatHeader } from "./ChatHeader";
 import { ExpandButton } from "./ExpandButton";
-import { toggleChatBarClicked } from "../../../store/slices/chatBarSlice";
+import { setChatBarOpen, toggleChatBarClicked } from "../../../store/slices/chatBarSlice";
 
 interface Message {
   message: string;
@@ -25,6 +25,10 @@ export const Chatbar = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (window.innerWidth < 640 && isChatOpen) {
+      dispatch(setChatBarOpen(false));
+    }
+
     const fetchMessages = async () => {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_CHAT_MESSAGE_API_URL}/chats`);
@@ -40,6 +44,7 @@ export const Chatbar = () => {
 
     fetchMessages();
   }, []);
+
   useEffect(() => {
     if (connectionStatus === "connected") {
       sendMessage(JSON.stringify({ action: "player-count" }));

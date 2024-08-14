@@ -79,11 +79,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   useEffect(() => {
+    if (!connected && user !== null) {
+      console.log("Wallet not connected, logging out...");
+      logout();
+      return;
+    }
     startLoading();
     setIsLoading(true);
     console.log("Checking token...");
     checkToken();
-  }, [checkToken]);
+  }, [checkToken, connected, startLoading]);
 
   const login = useCallback(async () => {
     startLoading();
