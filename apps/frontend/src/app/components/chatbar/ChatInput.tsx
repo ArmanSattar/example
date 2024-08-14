@@ -1,10 +1,18 @@
+"use client";
+
 import React, { KeyboardEvent, useState } from "react";
 import { useWebSocket } from "../../context/WebSocketContext";
 import Send from "./../../../../public/icons/send.svg";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "sonner";
+import { ExpandButton } from "./ExpandButton";
+import { toggleChatBarClicked } from "../../../store/slices/chatBarSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../store";
 
 export const ChatInput = () => {
+  const isChatOpen = useSelector((state: RootState) => state.chatBar.chatBarOpen);
+  const dispatch = useDispatch();
   const [message, setMessage] = useState("");
   const { sendMessage } = useWebSocket();
   const { user } = useAuth();
@@ -31,7 +39,14 @@ export const ChatInput = () => {
   };
 
   return (
-    <div className="px-2 py-2.5 w-full h-20 flex items-center justify-between z-30 border-t-[1px] border-color_gray_3">
+    <div className="relative px-2 py-2.5 w-full max-h-20 flex items-center justify-between z-30 border-t-[1px] border-color_gray_3">
+      <div className={`fixed z-50 bottom-[21px] -right-[49px]`}>
+        <ExpandButton
+          toggleChatOpen={() => {
+            dispatch(toggleChatBarClicked());
+          }}
+        />
+      </div>
       <div className={"relative flex w-full justify-center items-center"}>
         <textarea
           className="border-[1px] border-color_gray_3 focus:border-color_secondary text-white text-sm rounded-sm w-full min-h-[40px] max-h-[200px] pr-9 pl-[15px] py-3 resize-none outline-none bg-[#141419] h-12 placeholder:transition-opacity focus:placeholder:opacity-50 focus:outline-none flex justify-center items-center overflow-y-auto"

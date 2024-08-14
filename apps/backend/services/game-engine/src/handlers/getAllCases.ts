@@ -1,7 +1,7 @@
 import { ApiHandler } from "sst/node/api";
 import { listCases } from "../data-access/caseRepository";
 import { getLogger } from "@solspin/logger";
-import { errorResponse, successResponse } from "@solspin/gateway-responses";
+import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 
 const logger = getLogger("get-all-cases-handler");
 export const handler = ApiHandler(async (event) => {

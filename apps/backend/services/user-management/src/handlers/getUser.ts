@@ -4,7 +4,7 @@ import { ValidationError } from "@solspin/errors";
 import { GetUserByIdRequestSchema } from "@solspin/user-management-types";
 import { ZodError } from "zod";
 import { getLogger } from "@solspin/logger";
-import { errorResponse } from "@solspin/gateway-responses";
+import { errorResponse } from "@solspin/events/utils/gateway-responses";
 import { APIGatewayProxyEventV2, Context } from "aws-lambda";
 
 const logger = getLogger("get-user-handler");

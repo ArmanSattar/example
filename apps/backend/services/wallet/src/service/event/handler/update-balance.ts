@@ -1,6 +1,6 @@
 import { ZodError } from "zod";
 import { APIGatewayProxyEvent, EventBridgeEvent } from "aws-lambda";
-import { errorResponse, successResponse } from "@solspin/gateway-responses";
+import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 import { getLogger } from "@solspin/logger";
 import { updateWalletBalance } from "../../../data-access/updateWalletBalance";
 import {

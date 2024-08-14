@@ -1,6 +1,6 @@
 import { ZodError } from "zod";
 import { Context } from "aws-lambda";
-import { errorResponse, successResponse } from "@solspin/gateway-responses";
+import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 import { getLogger } from "@solspin/logger";
 import { v4 as uuidv4 } from "uuid";
 import { DepositRequest, DepositRequestSchema } from "@solspin/types";

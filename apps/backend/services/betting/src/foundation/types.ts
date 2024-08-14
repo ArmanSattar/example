@@ -1,5 +1,4 @@
-import { GameOutcome } from "@solspin/types";
-import { GameType } from "../service/events/schemas/schema";
+import { GameOutcome, GameType } from "@solspin/types";
 
 export interface BetDBObject {
   id: string;

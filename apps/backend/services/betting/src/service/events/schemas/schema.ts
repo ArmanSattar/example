@@ -1,11 +1,5 @@
 import { z } from "zod";
-import { GameOutcome } from "@solspin/types";
-
-//TODO - remove this enum
-export enum GameType {
-  CASES = "CASES",
-  CASE_BATTLES = "CASE_BATTLES",
-}
+import { GameOutcome, GameType } from "@solspin/types";
 
 export const CreateBetRequestSchema = z.object({
   publisher: z.string(),

@@ -1,7 +1,7 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { GetWalletsByIdRequestSchema, GetWalletsByIdResponseSchema } from "@solspin/types";
 import { queryWalletById } from "../../../data-access/query-by-id";
-import { errorResponse, successResponse } from "@solspin/gateway-responses";
+import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 import { getLogger } from "@solspin/logger";
 
 const logger = getLogger("get-Wallet-by-id-handler");

@@ -7,8 +7,7 @@ import { useWebSocket } from "../../context/WebSocketContext";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { ChatHeader } from "./ChatHeader";
-import { ExpandButton } from "./ExpandButton";
-import { setChatBarOpen, toggleChatBarClicked } from "../../../store/slices/chatBarSlice";
+import { setChatBarOpen } from "../../../store/slices/chatBarSlice";
 
 interface Message {
   message: string;
@@ -110,19 +109,6 @@ export const Chatbar = () => {
           <ChatBody messages={messages} />
           <ChatInput />
         </div>
-      </div>
-      <div
-        className={`
-          absolute bottom-8
-          ${isChatOpen ? "left-[320px]" : "left-0"}
-          transition-all duration-300 ease-in-out z-50
-        `}
-      >
-        <ExpandButton
-          toggleChatOpen={() => {
-            dispatch(toggleChatBarClicked());
-          }}
-        />
       </div>
     </div>
   );

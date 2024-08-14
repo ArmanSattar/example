@@ -1,5 +1,5 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { errorResponse, successResponse } from "@solspin/gateway-responses";
+import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 import { getLogger } from "@solspin/logger";
 import { getBetStats } from "../../../data-access/get-bet-stats";
 import {

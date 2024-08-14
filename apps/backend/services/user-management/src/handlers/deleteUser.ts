@@ -1,9 +1,7 @@
 import { ApiHandler } from "sst/node/api";
-import { DeleteUserRequestSchema } from "@solspin/user-management-types";
 import { deleteUser } from "../data-access/userRepository";
-import { ZodError } from "zod";
 import { getLogger } from "@solspin/logger";
-import { errorResponse, successResponse } from "@solspin/gateway-responses";
+import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 
 const logger = getLogger("delete-user-handler");
 export const handler = ApiHandler(async (event) => {

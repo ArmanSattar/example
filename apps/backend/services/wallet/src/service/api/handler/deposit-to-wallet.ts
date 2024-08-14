@@ -5,7 +5,7 @@ import {
   DepositToWalletRequestSchema,
   GatewayResponseSchema,
 } from "@solspin/types";
-import { errorResponse, successResponse } from "@solspin/gateway-responses";
+import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 import { getLogger } from "@solspin/logger";
 import { v4 as uuidv4 } from "uuid";
 import { lockWallet } from "../../../data-access/lockWallet";
@@ -14,6 +14,7 @@ import { unlockWallet } from "../../../data-access/unlockWallet";
 import { deposit } from "../../../data-access/deposit";
 import { Lambda } from "aws-sdk";
 import { DEPOSIT_TREASURY_FUNCTION_ARN } from "../../../foundation/runtime";
+import { UpdateBalanceResponseSchema } from "../../event/schema/schema";
 
 const logger = getLogger("deposit-handler");
 const lambda = new Lambda();
@@ -60,10 +61,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         return errorResponse(new Error("Internal server error"), 500);
       }
 
-      // TODO - add schema validation
-      const { depositAmount: depositAmountInCrypto, transactionId } = JSON.parse(
-        responsePayload.body
-      );
+      const { depositAmount: depositAmountInCrypto, transactionId } =
+        UpdateBalanceResponseSchema.parse(JSON.parse(responsePayload.body));
 
       logger.info("Deposit request processed", { depositAmountInCrypto, transactionId });
 

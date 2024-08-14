@@ -3,7 +3,7 @@ import {
   WalletTransactionStatsRequestSchema,
   WalletTransactionStatsResponseSchema,
 } from "@solspin/types";
-import { errorResponse, successResponse } from "@solspin/gateway-responses";
+import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 import { getLogger } from "@solspin/logger";
 import { getTransactionStats } from "../../../data-access/getTransactions";
 

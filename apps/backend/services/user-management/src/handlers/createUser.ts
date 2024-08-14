@@ -6,7 +6,7 @@ import { ZodError } from "zod";
 import jwt from "jsonwebtoken";
 import { Config } from "sst/node/config";
 import { getLogger } from "@solspin/logger";
-import { errorResponse, successResponse } from "@solspin/gateway-responses";
+import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 
 const logger = getLogger("create-user-handler");
 

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { ProfilePictureWithEdit } from "./ProfilePictureWithEdit";
 import axios from "axios";
 import { toast } from "sonner";
 import { User } from "@solspin/user-management-types";
+import { truncateUsername } from "../../libs/utils";
 
 interface UserHeaderProps {
   user: User;
@@ -12,6 +13,7 @@ interface UserHeaderProps {
 }
 
 export const UserHeader: React.FC<UserHeaderProps> = ({ user, updateUser }) => {
+  const truncatedUsername = useMemo(() => truncateUsername(user.username), [user.username]);
   const handleProfilePictureChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files[0]) {
@@ -84,17 +86,17 @@ export const UserHeader: React.FC<UserHeaderProps> = ({ user, updateUser }) => {
   }
 
   return (
-    <div className={"flex flex-col gap-y-2"}>
+    <div className={"flex flex-col gap-y-2 max-w-full"}>
       <span className={"uppercase text-white text-lg font-bold"}>Profile</span>
-      <div className="flex flex-col justify-between mx-auto p-10 rounded-xl bg-color_gray_4 relative gap-y-4 shadow-lg">
-        <div className={"relative w-full flex justify-center items-center scale-125"}>
+      <div className="flex flex-col justify-between sm:mx-auto p-10 rounded-xl bg-color_gray_4 relative gap-y-4 shadow-lg">
+        <div className={"relative w-full flex justify-center items-center scale-100 md:scale-125"}>
           <ProfilePictureWithEdit
             profileImageUrl={user ? user.profileImageUrl : undefined}
             handleProfilePictureChange={handleProfilePictureChange}
           />
         </div>
-        <div className={"flex flex-col gap-y-1 justify-between items-start w-full"}>
-          <div className="text-white text-xl font-bold">{user.username}</div>
+        <div className={"flex flex-col gap-y-1 justify-between items-start max-w-full"}>
+          <div className="text-white text-xl font-bold">{truncatedUsername}</div>
           {/*<div className="text-gray-400">{user.level}</div>*/}
           {/*<div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">*/}
           {/*  <div*/}

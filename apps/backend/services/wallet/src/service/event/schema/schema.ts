@@ -16,6 +16,11 @@ export const UpdateBalanceRequestSchema = z.object({
   amount: z.number(),
 });
 
+export const UpdateBalanceResponseSchema = z.object({
+  depositAmount: z.number(),
+  transactionId: z.string(),
+});
+
 export const CreateWalletEventSchema = z.object({
   publisher: z.string(),
   metadata: z.object({

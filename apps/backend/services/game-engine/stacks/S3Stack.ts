@@ -9,7 +9,6 @@ import { RemovalPolicy } from "aws-cdk-lib/core";
 export function S3Stack({ stack }: StackContext) {
   const removeOnDelete = stack.stage !== "prod";
 
-  //TODO - Fix permissions
   const bucket = new Bucket(stack, "CasesBucket", {
     cdk: {
       bucket: {
@@ -17,10 +16,13 @@ export function S3Stack({ stack }: StackContext) {
         cors: [
           {
             allowedMethods: [s3.HttpMethods.GET],
-            allowedOrigins: ["*"],
-            allowedHeaders: ["*"],
+            allowedOrigins: [
+              stack.stage === "dev" ? "http://localhost:3000" : "https://www.solspin.bet",
+            ],
+            allowedHeaders: ["Authorization", "Content-Type"],
           },
         ],
+        encryption: s3.BucketEncryption.S3_MANAGED,
         // removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
         removalPolicy: RemovalPolicy.RETAIN,
       },
