@@ -71,7 +71,7 @@ export const handler = WebSocketApiHandler(async (event) => {
         profileImageUrl: chatMessage.profileImageUrl,
       },
     };
-    broadcastMessage(messageEndpoint, broadcastChatMessage, connectionIds, TYPE);
+    await broadcastMessage(messageEndpoint, broadcastChatMessage, connectionIds, TYPE);
 
     return {
       statusCode: 200,
@@ -81,7 +81,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     const errorMessage: string = (error as Error).message;
     logger.error(`Error occurred in chat handler: ${error}`);
 
-    sendWebSocketMessage(messageEndpoint, connectionId, { message: errorMessage }, "error");
+    await sendWebSocketMessage(messageEndpoint, connectionId, { message: errorMessage }, "error");
     return {
       statusCode: 500,
       body: JSON.stringify({
