@@ -1,5 +1,5 @@
 import type { SSTConfig } from "sst";
-import { ApiStack } from "./stacks/Api";
+import { LambdaStack } from "./stacks/Api";
 import { DatabaseStack } from "./stacks/Database";
 
 export default {
@@ -17,6 +17,6 @@ export default {
     });
 
     app.stack(DatabaseStack);
-    app.stack(ApiStack);
+    app.stack(LambdaStack);
   },
 } satisfies SSTConfig;

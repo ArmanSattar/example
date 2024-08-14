@@ -1,12 +1,12 @@
-import { Api, StackContext, use } from "sst/constructs";
+import { Function, StackContext, use } from "sst/constructs";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import { DatabaseStack } from "./Database";
 
-export function ApiStack({ stack }: StackContext) {
-  const { transactionsTableArn } = use(DatabaseStack);
+export function LambdaStack({ stack }: StackContext) {
+  const { transactionsTableArn, transactionsTableName } = use(DatabaseStack);
 
-  // Create the Solana layer once
+  // Create the Solana layer
   const solanaLayer = new lambda.LayerVersion(stack, "solana-web3-layer", {
     code: lambda.Code.fromAsset("layers/solana/nodejs"),
     description: "Lambda layer for @solana/web3.js",
@@ -14,64 +14,55 @@ export function ApiStack({ stack }: StackContext) {
     compatibleArchitectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],
   });
 
-  const api = new Api(stack, "api", {
-    defaults: {
-      function: {
-        enableLiveDev: stack.stage === "dev",
-        environment: {
-          TRANSACTIONS_TABLE_NAME: transactionsTableArn.split("/").pop() || "",
-          SOLANA_RPC_URL: process.env.SOLANA_RPC_URL || "",
-          HOUSE_WALLET_ADDRESS: process.env.HOUSE_WALLET_ADDRESS || "",
-          HOUSE_SECRET_KEY: process.env.HOUSE_SECRET_KEY || "",
-          FEE: process.env.TRANSACTION_FEE || "5000",
-          COMMITMENT_LEVEL: process.env.COMMITMENT_LEVEL || "finalized",
-        },
-        nodejs: {
-          esbuild: {
-            external: ["@solana/web3.js"],
-          },
-        },
-        layers: [solanaLayer],
-        permissions: [
-          new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            actions: ["dynamodb:PutItem"],
-            resources: [transactionsTableArn],
-          }),
-        ],
+  // Common function properties
+  const commonFunctionProps = {
+    enableLiveDev: stack.stage === "dev",
+    environment: {
+      TRANSACTIONS_TABLE_NAME: transactionsTableName,
+      SOLANA_RPC_URL: process.env.SOLANA_RPC_URL || "",
+      HOUSE_WALLET_ADDRESS: process.env.HOUSE_WALLET_ADDRESS || "",
+      HOUSE_SECRET_KEY: process.env.HOUSE_SECRET_KEY || "",
+      FEE: process.env.TRANSACTION_FEE || "5000",
+      COMMITMENT_LEVEL: process.env.COMMITMENT_LEVEL || "finalized",
+    },
+    nodejs: {
+      esbuild: {
+        external: ["@solana/web3.js"],
       },
     },
-    // TODO - Remove these endpoints
-    routes: {
-      "POST /treasury/deposit": {
-        function: {
-          functionName: `${stack.stackName}-deposit-to-wallet`,
-          handler: "src/service/api/handler/deposit-to-wallet.handler",
-          timeout: 30,
-        },
-      },
-      "POST /treasury/withdraw": {
-        function: {
-          functionName: `${stack.stackName}-withdraw-from-wallet`,
-          handler: "src/service/api/handler/withdraw-from-wallet.handler",
-          timeout: 60,
-        },
-      },
-    },
+    layers: [solanaLayer],
+    permissions: [
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ["dynamodb:PutItem"],
+        resources: [transactionsTableArn],
+      }),
+    ],
+  };
+
+  // Create deposit Lambda function
+  const depositFunction = new Function(stack, "DepositFunction", {
+    ...commonFunctionProps,
+    functionName: `${stack.stackName}-deposit-to-wallet`,
+    handler: "src/service/api/handler/deposit-to-wallet.handler",
+    timeout: 30,
   });
 
-  const withdrawLambda = api.getFunction("POST /treasury/withdraw");
-  const depositLambda = api.getFunction("POST /treasury/deposit");
+  // Create withdraw Lambda function
+  const withdrawFunction = new Function(stack, "WithdrawFunction", {
+    ...commonFunctionProps,
+    functionName: `${stack.stackName}-withdraw-from-wallet`,
+    handler: "src/service/api/handler/withdraw-from-wallet.handler",
+    timeout: 30,
+  });
 
   stack.addOutputs({
-    ApiEndpoint: api.url,
-    WithdrawLambdaArn: withdrawLambda?.functionArn || "Not found",
-    DepositLambdaArn: depositLambda?.functionArn || "Not found",
+    DepositLambdaArn: depositFunction.functionArn,
+    WithdrawLambdaArn: withdrawFunction.functionArn,
   });
 
   return {
-    api,
-    withdrawLambdaName: withdrawLambda?.functionName || "",
-    depositLambdaName: depositLambda?.functionName || "",
+    depositLambdaName: depositFunction.functionName,
+    withdrawLambdaName: withdrawFunction.functionName,
   };
 }
