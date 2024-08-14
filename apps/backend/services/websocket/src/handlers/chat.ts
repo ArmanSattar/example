@@ -1,19 +1,14 @@
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { getConnectionInfo } from "../helpers/handleConnections";
-import { getLogger } from "@solspin/logger";
+import { getLogger } from "@solspin/events/utils/logger";
 import { randomUUID } from "crypto";
-import { broadcastMessage, sendWebSocketMessage } from "@solspin/web-socket-message";
+import { broadcastMessage, sendWebSocketMessage } from "@solspin/events/utils/sendWebSocketMessage";
 import {
+  ChatMessage,
   ConnectionInfo,
   WebSocketChatMessagePayloadSchema,
-  ChatMessage,
-  WebSocketChatMessageResponseSchema,
 } from "@solspin/websocket-types";
-import {
-  saveMessage,
-  deleteMessage,
-  getMessageHistory,
-} from "../data-access/chatMessageRepository";
+import { saveMessage } from "../data-access/chatMessageRepository";
 import { callGetUser } from "../helpers/getUserHelper";
 import { getAllConnectionIds } from "../data-access/connectionRepository";
 import { User } from "@solspin/user-management-types";

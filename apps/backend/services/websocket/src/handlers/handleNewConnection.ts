@@ -1,10 +1,14 @@
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { handleNewConnection } from "../helpers/handleConnections";
-import { getLogger } from "@solspin/logger";
+import { getLogger } from "@solspin/events/utils/logger";
 
 const logger = getLogger("handle-new-connection-handler");
 
-const whiteListedOrigins = ["https://piehost.com", "http://localhost:3000"];
+const whiteListedOrigins = [
+  "https://piehost.com",
+  "http://localhost:3000",
+  "https://www.solspin.bet",
+];
 export const handler = WebSocketApiHandler(async (event) => {
   const connectionId = event.requestContext?.connectionId;
   const origin = event.headers?.Origin;

@@ -8,4 +8,4 @@ export * as GameResult from "./registry/gameResultEventSchema";
 export * as CreateWallet from "./registry/create-wallet";
 
 // schemas
-export * as Betting from "./service/betting/schemas";
+export * as Betting from "../types/src/service/betting/schemas";

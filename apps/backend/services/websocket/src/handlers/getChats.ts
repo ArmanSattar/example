@@ -1,7 +1,8 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { getLogger } from "@solspin/logger";
+import { getLogger } from "@solspin/events/utils/logger";
 import { getMessageHistory } from "../data-access/chatMessageRepository";
-import { errorResponse, successResponse } from "@solspin/gateway-responses";
+import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
+
 const logger = getLogger("recent-messages-handler");
 
 const MESSAGE_HISTORY_MAX_NUMBER: number = 10;

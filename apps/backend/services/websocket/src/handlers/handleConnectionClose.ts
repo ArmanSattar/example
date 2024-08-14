@@ -1,6 +1,6 @@
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { handleConnectionClose } from "../helpers/handleConnections";
-import { getLogger } from "@solspin/logger";
+import { getLogger } from "@solspin/events/utils/logger";
 
 const logger = getLogger("handle-connection-close-handler");
 export const handler = WebSocketApiHandler(async (event) => {

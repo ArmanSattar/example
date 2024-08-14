@@ -1,8 +1,8 @@
 import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 import { handleConnectionClose } from "../helpers/handleConnections";
 import { ApiHandler } from "sst/node/api";
-import { sendWebSocketMessage } from "@solspin/web-socket-message";
-import { getLogger } from "@solspin/logger";
+import { sendWebSocketMessage } from "@solspin/events/utils/sendWebSocketMessage";
+import { getLogger } from "@solspin/events/utils/logger";
 
 const logger = getLogger("prune-connections-handler");
 const dynamoDbClient = new DynamoDBClient({});

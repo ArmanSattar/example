@@ -1,6 +1,6 @@
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { handleLogout } from "../helpers/handleConnections";
-import { getLogger } from "@solspin/logger";
+import { getLogger } from "@solspin/events/utils/logger";
 
 const logger = getLogger("handle-logout-handler");
 export const handler = WebSocketApiHandler(async (event) => {

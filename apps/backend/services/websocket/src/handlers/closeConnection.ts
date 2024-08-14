@@ -1,6 +1,6 @@
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { disconnectClient } from "../helpers/disconnectClient";
-import { getLogger } from "@solspin/logger";
+import { getLogger } from "@solspin/events/utils/logger";
 
 const logger = getLogger("close-connection-handler");
 

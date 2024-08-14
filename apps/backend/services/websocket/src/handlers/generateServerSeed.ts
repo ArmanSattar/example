@@ -1,8 +1,8 @@
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { generateServerSeed } from "../helpers/handleConnections";
 import { hashString } from "@solspin/hash";
-import { sendWebSocketMessage } from "@solspin/web-socket-message";
-import { getLogger } from "@solspin/logger";
+import { sendWebSocketMessage } from "@solspin/events/utils/sendWebSocketMessage";
+import { getLogger } from "@solspin/events/utils/logger";
 
 const logger = getLogger("generate-server-seed-handler");
 

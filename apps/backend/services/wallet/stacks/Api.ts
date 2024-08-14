@@ -138,7 +138,7 @@ export function ApiStack({ stack }: StackContext) {
               resources: [depositTreasuryFunction.functionArn],
             }),
           ],
-          timeout: 90,
+          timeout: 45,
         },
       },
       "POST /wallets/withdraw": {
@@ -156,7 +156,7 @@ export function ApiStack({ stack }: StackContext) {
               resources: [withdrawTreasuryFunction.functionArn],
             }),
           ],
-          timeout: 90,
+          timeout: 45,
         },
       },
     },

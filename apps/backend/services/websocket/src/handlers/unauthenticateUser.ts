@@ -1,7 +1,6 @@
 import { WebSocketApiHandler } from "sst/node/websocket-api";
-import { authenticateUser, unauthenticateUser } from "../helpers/handleConnections";
-import { callAuthorizer } from "../helpers/callAuthorizer";
-import { getLogger } from "@solspin/logger";
+import { unauthenticateUser } from "../helpers/handleConnections";
+import { getLogger } from "@solspin/events/utils/logger";
 
 const logger = getLogger("unauthenticate-user-handler");
 

@@ -8,11 +8,11 @@ import { debitUser } from "../helpers/debitUser";
 import { callGetCase } from "../helpers/getCaseHelper";
 import { performSpin } from "../helpers/performSpinHelper";
 import { WebSocketApiHandler } from "sst/node/websocket-api";
-import { sendWebSocketMessage } from "@solspin/web-socket-message";
+import { sendWebSocketMessage } from "@solspin/events/utils/sendWebSocketMessage";
 import { GameResult, publishEvent } from "@solspin/events";
 import { Service } from "@solspin/types";
-import { GameOutcome } from "@solspin/betting-types";
-import { getLogger } from "@solspin/logger";
+import { GameOutcome } from "@solspin/events/types/src/service/betting/schemas";
+import { getLogger } from "@solspin/events/utils/logger";
 import {
   BaseCase,
   BaseCaseItem,

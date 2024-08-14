@@ -1,7 +1,7 @@
 import { ApiHandler } from "sst/node/api";
 import { getConnectionInfo } from "../helpers/handleConnections";
 import { ConnectionInfo } from "@solspin/websocket-types";
-import { getLogger } from "@solspin/logger";
+import { getLogger } from "@solspin/events/utils/logger";
 
 const logger = getLogger("get-connection-info-handler");
 export const handler = ApiHandler(async (event) => {

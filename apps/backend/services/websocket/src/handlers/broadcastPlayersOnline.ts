@@ -1,6 +1,6 @@
 import { WebSocketApiHandler } from "sst/node/websocket-api";
-import { getLogger } from "@solspin/logger";
-import { broadcastMessage } from "@solspin/web-socket-message";
+import { getLogger } from "@solspin/events/utils/logger";
+import { broadcastMessage } from "@solspin/events/utils/sendWebSocketMessage";
 import { getAllConnectionIds } from "../data-access/connectionRepository";
 
 const logger = getLogger("broadcast-active-players-handler");

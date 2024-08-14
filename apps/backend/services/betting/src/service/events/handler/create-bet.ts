@@ -4,7 +4,7 @@ import { Service } from "@solspin/types";
 import { BetTransaction, publishEvent } from "@solspin/events";
 import { recordBet } from "../../../data-access/record-bet";
 import { updateOrCreateBetStats } from "../../../data-access/update-bet-stats";
-import { errorResponse, successResponse } from "@solspin/gateway-responses";
+import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 import { getLogger } from "@solspin/logger";
 import { CreateBetEvent, CreateBetRequestSchema } from "../schemas/schema";
 

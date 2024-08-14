@@ -1,6 +1,6 @@
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { authenticateUser } from "../helpers/handleConnections";
-import { getLogger } from "@solspin/logger";
+import { getLogger } from "@solspin/events/utils/logger";
 import jwt from "jsonwebtoken";
 import { Config } from "sst/node/config";
 
