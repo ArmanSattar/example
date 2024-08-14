@@ -50,5 +50,6 @@ export async function publishEvent<T>(
     ],
   });
 
-  await eventBridgeClient.send(command);
+  const res = await eventBridgeClient.send(command);
+  logger.info("Event published", { res });
 }

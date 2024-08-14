@@ -1,6 +1,6 @@
 import { ApiHandler } from "sst/node/api";
 import { createUser, getUserByWalletAddress } from "../data-access/userRepository";
-import { deleteNonce, nonceExists } from "../data-access/nonceRepository"; // Import necessary functions
+import { deleteNonce, nonceExists } from "../data-access/nonceRepository";
 import { UserSchema } from "@solspin/user-management-types";
 import { PublicKey } from "@solana/web3.js";
 import nacl from "tweetnacl";
@@ -99,7 +99,7 @@ export const handler = ApiHandler(async (event) => {
 
       validateUser(user);
 
-      publishEvent(
+      await publishEvent(
         CreateWallet.event,
         {
           userId: user.userId,

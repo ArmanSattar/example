@@ -127,16 +127,11 @@ export const handler = WebSocketApiHandler(async (event) => {
     // Publish outcomes to event bridge
     for (const spinResult of spinResults) {
       const caseRolledItem: BaseCaseItem = BaseCaseItemSchema.parse(spinResult.rewardItem);
-      const outcome =
-        caseModel.price < caseRolledItem.price
-          ? GameOutcome.WIN
-          : caseModel.price > caseRolledItem.price
-          ? GameOutcome.LOSE
-          : GameOutcome.NEUTRAL;
+      const outcome = caseModel.price < caseRolledItem.price ? GameOutcome.WIN : GameOutcome.LOSE;
 
       const outcomeAmount = caseRolledItem.price;
 
-      publishEvent(
+      await publishEvent(
         GameResult.gameResultEvent,
         {
           userId,
