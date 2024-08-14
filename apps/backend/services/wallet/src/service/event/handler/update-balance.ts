@@ -8,6 +8,8 @@ import {
   UpdateBalanceEventSchema,
   UpdateBalanceRequestSchema,
 } from "../schema/schema";
+import { checkIdempotencyAndThrow } from "../../../data-access/check-idempotency";
+import { putIdempotencyKey } from "../../../data-access/put-idempotency-key";
 
 const logger = getLogger("update-balance");
 
@@ -24,27 +26,31 @@ const logger = getLogger("update-balance");
 export const handler = async (
   event: EventBridgeEvent<"event", UpdateBalanceEvent> | APIGatewayProxyEvent
 ) => {
-  logger.info("Received update balance request", { event });
-
   let userId: string | undefined;
   let amount: number | undefined;
+  let requestId: string | undefined;
 
   try {
     // Check if the event is from EventBridge or direct invocation
     if ("detail" in event) {
       // EventBridge event
       const eventDetails = UpdateBalanceEventSchema.parse(event.detail);
-      ({ userId, amount } = eventDetails.payload);
+      ({ userId, amount, requestId } = eventDetails.payload);
     } else {
       // Direct invocation (assume APIGatewayProxyEvent)
       const body = JSON.parse(event.body || "{}");
       const directInvokeData = UpdateBalanceRequestSchema.parse(body);
-      ({ userId, amount } = directInvokeData);
+      ({ userId, amount, requestId } = directInvokeData);
     }
 
-    if (!userId || !amount) {
+    logger.info("Received update balance request", { event, requestId });
+
+    if (!userId || !amount || !requestId) {
       return errorResponse(new Error("Invalid request"), 400);
     }
+
+    await checkIdempotencyAndThrow(requestId);
+    await putIdempotencyKey(requestId);
 
     const amountFpn = Math.round(amount * 100);
     await updateWalletBalance(userId, amountFpn);

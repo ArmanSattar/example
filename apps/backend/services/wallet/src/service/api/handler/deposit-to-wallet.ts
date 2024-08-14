@@ -7,7 +7,6 @@ import {
 } from "@solspin/types";
 import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 import { getLogger } from "@solspin/logger";
-import { v4 as uuidv4 } from "uuid";
 import { lockWallet } from "../../../data-access/lockWallet";
 import { getCurrentPrice } from "../../../remote/jupiterClient";
 import { unlockWallet } from "../../../data-access/unlockWallet";
@@ -15,6 +14,8 @@ import { deposit } from "../../../data-access/deposit";
 import { Lambda } from "aws-sdk";
 import { DEPOSIT_TREASURY_FUNCTION_ARN } from "../../../foundation/runtime";
 import { UpdateBalanceResponseSchema } from "../../event/schema/schema";
+import { checkIdempotencyAndThrow } from "../../../data-access/check-idempotency";
+import { putIdempotencyKey } from "../../../data-access/put-idempotency-key";
 
 const logger = getLogger("deposit-handler");
 const lambda = new Lambda();
@@ -27,19 +28,20 @@ const lambda = new Lambda();
  **/
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
-  const depositId = uuidv4(); // Generate a unique ID for this withdrawal attempt
-  logger.info("Received deposit request", { event, depositId });
-
   try {
     const parsedBody = JSON.parse(event.body || "{}");
 
     const depositRequest = DepositToWalletRequestSchema.parse(parsedBody);
 
-    const { userId, walletAddress, txnSignature } = depositRequest;
-    console.log(depositRequest);
+    const { userId, walletAddress, txnSignature, requestId } = depositRequest;
+    logger.info("Received deposit request", { event });
+
     if (!walletAddress || !txnSignature) {
       return errorResponse(new Error("Invalid request"), 400);
     }
+
+    await checkIdempotencyAndThrow(requestId);
+    await putIdempotencyKey(requestId);
 
     try {
       const wallet = await lockWallet(userId);
@@ -57,7 +59,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       const responsePayload = GatewayResponseSchema.parse(JSON.parse(response.Payload as string));
 
       if (response.StatusCode !== 200 || responsePayload.statusCode !== 200) {
-        logger.error("Error processing deposit request", { responsePayload, depositId });
+        logger.error("Error processing deposit request", { responsePayload, requestId });
         return errorResponse(new Error("Internal server error"), 500);
       }
 
@@ -78,7 +80,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         depositAmount: depositAmountInUsdFpn / 100,
       } as DepositResponse);
     } catch (error) {
-      logger.error("Error processing deposit request", { error, depositId });
+      logger.error("Error processing deposit request", { error, requestId });
 
       if (error instanceof ZodError) {
         return errorResponse(error, 400);
@@ -90,7 +92,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       await unlockWallet(userId);
     }
   } catch (error) {
-    logger.error("Error processing deposit request", { error, depositId });
+    logger.error("Error processing deposit request", { error });
 
     if (error instanceof ZodError) {
       return errorResponse(error, 400);

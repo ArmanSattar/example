@@ -1,7 +1,7 @@
 import { WebSocketApiHandler } from "sst/node/websocket-api";
 import { getConnectionInfo } from "../helpers/handleConnections";
 import { getLogger } from "@solspin/events/utils/logger";
-import { randomUUID } from "crypto";
+import { v4 as uuid } from "uuid";
 import { broadcastMessage, sendWebSocketMessage } from "@solspin/events/utils/sendWebSocketMessage";
 import {
   ChatMessage,
@@ -35,7 +35,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     }
 
     const parsedBody = JSON.parse(event.body || "{}");
-    let payload = WebSocketChatMessagePayloadSchema.parse(parsedBody);
+    const payload = WebSocketChatMessagePayloadSchema.parse(parsedBody);
     const { message } = payload;
 
     const connectionInfo: ConnectionInfo | null = await getConnectionInfo(connectionId);
@@ -47,7 +47,7 @@ export const handler = WebSocketApiHandler(async (event) => {
     const userInfo: User = await callGetUser(userId);
 
     const chatMessage: ChatMessage = {
-      messageId: randomUUID(),
+      messageId: uuid(),
       message,
       sentAt: Date.now(),
       userId,

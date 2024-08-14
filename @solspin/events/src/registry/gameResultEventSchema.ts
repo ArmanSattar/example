@@ -16,6 +16,7 @@ export interface GameResultPayload {
 }
 
 export const gameResultEventSchema = z.object({
+  requestId: z.string().uuid(),
   userId: z.string().uuid(),
   gameType: z.nativeEnum(GameType),
   amountBet: z.number().positive(),

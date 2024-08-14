@@ -4,7 +4,13 @@ import * as cdk from "aws-cdk-lib";
 import { DatabaseStack } from "./Database";
 
 export function ApiStack({ stack }: StackContext) {
-  const { betsTableArn, betStatsTableArn, betStatsTableName } = use(DatabaseStack);
+  const {
+    betsTableArn,
+    betStatsTableArn,
+    betStatsTableName,
+    idempotencyTableName,
+    idempotencyTableArn,
+  } = use(DatabaseStack);
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
 
   const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
@@ -20,6 +26,7 @@ export function ApiStack({ stack }: StackContext) {
       BETS_TABLE_ARN: betsTableArn,
       EVENT_BUS_ARN: eventBusArn,
       BET_STATS_TABLE_NAME: betStatsTableName,
+      IDEMPOTENCY_TABLE_NAME: idempotencyTableName,
     },
     permissions: [
       new iam.PolicyStatement({
@@ -36,6 +43,11 @@ export function ApiStack({ stack }: StackContext) {
         effect: iam.Effect.ALLOW,
         actions: ["dynamodb:UpdateItem", "dynamodb:PutItem"],
         resources: [betStatsTableArn],
+      }),
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ["dynamodb:PutItem", "dynamodb:GetItem"],
+        resources: [idempotencyTableArn],
       }),
     ],
   });

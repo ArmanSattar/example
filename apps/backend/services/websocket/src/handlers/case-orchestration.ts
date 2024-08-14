@@ -21,6 +21,8 @@ import {
   SpinResult,
 } from "@solspin/game-engine-types";
 import { hashString } from "@solspin/hash";
+// @ts-ignore
+import { v4 as uuid } from "uuid";
 
 const logger = getLogger("case-orchestration-handler");
 
@@ -134,6 +136,7 @@ export const handler = WebSocketApiHandler(async (event) => {
       await publishEvent(
         GameResult.gameResultEvent,
         {
+          requestId: uuid(),
           userId,
           gameType: GameResult.GameType.CASES,
           amountBet: caseModel.price,

@@ -13,12 +13,14 @@ import { postData } from "./utils/requests";
 import { DepositResponse } from "@solspin/types";
 import { HOUSE_WALLET_ADDRESS, WALLETS_API_URL } from "../../types";
 import Close from "../../../../public/icons/close.svg";
+import { v4 as uuid } from "uuid";
 
 interface DepositPopUpProps {
   handleClose: () => void;
 }
 
 type DepositData = {
+  requestId: string;
   walletAddress: string;
   txnSignature: string;
   userId: string;
@@ -151,6 +153,7 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
       );
 
       await postDataMutation({
+        requestId: uuid(),
         walletAddress: wallet.publicKey.toString(),
         txnSignature: signature,
         userId: user?.userId,

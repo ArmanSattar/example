@@ -223,18 +223,6 @@ export function WebSocketGateway({ stack }: StackContext) {
     },
   });
 
-  // TODO - Find the handler that needs permision to invoke betTransactionFunction and add it to it and remove this
-  api.attachPermissions([
-    new PolicyStatement({
-      actions: ["lambda:InvokeFunction"],
-      resources: [
-        getCaseFunction.functionArn,
-        performSpinFunction.functionArn,
-        betTransactionFunction.functionArn,
-      ],
-    }),
-  ]);
-
   const matches = api.url.match(/^wss?:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
   const domainName = `${matches && matches[1]}/${stack.stage}`;
 

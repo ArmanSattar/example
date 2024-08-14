@@ -15,7 +15,7 @@ export const handler = ApiHandler(async (event) => {
       body: JSON.stringify({ message: "Logout successful" }),
     };
   } catch (error) {
-    logger.error("Error processing wallet disconnection:", error);
+    logger.error("Error processing wallet disconnection:", { error });
     const errorMessage = error instanceof Error ? error.message : "Internal server error";
     return {
       statusCode: 500,

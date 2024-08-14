@@ -7,13 +7,14 @@ import {
 } from "@solspin/types";
 import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 import { getLogger } from "@solspin/logger";
-import { v4 as uuidv4 } from "uuid";
 import { lockWallet } from "../../../data-access/lockWallet";
 import { getCurrentPrice } from "../../../remote/jupiterClient";
 import { withdraw } from "../../../data-access/withdraw";
 import { unlockWallet } from "../../../data-access/unlockWallet";
 import { Lambda } from "aws-sdk";
 import { WITHDRAW_TREASURY_FUNCTION_ARN } from "../../../foundation/runtime";
+import { checkIdempotencyAndThrow } from "../../../data-access/check-idempotency";
+import { putIdempotencyKey } from "../../../data-access/put-idempotency-key";
 
 const logger = getLogger("withdraw-handler");
 const lambda = new Lambda();
@@ -26,19 +27,22 @@ const lambda = new Lambda();
  **/
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
-  const withdrawId = uuidv4(); // Generate a unique ID for this withdrawal attempt
-  logger.info("Received withdraw request", { event, withdrawId });
-
   try {
     const parsedBody = JSON.parse(event.body || "{}");
 
     const withdrawRequest = WithdrawFromWalletRequestSchema.parse(parsedBody);
 
-    const { userId, amount, walletAddress } = withdrawRequest;
+    const { userId, amount, walletAddress, requestId } = withdrawRequest;
+
+    logger.info("Received withdraw request", { event, requestId });
 
     if (amount <= 0) {
       return errorResponse(new Error("Amount must be greater than 0"), 400);
     }
+
+    await checkIdempotencyAndThrow(requestId);
+    await putIdempotencyKey(requestId);
+
     try {
       // Convert amount to FPN ($16.45 -> 1645)
       const fpnAmount = Math.round(amount * 100);
@@ -75,7 +79,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       const responsePayload = GatewayResponseSchema.parse(JSON.parse(response.Payload as string));
 
       if (response.StatusCode !== 200 || responsePayload.statusCode !== 200) {
-        logger.error("Error processing withdraw request", { responsePayload, withdrawId });
+        logger.error("Error processing withdraw request", { responsePayload, requestId });
         return errorResponse(
           new Error(JSON.parse(responsePayload.body).error || "Internal server error"),
           responsePayload.statusCode
@@ -94,7 +98,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         txnId: txnSignature,
       } as WithdrawResponse);
     } catch (error) {
-      logger.error("Error processing withdrawal request", { error, withdrawId });
+      logger.error("Error processing withdrawal request", { error, requestId });
 
       if (error instanceof ZodError) {
         return errorResponse(error, 400);
@@ -106,7 +110,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       await unlockWallet(userId);
     }
   } catch (error) {
-    logger.error("Error processing withdrawal request", { error, withdrawId });
+    logger.error("Error processing withdrawal request", { error });
 
     if (error instanceof ZodError) {
       return errorResponse(error, 400);

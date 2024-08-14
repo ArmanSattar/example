@@ -7,6 +7,9 @@ import { updateOrCreateBetStats } from "../../../data-access/update-bet-stats";
 import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 import { getLogger } from "@solspin/logger";
 import { CreateBetEvent, CreateBetRequestSchema } from "../schemas/schema";
+import { checkIdempotencyAndThrow } from "../../../data-access/check-idempotency";
+import { putIdempotencyKey } from "../../../data-access/put-idempotency-key";
+import { v4 as uuid } from "uuid";
 
 const logger = getLogger("create-bet-handler");
 
@@ -15,7 +18,7 @@ export const handler = async (event: EventBridgeEvent<"CreateBetEvent", CreateBe
 
   try {
     const eventDetails = CreateBetRequestSchema.parse(event.detail);
-    const { userId, gameType, amountBet, outcome, outcomeAmount } = eventDetails.payload;
+    const { requestId, userId, gameType, amountBet, outcome, outcomeAmount } = eventDetails.payload;
 
     if (amountBet <= 0) {
       throw new Error("Amount bet must be greater than 0");
@@ -27,9 +30,10 @@ export const handler = async (event: EventBridgeEvent<"CreateBetEvent", CreateBe
 
     const minorAmountBet = amountBet * 100;
     const minorOutcomeAmount = outcomeAmount * 100;
-    // TODO - Accept Idempotency Key and check if bet already exists
+
+    await checkIdempotencyAndThrow(requestId);
+    await putIdempotencyKey(requestId);
     // TODO - Check user exists
-    // TODO - Check game exists
 
     const createdBet = await recordBet(userId, gameType, minorAmountBet, outcome, outcomeAmount);
     await updateOrCreateBetStats(userId, minorAmountBet, minorOutcomeAmount - minorAmountBet);
@@ -37,6 +41,7 @@ export const handler = async (event: EventBridgeEvent<"CreateBetEvent", CreateBe
     await publishEvent(
       BetTransaction.event,
       {
+        requestId: uuid(),
         userId,
         amount: outcomeAmount,
       } as BetTransaction.type,

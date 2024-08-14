@@ -8,15 +8,23 @@ import { useAuth } from "../../context/AuthContext";
 import { fromMinorAmount } from "./utils/money";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postData } from "./utils/requests";
-import { WithdrawRequest, WithdrawResponse } from "@solspin/types";
+import { WithdrawResponse } from "@solspin/types";
 import { WALLETS_API_URL } from "../../types";
 import Close from "../../../../public/icons/close.svg";
 import Wallet from "../../../../public/icons/wallet.svg";
 import Dollar from "../../../../public/icons/dollar.svg";
+import { v4 as uuid } from "uuid";
 
 interface WithdrawPopUpProps {
   handleClose: () => void;
 }
+
+type WithdrawRequest = {
+  requestId: string;
+  walletAddress: string;
+  amount: number;
+  userId: string;
+};
 
 export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
@@ -146,6 +154,7 @@ export const WithdrawPopUp: React.FC<WithdrawPopUpProps> = ({ handleClose }) => 
       }
 
       await postDataMutation({
+        requestId: uuid(),
         userId: user?.userId,
         walletAddress: wallet.publicKey.toString(),
         amount: dollarValueFloat,

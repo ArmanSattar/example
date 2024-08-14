@@ -9,7 +9,8 @@ import { Config } from "sst/node/config";
 import { getLogger } from "@solspin/logger";
 import { ZodError } from "zod";
 import bs58 from "bs58";
-import { randomUUID } from "crypto";
+// @ts-ignore
+import { v4 as uuid } from "uuid";
 import { CreateWallet, publishEvent } from "@solspin/events";
 import { Service } from "@solspin/types";
 
@@ -86,7 +87,7 @@ export const handler = ApiHandler(async (event) => {
       logger.info(`Creating new user with wallet address: ${walletAddress}`);
       const now = new Date().toISOString();
       user = {
-        userId: randomUUID(),
+        userId: uuid(),
         username: walletAddress,
         walletAddress: walletAddress,
         createdAt: now,
@@ -102,6 +103,7 @@ export const handler = ApiHandler(async (event) => {
       await publishEvent(
         CreateWallet.event,
         {
+          requestId: uuid(),
           userId: user.userId,
           walletAddress: walletAddress,
         } as CreateWallet.type,

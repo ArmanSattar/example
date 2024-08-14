@@ -2,5 +2,8 @@
   "name": "betting",
   "scripts": {
     "sst": "sst"
+  },
+  "devDependencies": {
+    "@types/uuid": "^10.0.0"
   }
 }

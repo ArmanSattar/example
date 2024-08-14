@@ -1,7 +1,8 @@
 import { ApiHandler } from "sst/node/api";
 import { CreateUserRequestSchema, User, UserSchema } from "@solspin/user-management-types";
 import { createUser } from "../data-access/userRepository";
-import { randomUUID } from "crypto";
+// @ts-ignore
+import { v4 as uuid } from "uuid";
 import { ZodError } from "zod";
 import jwt from "jsonwebtoken";
 import { Config } from "sst/node/config";
@@ -63,7 +64,7 @@ export const handler = ApiHandler(async (event) => {
 
     const now = new Date().toISOString();
     const user: User = {
-      userId: randomUUID(),
+      userId: uuid(),
       username: validatedPayload.walletAddress,
       walletAddress: validatedPayload.walletAddress,
       createdAt: now,

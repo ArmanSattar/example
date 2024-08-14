@@ -17,6 +17,7 @@ export const BaseWalletsSchema = z.object({
 });
 
 export const WalletTransactionSchema = z.object({
+  requestId: z.string().uuid(),
   userId: z.string().uuid(),
   amount: z.number().positive(),
   walletAddress: z.string(),
@@ -34,6 +35,8 @@ export const CreateWalletRequestSchema = BaseWalletsSchema.omit({
   lockedAt: true,
   balance: true,
   wagerRequirement: true,
+}).extend({
+  requestId: z.string().uuid(),
 });
 
 export const GetWalletsByIdRequestSchema = BaseWalletsSchema.pick({ userId: true });

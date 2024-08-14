@@ -4,8 +4,14 @@ import * as cdk from "aws-cdk-lib";
 import { DatabaseStack } from "./Database";
 
 export function ApiStack({ stack }: StackContext) {
-  const { walletsTableArn, walletsTableName, transactionsTableName, transactionsTableArn } =
-    use(DatabaseStack);
+  const {
+    walletsTableArn,
+    walletsTableName,
+    transactionsTableName,
+    transactionsTableArn,
+    idempotencyTableName,
+    idempotencyTableArn,
+  } = use(DatabaseStack);
   const eventBusArn = cdk.Fn.importValue(`EventBusArn--${stack.stage}`);
 
   const existingEventBus = cdk.aws_events.EventBus.fromEventBusArn(
@@ -25,12 +31,18 @@ export function ApiStack({ stack }: StackContext) {
     handler: "../wallet/src/service/event/handler/create-wallet.handler",
     environment: {
       WALLETS_TABLE_ARN: walletsTableName,
+      IDEMPOTENCY_TABLE_NAME: idempotencyTableName,
     },
     permissions: [
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ["dynamodb:PutItem"],
-        resources: [walletsTableArn],
+        resources: [walletsTableArn, idempotencyTableArn],
+      }),
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ["dynamodb:GetItem"],
+        resources: [idempotencyTableArn],
       }),
     ],
   });
@@ -46,12 +58,18 @@ export function ApiStack({ stack }: StackContext) {
     handler: "../wallet/src/service/event/handler/update-balance.handler",
     environment: {
       WALLETS_TABLE_ARN: walletsTableName,
+      IDEMPOTENCY_TABLE_NAME: idempotencyTableName,
     },
     permissions: [
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ["dynamodb:UpdateItem"],
         resources: [walletsTableArn],
+      }),
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ["dynamodb:GetItem", "dynamodb:PutItem"],
+        resources: [idempotencyTableArn],
       }),
     ],
   });
@@ -73,7 +91,6 @@ export function ApiStack({ stack }: StackContext) {
     },
     targets: [new cdk.aws_events_targets.LambdaFunction(createWalletFunction)],
   });
-
   const api = new Api(stack, "api", {
     defaults: {
       function: {
@@ -83,22 +100,11 @@ export function ApiStack({ stack }: StackContext) {
           DEPOSIT_TREASURY_FUNCTION_ARN: depositTreasuryFunction.functionArn,
           WITHDRAW_TREASURY_FUNCTION_ARN: withdrawTreasuryFunction.functionArn,
           TRANSACTIONS_TABLE_ARN: transactionsTableName,
+          IDEMPOTENCY_TABLE_NAME: idempotencyTableName,
         },
       },
     },
     routes: {
-      "POST /wallets": {
-        function: {
-          handler: "src/service/event/handler/create-wallet.handler",
-          permissions: [
-            new iam.PolicyStatement({
-              effect: iam.Effect.ALLOW,
-              actions: ["dynamodb:PutItem"],
-              resources: [walletsTableArn],
-            }),
-          ],
-        },
-      },
       "GET /wallets/{userId}": {
         function: {
           handler: "src/service/api/handler/get-wallet-by-userid.handler",
@@ -137,6 +143,11 @@ export function ApiStack({ stack }: StackContext) {
               actions: ["lambda:InvokeFunction"],
               resources: [depositTreasuryFunction.functionArn],
             }),
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: ["dynamodb:GetItem", "dynamodb:PutItem"],
+              resources: [idempotencyTableArn],
+            }),
           ],
           timeout: 45,
         },
@@ -154,6 +165,11 @@ export function ApiStack({ stack }: StackContext) {
               effect: iam.Effect.ALLOW,
               actions: ["lambda:InvokeFunction"],
               resources: [withdrawTreasuryFunction.functionArn],
+            }),
+            new iam.PolicyStatement({
+              effect: iam.Effect.ALLOW,
+              actions: ["dynamodb:GetItem", "dynamodb:PutItem"],
+              resources: [idempotencyTableArn],
             }),
           ],
           timeout: 45,

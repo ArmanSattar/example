@@ -41,6 +41,7 @@ export function ApiStack({ stack }: StackContext) {
         ],
       },
     },
+    // TODO - Remove these endpoints
     routes: {
       "POST /treasury/deposit": {
         function: {

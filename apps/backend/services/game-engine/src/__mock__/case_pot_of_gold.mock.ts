@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { v4 as uuid } from "uuid";
 import { BaseCase, BaseCaseItem, CaseType } from "@solspin/game-engine-types";
 import { CaseItemRarity, CaseItemWear } from "@solspin/types";
 
@@ -206,7 +206,7 @@ const mockCase: BaseCase = {
   type: CaseType.CSGO,
   name: "pot-of-gold",
   price: 10,
-  id: randomUUID(),
+  id: uuid(),
   imagePath: "https://example.com/bravo_case.png",
   rarity: CaseItemRarity.COVERT,
   highestPrice: 2998.81,

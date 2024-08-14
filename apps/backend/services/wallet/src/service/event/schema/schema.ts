@@ -8,12 +8,14 @@ export const UpdateBalanceEventSchema = z.object({
   payload: z.object({
     userId: z.string(),
     amount: z.number(),
+    requestId: z.string(),
   }),
 });
 
 export const UpdateBalanceRequestSchema = z.object({
   userId: z.string(),
   amount: z.number(),
+  requestId: z.string(),
 });
 
 export const UpdateBalanceResponseSchema = z.object({

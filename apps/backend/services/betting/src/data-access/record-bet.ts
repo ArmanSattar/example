@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { v4 as uuid } from "uuid";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { GameOutcome } from "@solspin/types";
@@ -16,7 +16,7 @@ export const recordBet = async (
   outcome: GameOutcome,
   outcomeAmount: number
 ): Promise<BetDBObject> => {
-  const id = randomUUID();
+  const id = uuid();
   const createdAt = new Date().toISOString();
 
   const bet: BetDBObject = {

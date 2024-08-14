@@ -4,15 +4,20 @@ import { CreateWalletRequestSchema, CreateWalletsResponseSchema } from "@solspin
 import { createWallet } from "../../../data-access/create-wallet";
 import { getLogger } from "@solspin/logger";
 import { CreateWalletEvent } from "../schema/schema";
+import { checkIdempotencyAndThrow } from "../../../data-access/check-idempotency";
+import { putIdempotencyKey } from "../../../data-access/put-idempotency-key";
 
 const logger = getLogger("create-wallet-handler");
 
 export const handler = async (event: EventBridgeEvent<"event", CreateWalletEvent>) => {
-  logger.info("Received create wallet request", { event });
-
   try {
     const eventDetails = CreateWalletRequestSchema.parse(event.detail.payload);
-    const { userId, walletAddress } = eventDetails;
+    const { userId, walletAddress, requestId } = eventDetails;
+
+    logger.info("Received create wallet request", { event, requestId });
+
+    await checkIdempotencyAndThrow(requestId);
+    await putIdempotencyKey(requestId);
 
     const createdWallet = await createWallet(userId, walletAddress);
 

@@ -35,10 +35,27 @@ export function DatabaseStack({ stack }: StackContext) {
     },
   });
 
+  const idempotencyTable = new Table(stack, "Idempotency", {
+    fields: {
+      id: "string",
+      createdAt: "string",
+      expiresAt: "number",
+    },
+    primaryIndex: { partitionKey: "id" },
+    cdk: {
+      table: {
+        removalPolicy: removeOnDelete ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN,
+      },
+    },
+    timeToLiveAttribute: "expiresAt",
+  });
+
   return {
     walletsTableArn: walletsTable.tableArn,
     walletsTableName: walletsTable.tableName,
     transactionsTableArn: transactionStatsTable.tableArn,
     transactionsTableName: transactionStatsTable.tableName,
+    idempotencyTableArn: idempotencyTable.tableArn,
+    idempotencyTableName: idempotencyTable.tableName,
   };
 }
