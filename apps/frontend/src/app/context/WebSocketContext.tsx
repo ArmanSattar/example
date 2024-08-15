@@ -18,7 +18,9 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [connectionStatus, setConnectionStatus] = useState("disconnected");
   const socketRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<number | null>(null);
+  const reconnectAttempts = useRef(0);
+  const maxReconnectAttempts = 5;
+  const reconnectIntervalRef = useRef(3000); // 3 seconds
 
   const connect = () => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
@@ -30,6 +32,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
     socketRef.current.onopen = () => {
       setConnectionStatus("connected");
       toast.success("Connected to server");
+      reconnectAttempts.current = 0;
+      reconnectIntervalRef.current = 3000; // Reset interval on successful connection
 
       const token = localStorage.getItem("token");
       if (token) {
@@ -39,7 +43,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
 
     socketRef.current.onclose = () => {
       setConnectionStatus("disconnected");
-    };
+      attemptReconnect();
+    }; 
 
     socketRef.current.onerror = (error) => {
       console.error("WebSocket error:", error);
@@ -61,6 +66,23 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
     setSocket(socketRef.current);
   };
 
+  const attemptReconnect = () => {
+    if (reconnectAttempts.current >= maxReconnectAttempts) {
+      console.log('Max reconnect attempts reached');
+      return;
+    }
+
+    reconnectAttempts.current++;
+
+
+    setTimeout(() => {
+      connect();
+    }, reconnectIntervalRef.current);
+
+    // Implement exponential backoff
+    reconnectIntervalRef.current = Math.min(30000, reconnectIntervalRef.current * 2);
+  };
+
   const handleVisibilityChange = () => {
     if (!document.hidden) {
       connect();
@@ -74,15 +96,12 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
   useEffect(() => {
     connect();
 
-    window.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("online", handleOnline);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      window.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("online", handleOnline);
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       socketRef.current?.close();
     };
   }, [url]);
