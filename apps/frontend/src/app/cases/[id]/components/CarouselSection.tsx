@@ -224,7 +224,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
         />
         <SoundToggle />
       </div>
-      <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-1 xl:space-y-0 space-y-4">
+      <div className="flex flex-col xl:flex-row justify-between items-center w-full xl:space-x-1 xl:space-y-0 space-y-1">
         {Array.from({ length: numCases }).map((_, i) => (
           <CaseCarousel
             key={`${i}-${numCases}`}
