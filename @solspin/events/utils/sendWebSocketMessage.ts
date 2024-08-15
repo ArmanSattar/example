@@ -29,7 +29,6 @@ export async function broadcastMessage(
   type: string
 ) {
   try {
-    console.log(message);
     const sendMessages = connectionIds.map((connectionId) =>
       sendWebSocketMessage(endpoint, connectionId, message, type)
     );

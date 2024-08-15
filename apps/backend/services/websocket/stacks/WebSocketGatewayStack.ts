@@ -223,20 +223,29 @@ export function WebSocketGateway({ stack }: StackContext) {
     },
   });
 
-  // TODO - Find the handler that needs permision to invoke betTransactionFunction and add it to it and remove this
-  api.attachPermissions([
-    new PolicyStatement({
-      actions: ["lambda:InvokeFunction"],
-      resources: [
-        getCaseFunction.functionArn,
-        performSpinFunction.functionArn,
-        betTransactionFunction.functionArn,
-      ],
-    }),
-  ]);
-
   const matches = api.url.match(/^wss?:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
   const domainName = `${matches && matches[1]}/${stack.stage}`;
+
+  const pruneConnectionCRON = new Cron(stack, "PruneConnectionsCron", {
+    schedule: "rate(1 minute)",
+    job: {
+      function: {
+        handler: "src/handlers/pruneConnections.handler",
+        permissions: [
+          "dynamodb:Scan",
+          "dynamodb:DeleteItem",
+          "execute-api:ManageConnections",
+          "dynamodb:UpdateItem",
+        ],
+        environment: {
+          WEBSOCKET_CONNECTIONS_TABLE_NAME: websocketConnectionsTable.tableName,
+          DOMAIN: domainName,
+        },
+      },
+    },
+  });
+
+  pruneConnectionCRON.bind([websocketConnectionsTable]);
 
   const broadcastPlayersOnlineCRON = new Cron(stack, "BroadcastPlayersOnlineCRON", {
     schedule: "rate(1 minute)",
