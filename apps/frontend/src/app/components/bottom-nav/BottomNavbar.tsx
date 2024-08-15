@@ -6,7 +6,7 @@ import Link from "next/link";
 import GamePad from "../../../../public/icons/Gamepad.svg";
 import Medal from "../../../../public/icons/Medal.svg";
 import Podium from "../../../../public/icons/Podium.svg";
-import Wallet from "../../../../public/icons/Wallet.svg";
+import Wallet from "../../../../public/icons/wallet.svg";
 import Case from "../../../../public/icons/Case.svg";
 
 interface BottomNavbarItems {
