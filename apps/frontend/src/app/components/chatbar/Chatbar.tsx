@@ -24,7 +24,6 @@ export const Chatbar = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("Chatbar mounted", window.innerWidth, isChatOpen);
     if (window.innerWidth < 640 && isChatOpen) {
       dispatch(setChatBarOpen(false));
     }

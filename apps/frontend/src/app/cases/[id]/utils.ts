@@ -32,17 +32,32 @@ const binarySearch = (items: BaseCaseItem[], target: number): BaseCaseItem => {
   throw new Error("No item found for roll number: " + target);
 };
 
-export const getItemDimensions = (isHorizontal: boolean, numCases: number) => {
+export const getItemDimensions = (
+  isHorizontal: boolean,
+  numCases: number,
+  windowHeight: number
+) => {
+  const isMobile = windowHeight < 900;
+
   if (isHorizontal) {
     switch (numCases) {
       case 1:
         return { width: ITEM_WIDTH, height: ITEM_HEIGHT };
       case 2:
-        return { width: ITEM_WIDTH, height: ITEM_HEIGHT };
+        return {
+          width: isMobile ? ITEM_WIDTH / 1.5 : ITEM_WIDTH,
+          height: isMobile ? ITEM_HEIGHT / 1.5 : ITEM_HEIGHT,
+        };
       case 3:
-        return { width: ITEM_WIDTH / 1.25, height: ITEM_HEIGHT / 1.25 };
+        return {
+          width: isMobile ? ITEM_WIDTH / 1.75 : ITEM_WIDTH / 1.25,
+          height: isMobile ? ITEM_HEIGHT / 1.75 : ITEM_HEIGHT / 1.25,
+        };
       case 4:
-        return { width: ITEM_WIDTH / 1.5, height: ITEM_HEIGHT / 1.5 };
+        return {
+          width: isMobile ? ITEM_WIDTH / 2 : ITEM_WIDTH / 1.5,
+          height: isMobile ? ITEM_HEIGHT / 2 : ITEM_HEIGHT / 1.5,
+        };
       default:
         return { width: ITEM_WIDTH, height: ITEM_HEIGHT };
     }
@@ -80,10 +95,10 @@ function getRandomInt(min: number, max: number) {
 const animationCalculation = (
   currentPosition: number,
   isHorizontal: boolean,
-  numCases: number
+  width: number,
+  height: number
 ): AnimationCalculation => {
-  const { width: itemWidth, height: itemHeight } = getItemDimensions(isHorizontal, numCases);
-  const dimension = isHorizontal ? itemWidth : itemHeight;
+  const dimension = isHorizontal ? width : height;
   const distanceInsideCenterItem = currentPosition % dimension;
   const lowerBound = DISTANCE_IN_ITEMS * dimension - distanceInsideCenterItem + 1;
   const upperBound = DISTANCE_IN_ITEMS * dimension + (dimension - distanceInsideCenterItem) - 1;

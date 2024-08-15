@@ -6,7 +6,7 @@ import { toggleDemoClicked, togglePaidSpinClicked } from "../../../../store/slic
 import { useDispatch, useSelector } from "react-redux";
 import { addToBalance } from "../../../../store/slices/userSlice";
 import { RootState } from "../../../../store";
-import { generateCases, generateClientSeed } from "../utils";
+import { generateCases, generateClientSeed, getItemDimensions } from "../utils";
 import { SpinResponse } from "@solspin/orchestration-types";
 import { toast } from "sonner";
 import { useWebSocket } from "../../../context/WebSocketContext";
@@ -14,6 +14,7 @@ import { ProvablyFair } from "./ProvablyFair";
 import { CarouselButtonsSubSection } from "./CarouselButtonsSubSection";
 import { SoundToggle } from "./SoundToggle";
 import { useQueryClient } from "@tanstack/react-query";
+import { Direction } from "../../../libs/types";
 
 interface CarouselSectionProps {
   caseData: BaseCase;
@@ -32,6 +33,7 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
   const dispatch = useDispatch();
   const [cases, setCases] = useState<BaseCaseItem[][]>([]);
   const windowSize = useWindowSize();
+  const [direction, setDirection] = useState<Direction>(Direction.HORIZONTAL);
   const [itemsWon, setItemsWon] = useState<BaseCaseItem[] | null>(null);
   const [rollValues, setRollValues] = useState<string[]>([]);
   const [serverSeed, setServerSeed] = useState<string | null>(null);
@@ -44,11 +46,38 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
     () => isDemoClicked || isPaidSpinClicked,
     [isDemoClicked, isPaidSpinClicked]
   );
+  const { width: itemWidth, height: itemHeight } = useMemo(
+    () => getItemDimensions(direction === Direction.HORIZONTAL, numCases, window.innerHeight),
+    [direction, numCases]
+  );
   const queryClient = useQueryClient();
 
   const handleClientSeedChange = useCallback((newClientSeed: string) => {
     setClientSeed(newClientSeed);
   }, []);
+
+  const calculateDirection = useCallback(() => {
+    if (windowSize.width && windowSize.width <= 640) {
+      if (numCases > 1) {
+        return Direction.HORIZONTAL;
+      }
+      return Direction.VERTICAL;
+    }
+    if (windowSize.width && windowSize.width < 1280) {
+      return Direction.HORIZONTAL;
+    }
+    if (numCases > 1) {
+      return Direction.VERTICAL;
+    }
+    return Direction.HORIZONTAL;
+  }, [windowSize, numCases]);
+
+  useEffect(() => {
+    const newDirection = calculateDirection();
+    if (newDirection !== direction) {
+      setDirection(newDirection);
+    }
+  }, [windowSize, numCases, calculateDirection, direction]);
 
   useEffect(() => {
     if (caseData && cases.length < numCases) {
@@ -208,6 +237,8 @@ export const CarouselSection: React.FC<CarouselSectionProps> = ({ caseData }) =>
             windowSize={windowSize}
             skipAnimation={isSkipAnimationClicked}
             attachObserver={i === 0}
+            itemDimensions={{ width: itemWidth, height: itemHeight }}
+            direction={direction}
           />
         ))}
       </div>
