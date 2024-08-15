@@ -35,8 +35,6 @@ export const CreateWalletRequestSchema = BaseWalletsSchema.omit({
   lockedAt: true,
   balance: true,
   wagerRequirement: true,
-}).extend({
-  requestId: z.string().uuid(),
 });
 
 export const GetWalletsByIdRequestSchema = BaseWalletsSchema.pick({ userId: true });

@@ -1,45 +1,57 @@
-import { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2, Context } from "aws-lambda";
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+const EVENT_BUS_ARN = "mock-event-bus-arn";
+const BETS_TABLE_ARN = "mock-dynamo-db-arn";
+const BET_STATS_TABLE_NAME = "mock-bet-stats-table-arn";
+const IDEMPOTENCY_TABLE_NAME = "mock-idempotency-table-arn";
+
+jest.mock("../../src/foundation/runtime", () => ({
+  EVENT_BUS_ARN: EVENT_BUS_ARN,
+  BETS_TABLE_ARN: BETS_TABLE_ARN,
+  IDEMPOTENCY_TABLE_NAME: IDEMPOTENCY_TABLE_NAME,
+  BET_STATS_TABLE_NAME: BET_STATS_TABLE_NAME,
+}));
+
+import { APIGatewayProxyStructuredResultV2 } from "aws-lambda";
+import {
+  DynamoDBDocumentClient,
+  GetCommand,
+  PutCommand,
+  UpdateCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
 import { mockClient } from "aws-sdk-client-mock";
 import { handler } from "../../src/service/events/handler/create-bet";
 import { BetFactory } from "../bet-factory";
-import { GameOutcome } from "@solspin/types";
-
-jest.mock("../../src/foundation/runtime", () => ({
-  BETS_TABLE_ARN: "mock-dynamo-db-arn",
-  EVENT_BUS_ARN: "mock-event-bus-arn",
-}));
 
 const dynamoMock = mockClient(DynamoDBDocumentClient);
 const eventBridgeMock = mockClient(EventBridgeClient);
 
 describe("create-bet-handler", () => {
   beforeAll(() => {
-    process.env.EVENT_BUS_ARN = "mock-event-bus-arn";
-    process.env.BETS_TABLE_ARN = "mock-dynamo-db-arn";
+    process.env.BETS_TABLE_ARN = BETS_TABLE_ARN;
+    process.env.EVENT_BUS_ARN = EVENT_BUS_ARN;
+    process.env.IDEMPOTENCY_TABLE_NAME = IDEMPOTENCY_TABLE_NAME;
+    process.env.BET_STATS_TABLE_NAME = BET_STATS_TABLE_NAME;
   });
 
   beforeEach(() => {
     dynamoMock.reset();
     eventBridgeMock.reset();
-  });
-
-  // Happy Path Tests
-  it("should create a bet successfully", async () => {
-    const mockBet = BetFactory.createMockBet();
-    const event: APIGatewayProxyEventV2 = {
-      body: JSON.stringify(mockBet),
-    } as unknown as APIGatewayProxyEventV2;
-
-    const context: Context = {} as unknown as Context;
-    const callback = jest.fn();
 
     dynamoMock.on(PutCommand).resolves({});
     eventBridgeMock.on(PutEventsCommand).resolves({});
+    dynamoMock.on(GetCommand).resolves({});
+    dynamoMock.on(UpdateCommand).resolves({});
+  });
 
-    const response = (await handler(event, context, callback)) as APIGatewayProxyStructuredResultV2;
+  it("should create a bet successfully", async () => {
+    // given
+    const mockBet = BetFactory.createMockBet();
+    const event = BetFactory.createMockEvent(mockBet);
 
+    // when
+    const response = (await handler(event)) as APIGatewayProxyStructuredResultV2;
+
+    // then
     expect(response).toEqual({
       statusCode: 200,
       body: expect.any(String),
@@ -49,21 +61,32 @@ describe("create-bet-handler", () => {
     expect(parsedBody).toEqual({
       id: expect.any(String),
       userId: mockBet.userId,
-      gameId: mockBet.gameId,
-      amountBet: mockBet.amountBet,
+      gameType: mockBet.gameType,
+      amountBet: mockBet.amountBet * 100,
       outcome: mockBet.outcome,
       outcomeAmount: mockBet.outcomeAmount,
       createdAt: expect.any(String),
     });
 
-    expect(dynamoMock.commandCalls(PutCommand).length).toBe(1);
+    expect(dynamoMock.commandCalls(PutCommand).length).toBe(2);
+    expect(dynamoMock.commandCalls(GetCommand).length).toBe(1);
+
     expect(dynamoMock.commandCalls(PutCommand)[0].args[0].input).toMatchObject({
+      TableName: IDEMPOTENCY_TABLE_NAME,
+      Item: {
+        id: expect.any(String),
+        createdAt: expect.any(Number),
+        expiresAt: expect.any(Number),
+      },
+    });
+
+    expect(dynamoMock.commandCalls(PutCommand)[1].args[0].input).toMatchObject({
       TableName: "mock-dynamo-db-arn",
       Item: {
         id: expect.any(String),
         userId: mockBet.userId,
-        gameId: mockBet.gameId,
-        amountBet: mockBet.amountBet,
+        gameType: mockBet.gameType,
+        amountBet: mockBet.amountBet * 100,
         outcome: mockBet.outcome,
         outcomeAmount: mockBet.outcomeAmount,
         createdAt: expect.any(String),
@@ -83,40 +106,17 @@ describe("create-bet-handler", () => {
     });
   });
 
-  it("should create a bet with the minimum required fields", async () => {
+  it("should return a validation error for missing required fields", async () => {
     const mockBet = BetFactory.createMockBet({
-      outcome: GameOutcome.WIN,
-      outcomeAmount: 10,
+      userId: undefined,
+      gameType: undefined,
     });
-    const event: APIGatewayProxyEventV2 = {
-      body: JSON.stringify(mockBet),
-    } as unknown as APIGatewayProxyEventV2;
-
-    const context: Context = {} as unknown as Context;
-    const callback = jest.fn();
+    const event = BetFactory.createMockEvent(mockBet);
 
     dynamoMock.on(PutCommand).resolves({});
     eventBridgeMock.on(PutEventsCommand).resolves({});
 
-    const response = (await handler(event, context, callback)) as APIGatewayProxyStructuredResultV2;
-
-    expect(response.statusCode).toBe(200);
-  });
-
-  // Unhappy Path Tests
-  it("should return a validation error for missing required fields", async () => {
-    const mockBet = BetFactory.createMockBet({
-      userId: undefined,
-      gameId: undefined,
-    });
-    const event: APIGatewayProxyEventV2 = {
-      body: JSON.stringify(mockBet),
-    } as unknown as APIGatewayProxyEventV2;
-
-    const context: Context = {} as unknown as Context;
-    const callback = jest.fn();
-
-    const response = (await handler(event, context, callback)) as APIGatewayProxyStructuredResultV2;
+    const response = (await handler(event)) as APIGatewayProxyStructuredResultV2;
 
     expect(response.statusCode).toBe(400);
   });
@@ -126,14 +126,12 @@ describe("create-bet-handler", () => {
       amountBet: -1,
       outcomeAmount: -1,
     });
-    const event: APIGatewayProxyEventV2 = {
-      body: JSON.stringify(mockBet),
-    } as unknown as APIGatewayProxyEventV2;
+    const event = BetFactory.createMockEvent(mockBet);
 
-    const context: Context = {} as unknown as Context;
-    const callback = jest.fn();
+    dynamoMock.on(PutCommand).resolves({});
+    eventBridgeMock.on(PutEventsCommand).resolves({});
 
-    const response = (await handler(event, context, callback)) as APIGatewayProxyStructuredResultV2;
+    const response = (await handler(event)) as APIGatewayProxyStructuredResultV2;
 
     expect(response.statusCode).toBe(400);
     // Add more assertions as needed
@@ -146,17 +144,12 @@ describe("create-bet-handler", () => {
     const mockBet = BetFactory.createMockBet({
       id: undefined,
     });
-    const event: APIGatewayProxyEventV2 = {
-      body: JSON.stringify(mockBet),
-    } as unknown as APIGatewayProxyEventV2;
-
-    const context: Context = {} as unknown as Context;
-    const callback = jest.fn();
+    const event = BetFactory.createMockEvent(mockBet);
 
     dynamoMock.on(PutCommand).resolves({});
     eventBridgeMock.on(PutEventsCommand).resolves({});
 
-    const response = (await handler(event, context, callback)) as APIGatewayProxyStructuredResultV2;
+    const response = (await handler(event)) as APIGatewayProxyStructuredResultV2;
 
     expect(response.statusCode).toBe(200);
     // Add more assertions as needed
@@ -166,18 +159,32 @@ describe("create-bet-handler", () => {
     const mockBet = BetFactory.createMockBet({
       userId: "invalid-user-id",
     });
-    const event: APIGatewayProxyEventV2 = {
-      body: JSON.stringify(mockBet),
-    } as unknown as APIGatewayProxyEventV2;
+    const event = BetFactory.createMockEvent(mockBet);
 
-    const context: Context = {} as unknown as Context;
-    const callback = jest.fn();
+    dynamoMock.on(PutCommand).resolves({});
+    eventBridgeMock.on(PutEventsCommand).resolves({});
 
-    const response = (await handler(event, context, callback)) as APIGatewayProxyStructuredResultV2;
+    const response = (await handler(event)) as APIGatewayProxyStructuredResultV2;
 
     expect(response.statusCode).toBe(400);
-    // Add more assertions as needed
   });
 
-  // Add more validation tests...
+  it("should fail on idempotency check if the request has already been processed", async () => {
+    const mockBet = BetFactory.createMockBet();
+    const event = BetFactory.createMockEvent(mockBet);
+
+    dynamoMock.on(GetCommand).resolves({
+      Item: {
+        id: "some-id",
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 1000,
+      },
+    });
+
+    const response = (await handler(event)) as APIGatewayProxyStructuredResultV2;
+
+    expect(response.statusCode).toBe(409);
+    expect(dynamoMock.commandCalls(PutCommand).length).toBe(0);
+    expect(dynamoMock.commandCalls(UpdateCommand).length).toBe(0);
+  });
 });

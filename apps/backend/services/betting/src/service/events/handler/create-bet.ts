@@ -6,10 +6,10 @@ import { recordBet } from "../../../data-access/record-bet";
 import { updateOrCreateBetStats } from "../../../data-access/update-bet-stats";
 import { errorResponse, successResponse } from "@solspin/events/utils/gateway-responses";
 import { getLogger } from "@solspin/logger";
-import { CreateBetEvent, CreateBetRequestSchema } from "../schemas/schema";
+import { CreateBetEvent, CreateBetPayloadSchema, CreateBetRequestSchema } from "../schemas/schema";
 import { checkIdempotencyAndThrow } from "../../../data-access/check-idempotency";
 import { putIdempotencyKey } from "../../../data-access/put-idempotency-key";
-import { v4 as uuid } from "uuid";
+import { DuplicateResourceError } from "@solspin/errors";
 
 const logger = getLogger("create-bet-handler");
 
@@ -18,7 +18,8 @@ export const handler = async (event: EventBridgeEvent<"CreateBetEvent", CreateBe
 
   try {
     const eventDetails = CreateBetRequestSchema.parse(event.detail);
-    const { requestId, userId, gameType, amountBet, outcome, outcomeAmount } = eventDetails.payload;
+    const { requestId, userId, gameType, amountBet, outcome, outcomeAmount } =
+      CreateBetPayloadSchema.parse(eventDetails.payload);
 
     if (amountBet <= 0) {
       throw new Error("Amount bet must be greater than 0");
@@ -41,7 +42,7 @@ export const handler = async (event: EventBridgeEvent<"CreateBetEvent", CreateBe
     await publishEvent(
       BetTransaction.event,
       {
-        requestId: uuid(),
+        requestId: requestId,
         userId,
         amount: outcomeAmount,
       } as BetTransaction.type,
@@ -55,6 +56,11 @@ export const handler = async (event: EventBridgeEvent<"CreateBetEvent", CreateBe
     if (error instanceof ZodError) {
       logger.error("Validation error creating bet", { error: error.errors });
       return errorResponse(error, 400);
+    }
+
+    if (error instanceof DuplicateResourceError) {
+      logger.error("Bet has already been processed", { error });
+      return errorResponse(error, error.statusCode);
     }
 
     logger.error("Error creating bet", { error });

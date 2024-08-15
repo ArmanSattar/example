@@ -15,7 +15,7 @@ export const queryBetsByGameId = async (
 ): Promise<BetDBObject[]> => {
   const filterExpressions: string[] = [];
   const expressionAttributeValues: Record<string, any> = {
-    ":gameId": GameType,
+    ":gameId": gameType,
   };
 
   if (gameOutcome) {
@@ -40,7 +40,7 @@ export const queryBetsByGameId = async (
       TableName: BETS_TABLE_ARN,
       IndexName: "byGame",
       KeyConditionExpression: "gameId = :gameId",
-      FilterExpression: filterExpression || undefined,
+      FilterExpression: filterExpression.length > 0 ? filterExpression : undefined,
       ExpressionAttributeValues: expressionAttributeValues,
     })
   );
