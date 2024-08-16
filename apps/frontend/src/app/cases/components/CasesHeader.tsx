@@ -118,10 +118,7 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({
           {filtersExpand && (
             <div className="flex flex-col lg:hidden space-y-4 justify-between w-full items-center rounded-lg -mt-5 bg-black/[0.3] p-4">
               {dropdownItems.map((item) => (
-                <div
-                  key={item.title}
-                  className="flex w-full flex-col space-y-0.5 transition-all duration-200 ease-in-out"
-                >
+                <div key={item.title} className="flex w-full flex-col space-y-0.5">
                   <label className="text-2xs text-white ml-1.5">{item.title}</label>
                   <FilterDropdownMenu
                     key={item.title}
