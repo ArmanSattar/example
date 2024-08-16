@@ -7,7 +7,6 @@ import { useAuth } from "../../context/AuthContext";
 import { useSolPrice } from "./hooks/useSolPrice";
 import { useWalletBalance } from "./hooks/useWalletBalance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import Dollar from "../../../../public/icons/dollar.svg";
 import ArrowHorizontal from "../../../../public/icons/arrows-horizontal.svg";
 import { postData } from "./utils/requests";
 import { DepositResponse } from "@solspin/types";
@@ -194,8 +193,8 @@ export const DepositPopUp: React.FC<DepositPopUpProps> = ({ handleClose }) => {
           </div>
           <div className="flex items-center justify-between w-full space-x-2">
             <div className="rounded-sm border-2 border-color_stroke_1 bg-color_gray_3 py-2 p-4 flex space-x-2 h-12 w-full items-center justify-center focus-within:border-color_secondary transition-colors">
-              <div className={"flex justify-center items-center w-6 h-6"}>
-                <Dollar className={"text-yellow-400"} />
+              <div className={"relative w-8 h-8 flex justify-center items-center"}>
+                <Image src={"/icons/gold_coin.png"} alt={"Gold coin"} width={32} height={32} />
               </div>
               <input
                 className="w-full placeholder:transition-opacity placeholder:font-light placeholder-gray-300 focus:placeholder:opacity-50 bg-transparent text-white focus:outline-none"

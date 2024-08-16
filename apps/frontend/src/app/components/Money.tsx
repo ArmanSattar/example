@@ -1,6 +1,6 @@
 import React from "react";
-import Dollar from "../../../public/icons/dollar.svg";
 import { cn } from "../cases/[id]/utils";
+import Image from "next/image";
 
 interface MoneyProps {
   amount: number;
@@ -10,8 +10,16 @@ interface MoneyProps {
 
 export const Money: React.FC<MoneyProps> = ({ amount, className, textStyle = "lg" }) => {
   return (
-    <div className={cn(`flex space-x-2 items-center`, className)}>
-      <Dollar className="text-yellow-400" />
+    <div className={cn(`flex space-x-1 items-center justify-center`, className)}>
+      <div className={textStyle === "lg" ? "w-7 h-7 relative" : "w-6 h-6 relative"}>
+        <Image
+          src={"/icons/gold_coin.png"}
+          alt={"Gold coin"}
+          width={32}
+          height={32}
+          objectFit={"contain"}
+        />
+      </div>
       <span className={cn(`text-white whitespace-nowrap`, textStyle)}>
         {amount.toLocaleString()}
       </span>

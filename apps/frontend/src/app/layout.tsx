@@ -18,6 +18,21 @@ const inter = Inter({
 export const metadata = {
   title: "SolSpin",
   description: "Solana's number one lootbox platform. Open NFT and CSGO cases here! Win big!",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://solspin.io",
+    title: "SolSpin",
+    description: "Solana's number one lootbox platform. Open NFT and CSGO cases here! Win big!",
+    images: [
+      {
+        url: "../public/icons/logo.webp",
+        width: 1200,
+        height: 630,
+        alt: "SolSpin",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
