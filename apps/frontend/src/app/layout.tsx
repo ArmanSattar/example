@@ -24,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`w-full h-full overflow-x-hidden overscroll-none ${inter.variable}`}>
       <body className="flex flex-col w-full h-full overflow-x-hidden bg-background">
+        <SpeedInsights />
         <Providers>
           <LoadingWrapper>
             <NavBar />
