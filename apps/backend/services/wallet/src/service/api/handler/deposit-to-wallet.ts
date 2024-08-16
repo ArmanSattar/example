@@ -43,8 +43,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     await checkIdempotencyAndThrow(requestId);
     await putIdempotencyKey(requestId);
 
+    const wallet = await lockWallet(userId);
     try {
-      const wallet = await lockWallet(userId);
       const params = {
         FunctionName: DEPOSIT_TREASURY_FUNCTION_ARN,
         InvocationType: "RequestResponse",

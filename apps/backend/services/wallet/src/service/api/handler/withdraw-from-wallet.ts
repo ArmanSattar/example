@@ -40,14 +40,13 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       return errorResponse(new Error("Amount must be greater than 0"), 400);
     }
 
+    const wallet = await lockWallet(userId);
+
     await checkIdempotencyAndThrow(requestId);
     await putIdempotencyKey(requestId);
-
     try {
       // Convert amount to FPN ($16.45 -> 1645)
       const fpnAmount = Math.round(amount * 100);
-
-      const wallet = await lockWallet(userId);
 
       if (!wallet) {
         return errorResponse(new Error("Wallet not found"), 404);
@@ -55,7 +54,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       const currentPriceSolFpn = Math.round((await getCurrentPrice()) * 100);
 
       if (wallet.balance < fpnAmount) {
-        console.log("gsg", wallet.balance, currentPriceSolFpn);
         return errorResponse(new Error("Insufficient balance"), 400);
       }
 
@@ -74,7 +72,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
           amount: withdrawalAmountInSol,
         }),
       };
-
+      console.log("called treasury function with params", params);
       const response = await lambda.invoke(params).promise();
       const responsePayload = GatewayResponseSchema.parse(JSON.parse(response.Payload as string));
 
@@ -87,7 +85,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       }
 
       const { txnSignature } = JSON.parse(responsePayload.body);
-      console.log(responsePayload);
 
       logger.info("Withdrawal request processed on the blockchain", { txnSignature });
 

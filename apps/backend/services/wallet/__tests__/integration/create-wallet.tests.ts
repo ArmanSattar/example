@@ -1,10 +1,10 @@
+const IDEMPOTENCY_TABLE_NAME = "mock-idempotency-table-arn";
+const WALLETS_TABLE_ARN = "mock-wallets-table-arn";
+
 import { WalletFactory } from "../wallet-factory";
 import { DynamoDBDocumentClient, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { mockClient } from "aws-sdk-client-mock";
 import { handler } from "../../src/service/event/handler/create-wallet";
-
-const IDEMPOTENCY_TABLE_NAME = "mock-idempotency-table-arn";
-const WALLETS_TABLE_ARN = "mock-wallets-table-arn";
 
 jest.mock("../../src/foundation/runtime", () => ({
   WALLETS_TABLE_ARN: WALLETS_TABLE_ARN,
@@ -30,7 +30,7 @@ describe("create-bet-handler", () => {
 
     dynamoMock.on(GetCommand).resolves({});
 
-    dynamoMock.on(PutCommand).callsFakeOnce((input) => {
+    dynamoMock.on(PutCommand).callsFakeOnce((input: any) => {
       expect(input).toEqual({
         TableName: IDEMPOTENCY_TABLE_NAME,
         Item: {

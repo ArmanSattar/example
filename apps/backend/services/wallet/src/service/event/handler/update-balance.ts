@@ -35,7 +35,8 @@ export const handler = async (
     if ("detail" in event) {
       // EventBridge event
       const eventDetails = UpdateBalanceEventSchema.parse(event.detail);
-      ({ userId, amount, requestId } = eventDetails.payload);
+      ({ userId, amount } = eventDetails.payload);
+      requestId = event.detail.metadata.requestId;
     } else {
       // Direct invocation (assume APIGatewayProxyEvent)
       const body = JSON.parse(event.body || "{}");
@@ -45,7 +46,7 @@ export const handler = async (
 
     logger.info("Received update balance request", { event, requestId });
 
-    if (!userId || !amount || !requestId) {
+    if (!userId || !amount || !requestId || amount === 0) {
       return errorResponse(new Error("Invalid request"), 400);
     }
 
