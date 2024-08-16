@@ -6,6 +6,7 @@ import { MainSection } from "./components/MainSection";
 import { BottomNavbar } from "./components/bottom-nav/BottomNavbar";
 import { Inter } from "next/font/google";
 import { LoadingWrapper } from "./components/LoadingWrapper";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
   subsets: ["latin"],
