@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import GamePad from "../../../../public/icons/Gamepad.svg";
 import Medal from "../../../../public/icons/Medal.svg";
@@ -27,12 +27,12 @@ const bottomNavItems: BottomNavbarItems[] = [
     href: "/cases",
   },
   {
-    name: "Cases",
+    name: "Leaderboards",
     icon: Podium,
     href: "/leaderboards",
   },
   {
-    name: "Cases",
+    name: "Rewards",
     icon: Medal,
     href: "/rewards",
   },
@@ -45,10 +45,16 @@ const bottomNavItems: BottomNavbarItems[] = [
 
 export const BottomNavbar = () => {
   const pathname = usePathname();
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const index = bottomNavItems.findIndex((item) => pathname.startsWith(item.href));
+    setActiveIndex(index !== -1 ? index : 0);
+  }, [pathname]);
 
   return (
     <div className="sticky md:hidden flex bottom-0 inset-x-0 z-50 bg-background w-full h-14 justify-between items-center border-t-color_gray_3 border-t-[1px]">
-      <ul className="flex justify-center items-center w-full h-full">
+      <ul className="flex justify-center items-center w-full h-full relative">
         {bottomNavItems.map((item, index) => (
           <li
             key={index}
@@ -66,16 +72,16 @@ export const BottomNavbar = () => {
                   }`}
                 />
               </div>
-              <div
-                className={`absolute inset-x-0 bottom-0 h-1 bg-color_primary origin-center ${
-                  pathname.startsWith(item.href)
-                    ? ""
-                    : "transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"
-                }`}
-              ></div>
             </Link>
           </li>
         ))}
+        <div
+          className="absolute bottom-0 h-1 bg-color_primary transition-all duration-200 ease-out"
+          style={{
+            width: `${100 / bottomNavItems.length}%`,
+            left: `${(100 / bottomNavItems.length) * activeIndex}%`,
+          }}
+        ></div>
       </ul>
     </div>
   );

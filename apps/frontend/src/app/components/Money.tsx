@@ -10,7 +10,7 @@ interface MoneyProps {
 
 export const Money: React.FC<MoneyProps> = ({ amount, className, textStyle = "lg" }) => {
   return (
-    <div className={cn(`flex space-x-1 items-center justify-between`, className)}>
+    <div className={cn(`flex space-x-1 items-center justify-center`, className)}>
       <div className={textStyle === "lg" ? "w-7 h-7 relative" : "w-6 h-6 relative"}>
         <Image
           src={"/icons/gold_coin.png"}

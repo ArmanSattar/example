@@ -45,7 +45,7 @@ export const ChatBody: React.FC<ChatBodyProps> = ({ messages }) => {
         ref={chatBodyRef}
       >
         {visibleMessages.map((message, index) => (
-          <div key={index} className={`transition-opacity relative p-2 duration-300`}>
+          <div key={index} className={`transition-opacity relative px-2 py-3 duration-300`}>
             <ChatInputElement
               message={message.message}
               username={message.username}
