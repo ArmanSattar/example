@@ -7,8 +7,8 @@ import { fromMinorAmount } from "./utils/money";
 import { useWalletInfo } from "./hooks/useWalletInfo";
 import { setBalance } from "../../../store/slices/userSlice";
 import { RootState } from "../../../store";
-import Coins from "../../../../public/icons/coins.svg";
 import BalanceAnimation from "./BalanceAnimation";
+import Image from "next/image";
 
 export const Balance = () => {
   const dispatch = useDispatch();
@@ -45,7 +45,15 @@ export const Balance = () => {
     <fieldset className="flex rounded-lg items-center justify-center border-2 border-color_tertiary h-12 -mt-2 sm:-mt-1 sm:h-14 bg-color_tertiary_2 relative">
       <legend className={"text-xs ml-1"}>BALANCE</legend>
       <div className={`flex space-x-2 items-center justify-between px-4 -mt-1`}>
-        <Coins className="text-yellow-400 mt-0.5" />
+        <div className={"relative w-7 h-7"}>
+          <Image
+            src={"/icons/gold_coin.png"}
+            alt={"Gold coin"}
+            width={32}
+            height={32}
+            objectFit={"contain"}
+          />
+        </div>
         <span className={`text-white whitespace-nowrap text-md text-center`}>
           {fromMinorAmount(isLoading ? 0 : balance).toFixed(2)}
         </span>

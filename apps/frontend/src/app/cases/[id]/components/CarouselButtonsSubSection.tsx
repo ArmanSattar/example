@@ -35,11 +35,11 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
             key={index}
             className={`group hover:${
               spinClicked ? "" : "bg-color_gray_3"
-            } rounded-md min-w-[48px] flex-1 h-12 p-2 disabled:opacity-30 ${
+            } rounded-md min-w-[48px] flex-1 h-12 p-2 disabled:opacity-50 transition-colors duration-200 ease-in-out font-semibold ${
               index + 1 === numCases ? "bg-color_gray_3" : ""
             } ${
               spinClicked
-                ? `opacity-50 cursor-not-allowed ${
+                ? `opacity-75 cursor-not-allowed ${
                     index + 1 === numCases ? "" : "hover:bg-color_gray_3"
                   }`
                 : ""
@@ -48,7 +48,7 @@ export const CarouselButtonsSubSection: React.FC<CarouselButtonsSubSectionProps>
             disabled={spinClicked}
           >
             <span
-              className={`text-gray-400 group-hover:text-white ${
+              className={`text-gray-300 group-hover:text-white transition-colors duration-200 ease-in-out ${
                 index + 1 === numCases ? "text-white" : ""
               }`}
             >
