@@ -20,6 +20,7 @@
     "@swc-node/register": "^1.9.2",
     "@swc/core": "^1.5.27",
     "@tanstack/react-query": "^5.49.0",
+    "@vercel/speed-insights": "^1.0.12",
     "aws-lambda": "^1.0.7",
     "aws-sdk-client-mock": "^4.0.1",
     "axios": "^1.6.0",
