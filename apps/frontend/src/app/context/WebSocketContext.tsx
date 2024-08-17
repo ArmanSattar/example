@@ -23,7 +23,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
   const reconnectIntervalRef = useRef(3000); // 3 seconds
 
   const connect = () => {
-    if (socketRef.current?.readyState === WebSocket.OPEN) {
+    if (socketRef.current?.readyState === WebSocket.OPEN || socketRef.current?.readyState === WebSocket.CONNECTING) {
       return;
     }
 
@@ -33,7 +33,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
       setConnectionStatus("connected");
       toast.success("Connected to server");
       reconnectAttempts.current = 0;
-      reconnectIntervalRef.current = 3000; // Reset interval on successful connection
+      reconnectIntervalRef.current = 3000; 
 
       const token = localStorage.getItem("token");
       if (token) {
@@ -53,7 +53,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
 
     socketRef.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log(data);
       if ("type" in data && data["type"] == "error") {
         const message = data["message"];
         if ("message" in message) {
@@ -102,7 +101,9 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ url, child
     return () => {
       window.removeEventListener("online", handleOnline);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      socketRef.current?.close();
+      if (socketRef.current && socketRef.current.readyState !== WebSocket.CLOSED) {
+        socketRef.current.close();
+      }
     };
   }, [url]);
 
