@@ -88,14 +88,14 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({
             <label className="text-2xs text-white ml-1.5">Price</label>
             <button
               className={`inline-flex justify-between items-center w-full rounded-md h-10
-               bg-color_gray_3 py-2 px-3 text-sm font-medium text-white focus:outline-none transition-custom gap-x-3`}
+               bg-color_gray_3 py-2 px-3 text-sm font-medium text-white focus:outline-none transition-custom gap-x-2`}
               onClick={() => setIsPricePopUpOpen(!isPricePopUpOpen)}
             >
               <div className={"w-7 h-7 relative"}>
                 <Image src={"/icons/gold_coin.png"} alt={"Gold coin"} width={32} height={32} />
               </div>
               {priceRange.min === "" || priceRange.max === "" ? (
-                <span className={"text-white whitespace-nowrap"}>All</span>
+                <span className={"text-white whitespace-nowrap font-semibold"}>All</span>
               ) : (
                 <span className={"text-white whitespace-nowrap font-semibold font-mono"}>
                   {priceRange.min} to {priceRange.max}
@@ -143,7 +143,7 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({
                     <Image src={"/icons/gold_coin.png"} alt={"Gold coin"} width={32} height={32} />
                   </div>
                   {filters.priceRange.length === 0 ? (
-                    <span className={"text-white whitespace-nowrap"}>All</span>
+                    <span className={"text-white whitespace-nowrap font-semibold"}>All</span>
                   ) : (
                     <span className={"text-white whitespace-nowrap font-semibold font-mono"}>
                       {filters.priceRange[0]} to {filters.priceRange[1]}
