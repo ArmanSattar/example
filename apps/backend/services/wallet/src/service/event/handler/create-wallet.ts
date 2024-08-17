@@ -12,7 +12,8 @@ const logger = getLogger("create-wallet-handler");
 export const handler = async (event: EventBridgeEvent<"event", CreateWalletEvent>) => {
   try {
     const eventDetails = CreateWalletRequestSchema.parse(event.detail.payload);
-    const { userId, walletAddress, requestId } = eventDetails;
+    const { userId, walletAddress } = eventDetails;
+    const requestId = event.detail.metadata.requestId;
 
     logger.info("Received create wallet request", { event, requestId });
 

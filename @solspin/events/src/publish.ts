@@ -24,6 +24,7 @@ export async function publishEvent<T>(
   const eventBusArn = process.env["EVENT_BUS_ARN"];
 
   if (!eventBusArn) {
+    console.log("Event bus name could not be established");
     throw new Error("Event bus name could not be established");
   }
 

@@ -4,7 +4,7 @@ import { Search } from "./Search";
 import React, { useMemo } from "react";
 import { IFilters } from "../../types";
 import { PricePopUp } from "./PricePopUp";
-import Dollar from "../../../../public/icons/dollar.svg";
+import Image from "next/image";
 
 interface CasesHeaderProps {
   updateFilters: (filterType: keyof IFilters, selectedOptions: string[]) => void;
@@ -91,7 +91,9 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({
                bg-color_gray_3 py-2 px-3 text-sm font-medium text-white focus:outline-none transition-custom gap-x-3`}
               onClick={() => setIsPricePopUpOpen(!isPricePopUpOpen)}
             >
-              <Dollar className="ml-1 inset-y-0 my-auto scale-125 text-color_tertiary" />
+              <div className={"w-7 h-7 relative"}>
+                <Image src={"/icons/gold_coin.png"} alt={"Gold coin"} width={32} height={32} />
+              </div>
               {priceRange.min === "" || priceRange.max === "" ? (
                 <span className={"text-white whitespace-nowrap"}>All</span>
               ) : (
@@ -137,7 +139,9 @@ export const CasesHeader: React.FC<CasesHeaderProps> = ({
                bg-color_gray_3 py-2 px-3 text-sm font-medium text-white focus:outline-none transition-custom gap-x-3`}
                   onClick={() => setIsPricePopUpOpen(!isPricePopUpOpen)}
                 >
-                  <Dollar className="ml-1 inset-y-0 my-auto scale-125 text-color_tertiary" />
+                  <div className={"w-7 h-7 relative"}>
+                    <Image src={"/icons/gold_coin.png"} alt={"Gold coin"} width={32} height={32} />
+                  </div>
                   {filters.priceRange.length === 0 ? (
                     <span className={"text-white whitespace-nowrap"}>All</span>
                   ) : (

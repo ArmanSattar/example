@@ -46,3 +46,4 @@ test-ledger/*
 .next
 out
 *.local
+apps/backend/services/wallet/package-lock.json
