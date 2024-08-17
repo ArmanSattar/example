@@ -18,20 +18,29 @@ const inter = Inter({
 export const metadata = {
   title: "SolSpin",
   description: "Solana's number one lootbox platform. Open NFT and CSGO cases here! Win big!",
+  keywords: ["Solana", "NFT", "CSGO", "lootbox", "cryptocurrency", "gaming"],
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://solspin.io",
-    title: "SolSpin",
+    url: "https://www.solspin.bet",
+    siteName: "SolSpin",
+    title: "SolSpin - Solana's #1 Lootbox Platform",
     description: "Solana's number one lootbox platform. Open NFT and CSGO cases here! Win big!",
     images: [
       {
-        url: "../public/icons/logo.webp",
+        url: "https://www.solspin.bet/icons/logo.png",
         width: 1200,
         height: 630,
-        alt: "SolSpin",
+        alt: "SolSpin Logo",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@SolSpin2", // Replace with your actual Twitter handle
+    title: "SolSpin - Solana's #1 Lootbox Platform",
+    description: "Open NFT and CSGO cases on Solana's premier lootbox platform. Win big today!",
+    images: ["https://www.solspin.bet/icons/logo.png"],
   },
 };
 
